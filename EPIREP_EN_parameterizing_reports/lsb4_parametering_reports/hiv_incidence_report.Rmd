@@ -1,0 +1,67 @@
+---
+title: "HIV Incidence Report - `r stringr::str_to_title(params$country)`"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: html_document
+params:
+  country: "Angola"
+---
+
+```{r, echo = FALSE}
+# Set-up global options 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo = FALSE)
+
+# load packages
+pacman::p_load(ggplot2, dplyr, knitr, kableExtra)
+
+## Load the dataset
+hiv_data <- read.csv("hiv_incidence.csv")
+```
+
+## Epidemiological Context
+
+HIV, the virus responsible for AIDS, remains one of the most significant public health challenges globally. The disease, which primarily spreads through unprotected sexual intercourse, contaminated blood transfusions, and from mother to child during pregnancy, childbirth, or breastfeeding, has had a profound impact on the health, economies, and development of affected countries.
+
+
+## HIV Incidence Trend in `r params$country`
+
+In `r params$country`, the HIV epidemic has its unique characteristics and challenges. This section of the report delves into the epidemiological trends observed in `r params$country` over the years, as reflected by the reported incidence of new HIV cases.
+
+```{r}
+hiv_incidence_data <- subset(hiv_data, country == params$country)
+ggplot(hiv_incidence_data, aes(x = year, y = new_cases)) +
+  geom_line() +
+  theme_minimal() +
+  labs(title = paste("HIV Incidence in", params$country, "(1990-2000)"),
+       x = "Year",
+       y = "New Cases")
+```
+
+The line plot above illustrates the trend in new HIV cases in `r params$country` from 1990 to 2000.
+  
+## HIV Cases Summary Table
+
+```{r}
+# Filter for selected country data
+country_data <- hiv_data %>% filter(country == params$country)
+
+# Summarize data by year
+country_summary <- country_data %>% 
+    group_by(year) %>%
+    summarise(Total_Cases = sum(new_cases))
+
+# Identify the most recent year
+most_recent_year <- max(country_summary$year)
+
+# Display the table using kable and highlight the most recent year
+country_summary %>%
+    kable("html", caption = paste("Summary of HIV Cases in", params$country, "by Year")) %>%
+    kable_styling(bootstrap_options = c("striped", "hover")) %>%
+    row_spec(which(country_summary$year == most_recent_year), background = "lightblue")
+```
+
+The table below provides a year-by-year summary of new HIV cases in `r params$country`. This data is crucial for understanding the trajectory of the HIV/AIDS epidemic in the country and for informing public health interventions.
+
+
+## Conclusion
+
+The data presented here is not just numbers; it represents the lives impacted by HIV/AIDS in `r params$country`. Continuous efforts in prevention, treatment, and education, along with robust data analysis, remain key to controlling and eventually ending the HIV epidemic in the country.

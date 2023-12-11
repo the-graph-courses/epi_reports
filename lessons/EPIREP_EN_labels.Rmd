@@ -1,0 +1,484 @@
+---
+title: '\ '
+output:
+  html_document:
+    number_sections: true
+    toc: true
+    toc_float: true
+    css: !expr here::here("global/style/style.css")
+    highlight: kate
+  word_document:
+    toc: true
+editor_options:
+  markdown:
+    wrap: 100
+  canonical: true
+  chunk_output_type: inline
+---
+
+```{r, include = FALSE, warning = FALSE, message = FALSE}
+## TEMPLATE FOR EPI REPORTS LESSONS
+
+# require pacman 
+if(!require(pacman)) install.packages("pacman")
+
+# Source functions 
+source(here::here("global/functions/lesson_functions.R"))
+
+# knitr settings
+knitr::opts_chunk$set(warning = F, message = F, class.source = "tgc-code-block", error = T)
+```
+
+# Introduction
+
+This lesson will pivot from group comparisons to the practice of labeling in data visualization. Labels provide additional context, clarify data points, and enhance the overall readability of a plot. We'll delve into the intricacies of labeling in ggplot2, particularly focusing on `geom_label()`, `geom_text()` functions from `{ggplot2}`, and the `geom_richtext()` function from `{ggtext}`.
+
+# Learning Objectives
+
+After this lesson, you will be able to:
+
+1.  **Use `geom_text()` to add textual annotations to plots:**
+    -   Learn to place readable text labels directly on the plot for immediate data point identification.
+2.  **Implement `geom_label()` for emphasized annotations:**
+    -   Discover how to make labels stand out with a bounding box, improving the legibility against complex backgrounds.
+3.  **Explore `geom_richtext()` for stylized text elements:**
+    -   Get creative with rich text capabilities, using formatted text to draw attention or group related information visually.
+
+By the end of this lesson you will be able to create visualization like this:
+
+![](images/labeling-intro)
+
+# Packages
+
+We'll utilize a combination of packages in this lesson to enhance our data visualizations:
+
+1.  **`tidyverse`**: A collection of R packages for efficient data manipulation and visualization, including `ggplot2`.
+
+2.  **`ggtext`**: Extends `ggplot2` for rich, HTML-like text formatting in plot labels.
+
+3.  **`glue`**: Enables flexible string interpolation for dynamic text in plots.
+
+4.  **`ggrepel`**: Provides functions like `geom_text_repel()` to prevent label overlap in dense plots.
+
+```{r}
+pacman::p_load(tidyverse, ggtext, glue, ggrepel)
+```
+
+Additionally we will also set a theme for all our graphs in this lesson using this code:
+
+```{r}
+theme_set(theme_light())
+```
+
+# Data
+
+The `tb` dataset will serve as the foundation for our examples, providing us a rich set of data points to label.
+
+```{r}
+tb <- read_csv(here::here('data', 'clean', 'benin_tb.csv'))
+tb
+```
+
+We will regenerate plots from the previous `"comparison lesson"` to serve us as the foundation for this lesson.
+
+# Labeling in ggplot2
+
+In `{ggplot2}`, adding labels is an exercise in precision and aesthetics. We'll start with `geom_text()` for direct labeling, move to `geom_label()` for labels with emphasis, and explore `geom_richtext()` for when you need labels to do more than just convey information. In the following we will introduce the difference between each of these functions, then we will get into more details on how leverage each of them in crafting efficient visualization in the following sections.
+
+`geom_text()`, `geom_label()`, and `geom_richtext()` in ggplot2 offer distinct approaches for adding text to plots, each with its unique characteristics and use cases.
+
+-   **`geom_text()`**: This method places plain text directly onto the plot. It is best used when the background is not too busy, and the text does not need to stand out excessively.
+
+-   **`geom_label()`**: This function draws a rectangle behind the text, enhancing contrast and legibility, especially useful in plots with complex backgrounds.
+
+-   **`geom_richtext()`**: Allows for richly formatted text, supporting multiple styles within a single label. It's suitable for expressive and creative labeling. The use of HTML-like tags in `geom_richtext()` enables the incorporation of various text styles, such as bold or italic, within the same label.
+
+::: side-note
+-   **`geom_text_repel()` and `geom_label_repel()`**:
+
+Building upon the principles of `geom_text()` and `geom_label()`, these functions offer advanced solutions for label placement in densely populated plots. `geom_text_repel()` excels in dynamically adjusting text labels to avoid overlap by repelling them away from each other and the data points, ensuring clarity and readability. This feature is particularly valuable in scatter plots where data points are numerous and close together. Complementing this, `geom_label_repel()` extends the capabilities of `geom_label()` by combining the emphasis of a background box with the repelling action to manage label overlap in complex visualizations.
+
+With `geom_label_repel()`, the labels not only repel each other to avoid clutter but also include a background box for added emphasis, making each label distinct and readable even in a densely plotted graph. This function is particularly useful in data visualizations where both label legibility and visual prominence are key.
+:::
+
+While all three functions are designed to annotate plots with text, `geom_text()` offers simplicity, `geom_label()` adds emphasis with a background box, and `geom_richtext()` provides advanced formatting options for a more visually engaging label. Each method serves different needs depending on the complexity and style of the visualization.
+
+::: practice
+**1. Exercise - Understanding `geom_text_repel()` and `geom_label_repel()`:** - **Logical Question**: When using `geom_text_repel()` and `geom_label_repel()`, what is the primary reason for their usage in a plot?
+
+-   
+
+    ```         
+     A) To color code labels
+    ```
+
+-   
+
+    ```         
+     B) To prevent label overlap
+    ```
+
+-   
+
+    ```         
+     C) To change label fonts
+    ```
+
+-   
+
+    ```         
+     D) To animate the labels
+    ```
+:::
+
+# Using `geom_text()` for Clear Annotations and `geom_label()` for Emphasized Labels
+
+## `geom_text()`
+
+`geom_text()` provides a simple and effective way to add textual annotations directly onto your plots. Let's explore how we can use this to highlight the total number of TB cases by diagnosis type for each period in a bar plot.
+
+First, we'll begin by aggregating our data and then crafting a basic bar plot as our starting point:
+
+-   **Start by summarizing the data:** This code chunk first summarizes our `tb` dataset by `period` and `diagnosis_type`, calculating the sum of cases (`value`) for each group.
+
+```{r}
+# Summarize the data by period and diagnosis type
+tb_sum <- tb |> 
+  group_by(period, diagnosis_type) |> 
+  summarise(value = sum(value, na.rm = TRUE))
+```
+
+-   **Then create a simple bar plot:** Plot the summarized data as a bar plot (`geom_col()`), where each bar's height represents the total cases for a particular diagnosis in each period.
+
+```{r}
+# Create a basic bar plot using the summarized data
+d_p_bar <- tb_sum |> 
+  ggplot(aes(x = period, y = value, fill = diagnosis_type)) +
+  geom_col()
+```
+
+-   **Add annotation to the bar plot:** Next, we add annotations to this plot. The `value` column, which represents the total cases, will be used for labeling each bar.
+
+```{r}
+# Add text labels to the bar plot
+d_p_bar +
+  geom_text(aes(label = value))
+```
+
+Here, `geom_text()` is used to place labels on top of each bar. The labels show the total case count (`value`) for each diagnosis type in each period.
+
+::: pro-tip
+In certain scenarios, like stacked bar plots, positioning the labels for better readability and association with the corresponding segment is crucial. We can adjust the label positions within the stacks as follows:
+
+```{r}
+# Reposition labels within the stacks for clarity
+d_p_bar +
+  geom_text(
+    aes(label = value),
+    position = position_stack(vjust = 0.5)
+  )
+```
+
+This code modifies the previous plot by using `position_stack(vjust = 0.5)` within `geom_text()`. This adjustment centers the labels vertically within each segment of the stacked bars, making it easier to associate them with the relevant data point.
+:::
+
+::: practice
+**2. Exercise - Implementing `geom_text()`:**
+
+Create a scatter plot using the `mtcars` dataset with `mpg` on the x-axis and `wt` on the y-axis. Add labels using `geom_text()`. Which code correctly adds these labels?
+
+-   
+
+    ```         
+     A) `ggplot(mtcars, aes(x = mpg, y = wt)) + geom_point() + geom_text(aes(label = rownames(mtcars)))`
+    ```
+
+-   
+
+    ```         
+     B) `ggplot(mtcars, aes(x = mpg, y = wt)) + geom_point() + geom_text(label = rownames(mtcars))`
+    ```
+
+-   
+
+    ```         
+     C) `ggplot(mtcars, aes(x = mpg, y = wt, label = rownames(mtcars))) + geom_point() + geom_text()`
+    ```
+
+-   
+
+    ```         
+     D) `ggplot(mtcars, aes(label = rownames(mtcars))) + geom_point() + geom_text(aes(x = mpg, y = wt))`
+    ```
+:::
+
+## `geom_label()`
+
+For labels that need to stand out more, `geom_label()` draws a rectangle behind the text, enhancing contrast. As illustrated in the fifth section we can implement it as follows:
+
+```{r}
+# Continuing from the previous example, add labels with geom_label()
+d_p_bar +
+  geom_label(aes(label = value), position = position_stack(vjust = 0.5))
+```
+
+Notice that we use the same `position_stack(vjust = 0.5)` trick that we used with `geom_text()` to center the labels vertically within each bar.
+
+::: pro-tip
+Notice that once we used `geom_label()`, the letter `a` appeared on the legend keys. This inconvenient and would ruin all the hard work we put to make these graphs look presentable. To mitigate this issue we add the `show.legend = FALSE` argument to the `geom_label()` function like this :
+
+```{r}
+d_p_bar +
+  geom_label(
+    aes(label = value), 
+    position =position_stack(vjust = 0.5),
+    # adding the argument here
+    show.legend = FALSE
+  )
+```
+
+Incorporating this option enhances the overall readability and effectiveness of the visualization, ensuring that the audience's attention is directed appropriately to the key aspects of the data.
+
+Also keep in mind that we can do the same addition for the `geom_richtext()` function to avoid similar redundancies
+:::
+
+::: practice
+**3. Exercise - Using `geom_label()` for Emphasis:** Which code snippet correctly adds emphasized labels to a bar plot in ggplot2 using `geom_label()`?
+
+-   
+
+    ```         
+     A) `ggplot(data, aes(x, y)) + geom_col() + geom_label(aes(label = names))`
+    ```
+
+-   
+
+    ```         
+     B) `ggplot(data, aes(x, y, label = names)) + geom_col() + geom_label()`
+    ```
+
+-   
+
+    ```         
+     C) `ggplot(data, aes(x, y)) + geom_col() + geom_label(aes(label = names), fill = 'lightblue')`
+    ```
+
+-   
+
+    ```         
+     D) `ggplot(data, aes(x, y, label = names, fill = 'lightblue')) + geom_col() + geom_label()`
+    ```
+:::
+
+# Exploring `geom_richtext()` for Formatted Text
+
+`geom_richtext()` from the `{ggtext}` package introduces a dynamic way to enhance the visual appeal of plot labels in ggplot2. This function allows us to apply multiple styles, such as bold or italic text, within a single label, opening up a diverse range of customization options for your data visualizations.
+
+Before diving into the code, let's set the stage: We'll first process our data to calculate percentages for different diagnosis types. This processed data will then serve as the basis for a bar plot embellished with richly formatted text labels. Basically we need the total number of cases for all years combined for each facility (`orgunit`) and then compute the percentage share of each diagnosis type for each of them.
+
+Here's how we prepare our data:
+
+```{r}
+# Preparing data for rich text labeling
+tb_rich_label <- tb |> 
+  group_by(orgunit, diagnosis_type) |> 
+  summarise(value = sum(value, na.rm = TRUE)) |> 
+  pivot_wider(names_from = diagnosis_type, values_from = value) |> 
+  summarise(
+    pct_bact = round(100 * bacteriologically_confirmed / (bacteriologically_confirmed + clinically_diagnosed), 2),
+    pct_clin = round(100 * clinically_diagnosed / (bacteriologically_confirmed + clinically_diagnosed), 2)
+  ) |> 
+  pivot_longer(2:3, names_to = 'diagnosis_type', values_to = 'value') |> 
+  ungroup()
+```
+
+In this chunk, we start by grouping our `tb` dataset by organizational unit and diagnosis type. We then calculate the sum of values for each group, pivot the data to widen its format, and subsequently calculate the percentages of bacteriologically confirmed and clinically diagnosed cases. Finally, we pivot the data again for a long format suitable for ggplot and ungroup it.
+
+::: watch-out
+In our visualization's data preparation step:
+
+-   **Detailed Data Transformation**: We meticulously transform the `tb` dataset, prioritizing this approach over using `geom_bar()` directly, especially for integrating `geom_richtext()`.
+
+-   **Requirement of `geom_richtext()`**: This function demands accurately processed data for effective display of richly formatted text. Pre-processing ensures precise, meaningful, and relevant annotations.
+
+-   **Avoidance of Bugs and Issues**: Proper data preparation helps prevent potential bugs or visualization issues that can occur with raw data and complex annotations like those in `geom_richtext()`.
+
+-   **Control Over Aesthetics and Label Placement**: Preparing data beforehand improves control over the plot's aesthetics and label positioning, essential when dealing with intricate text formatting in `geom_richtext()`.
+:::
+
+Next, we'll create a bar plot using this data and save the object:
+
+```{r}
+# Creating a bar plot with rich text labels
+pct_plot_nl <- tb_rich_label |> 
+  ggplot(aes(x = orgunit, y = value, fill = diagnosis_type)) +
+  geom_col() 
+pct_plot_nl
+```
+
+In this plot, `geom_col()` is used to create a bar plot based on the `orgunit` and `value` fields.
+
+Now we can leverage `geom_richtext()` to add some formatted text, Let's format the value of each column as bold and add a percentage sign to it:
+
+```{r}
+pct_plot <- pct_plot_nl+
+  geom_richtext(
+    aes(label = glue('<b> {value} % </b>')),  # format as bold
+    position = position_stack(vjust = 0.5), # center the labels
+    show.legend = FALSE # don't show the legend for this function
+  )
+pct_plot
+```
+
+The key feature here is `geom_richtext()`, which adds labels to each bar. These labels are not just plain text; they are formatted using HTML-like syntax (e.g., `<b>` tags for bold text) to emphasize the percentage values. The `glue()` function is used to dynamically create these labels, incorporating the calculated percentages with a percentage sign. We also adjust the position of the labels to be centered in each bar segment using `position_stack(vjust = 0.5)` and choose not to display these labels in the legend with `show.legend = FALSE`.
+
+::: practice
+**4. Exercise - Formatting Labels with `geom_richtext()`:**
+
+When adding rich text labels with `geom_richtext()` in a ggplot2 bar plot, which code snippet correctly applies bold and italic formatting to the labels?
+
+-   
+
+    ```         
+     A) `ggplot(data, aes(x, y)) + geom_col() + geom_richtext(aes(label = glue("<b>{names}</b><i>{value}</i>")))`
+    ```
+
+-   
+
+    ```         
+     B) `ggplot(data, aes(x, y)) + geom_col() + geom_richtext(aes(label = "<b>" + names + "</b><i>" + value + "</i>"))`
+    ```
+
+-   
+
+    ```         
+     C) `ggplot(data, aes(x, y, label = glue("<b>{names}</b><i>{value}</i>"))) + geom_col() + geom_richtext()`
+    ```
+
+-   
+
+    ```         
+     D) `ggplot(data, aes(x, y)) + geom_col() + geom_richtext(label = glue("<b>{names}</b><i>{value}</i>"))`
+    ```
+:::
+
+::: pro-tip
+Using flipped coordinates in bar plots can greatly enhance readability, especially when dealing with long category names or numerous categories. For our rich text labeled plot, flipping the axes is straightforward:
+
+```{r}
+
+pct_plot +
+  # Flipping coordinates for better visualization
+  coord_flip()
+```
+
+This approach changes the orientation of the plot, making it easier to read long labels. However, an issue that may arise is label truncation near the y-axis (which was originally the x-axis). To address this, we can adjust the axis limits. Since we've flipped the coordinates, we'll extend the y-axis (previously the x-axis) to provide more space for the labels:
+
+```{r}
+pct_plot +
+  coord_flip() +
+  # Adjusting axis limits to accommodate labels after flipping coordinates
+  expand_limits(y = -5)
+```
+
+Here, `expand_limits(y = -5)` effectively extends the y-axis, ensuring all labels, including those close to the axis, are fully displayed and legible.
+:::
+
+Through `geom_richtext()`, this approach brings an enhanced level of detail and clarity to the plot, making the data not only more informative but also visually striking.
+
+::: side-note
+After discussing the creation of a bar plot using `position_stack()` for neatly centered labels, it's also valuable to explore how this methodology adapts to bar plots using `position_dodge()`. This variation is particularly useful when we want to visually separate different categories within the same group.
+
+Here's how we can apply a similar approach to `position_dodge()` plots:
+
+```{r}
+# Creating a dodged bar plot with rich text labels
+tb_rich_label |> 
+  ggplot(aes(x = orgunit, y = value, fill = diagnosis_type)) +
+  # we add `position_dodge()` here
+  geom_col(position = position_dodge()) +
+  geom_richtext(
+    aes(label = glue('<b> {value} % </b>')), 
+    show.legend = FALSE
+  )
+```
+
+In this dodged bar plot, `geom_col(position = position_dodge())` arranges the bars side-by-side within each group (or `orgunit`), making it easier to compare different `diagnosis_type` categories within each group. The `geom_richtext()` function is then used to add formatted labels to these bars. Although the bars are now positioned side-by-side rather than stacked, the rich text labels continue to provide clear, visually appealing information about each category. This approach is especially effective in datasets with distinct categories or types that benefit from a side-by-side comparison within the same group.
+:::
+
+::: practice
+**5. Exercise - Flipped Coordinates and Axis Expansion:**
+
+Why is `expand_limits(y = -5)` used after applying `coord_flip()` in a ggplot2 plot?
+
+-   
+
+    ```         
+     A) To increase plot height
+    ```
+
+-   
+
+    ```         
+     B) To adjust the legend position
+    ```
+
+-   
+
+    ```         
+     C) To prevent label truncation near the axis
+    ```
+
+-   
+
+    ```         
+     D) To add extra categories to the plot
+    ```
+:::
+
+# Wrap Up! {.unnumbered}
+
+In this lesson, we delved into enhancing plots with labels, focusing on `geom_label()`, `geom_text()`, and `geom_richtext()`. Utilizing packages like `{tidyverse}`, `{ggtext}`, and `{glue}`, we explore a range of labeling techniques from simple text to advanced formatting.
+
+We started with `geom_text()`, demonstrating how to place readable text directly onto plots using the `tb` dataset. Then, `geom_label()` is introduced for creating more prominent labels with background boxes, ideal for complex plot backgrounds.
+
+Next, we explored `geom_richtext()` for its rich text formatting capabilities, showing how to incorporate diverse text styles within a single label for more expressive visualizations.
+
+This was followed by a discussion on using flipped coordinates in bar plots for enhanced readability and label visibility, along with tips on adjusting axis limits with `expand_limits()`.
+
+The lesson is a comprehensive guide to using labeling effectively in `{ggplot2}`, enhancing the clarity and visual appeal of data visualizations.
+
+# Solutions {.unlisted .unnumbered}
+
+1.  **Understanding `geom_text_repel()` and `geom_label_repel()`**
+    -   
+
+        B)  
+2.  **Implementing `geom_text()`**
+    -   
+
+        A)  
+3.  **Using `geom_label()` for Emphasis**
+    -   
+
+        C)  
+4.  **Formatting Labels with `geom_richtext()`**
+    -   
+
+        A)  
+5.  **Flipped Coordinates and Axis Expansion**
+    -   
+
+        C)  
+
+# References {.unlisted .unnumbered}
+
+Some material in this lesson was adapted from the following sources:
+
+-   Horst, Allison. "Allisonhorst/Dplyr-Learnr: A Colorful Introduction to Some Common Functions in Dplyr, Part of the Tidyverse." GitHub. Accessed April 6, 2022. <https://github.com/allisonhorst/dplyr-learnr.>
+
+<!-- (Chicago format. You can use https://www.citationmachine.net) -->
+
+# appendix {.unlisted .unnumbered}
+
+`r .tgc_license()`

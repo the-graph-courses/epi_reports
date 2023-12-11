@@ -1,0 +1,664 @@
+---
+title: 'Epidemiological Time Series Visualization'
+output:
+  html_document:
+    number_sections: true
+    toc: true
+    toc_float: true
+    css: !expr here::here("global/style/style.css")
+    highlight: kate
+editor_options: 
+  chunk_output_type: inline
+---
+
+
+```{r, echo = F, message = F, warning = F}
+# Load packages 
+if(!require(pacman)) install.packages("pacman")
+pacman::p_load(rlang, tidyverse, knitr, here, reactable, gt, flextable)
+
+## functions
+source(here::here("global/functions/misc_functions.R"))
+
+## default render
+knitr::opts_chunk$set(class.source = "tgc-code-block", warning = FALSE, message = FALSE)
+```
+
+
+
+# Introduction
+
+Time series analysis is crucial in epidemiology for uncovering trends and patterns in disease occurrence over time. This analytical method provides insights into the temporal dynamics of health-related events, enabling public health professionals to track progression, anticipate outbreaks, and evaluate the impact of interventions. By analyzing data collected at regular intervals, epidemiologists can generate forecasts, inform policy decisions, and ultimately, improve disease prevention and control measures. In this lesson, we delve into how to create and interpret epidemiological time series, using R to visualize data effectively.
+
+
+
+![](images/tb_notifications.png){width="408"}
+
+
+# Learning Objectives
+
+Upon completing this lesson, you will be able to:
+
+- Aggregate time-series data by a specific time unit (such as year) using dplyr's `group_by` and `summarise` functions in R.
+
+ - Create and interpret dual-line plots in ggplot2 to compare different types of data, specifically focusing on clinically diagnosed and laboratory-confirmed TB cases.
+   
+- Implement annual data aggregation techniques for clearer trend analysis in time series data, combining `geom_line()` and `geom_point()` functions in ggplot2.
+
+- Utilize `geom_ribbon()` in ggplot2 to represent ranges or confidence intervals, enhancing the understanding of data variability in trend analysis.
+   
+- Apply `geom_smooth()` in ggplot2 to create and interpret smoothed trend lines with confidence intervals, aiding in the identification of underlying patterns in time series data.
+
+- Understand and apply the concept of a secondary y-axis in ggplot2 for effective comparison of disparate data sets within a single plot, using `scale_y_continuous()` in ggplot2.
+   
+
+These objectives aim to equip you with the necessary skills to effectively prepare, analyze, and visualize time series data in epidemiology, particularly focusing here on TB trend analysis using R and ggplot2.
+
+
+# Packages
+
+The `pacman` is an external R package that manages the loading and installation of other R packages.
+
+```{r warning = F, message = F}
+# Load packages 
+if(!require(pacman)) install.packages("pacman")
+pacman::p_load(dplyr, ggplot2, tidyr, lubridate, outbreaks, scales)
+options(scipen=999)
+```
+
+
+::: pro-tip
+
+To prevent scientific notation in your plots, utilize the command `options(scipen=999)` in R. This setting ensures your plot axes and other numerical representations use regular formatting instead of scientific notation, making your data easier to read and interpret.
+
+:::
+
+
+# TB Benin dataset
+
+The TB Benin dataset provides a record of tuberculosis (TB) cases in Benin, collected and compiled to aid in the surveillance and control of the disease. The data spans a series of time intervals and includes information on new cases detected through clinical diagnosis and those confirmed by laboratory tests. This dataset can serve as a valuable resource for understanding the epidemiology of TB in Benin, assessing the burden of the disease, and tracking the effectiveness of TB control programs over time.
+
+Let's start by loading the data from the `tb_benin_ts.csv` file to understand its structure. We will read the data and display the first few rows to get a sense of the contents.
+
+```{r load_data}
+# Load the dataset into an R data frame
+tb_data <- read_csv(here::here("data/tb_benin_q.csv"))
+
+# Display the first few rows to inspect the data
+head(tb_data)
+```
+
+The `tb_data`  contains three columns:
+
+   * `period`: The time period, which appears in a quarterly format (e.g., 2015Q1 for the first quarter of 2015).
+   
+   * `hivtest`: This represents the number of tested cases for HIV.
+   
+   * `hivtest_pos`:  This represents the number of positive tested HIV cases.
+   
+   * `new_clindx`: This represents the number of new cases detected or clinically diagnosed.
+   
+   * `new_labconf`: This represents the number of new cases that have been confirmed by a laboratory.
+
+
+# Visualizing the trends in TB detection: two lines in the same plot
+
+In epidemiology, visualizing the trends in disease detection over time is crucial for understanding the dynamics of disease spread. It's particularly helpful for identifying outbreaks, seasonal patterns, or the impact of interventions.
+
+Since we have two indicators (i.e. `new_clindx` and `new_labconf`), we need to plot two time series: one for the clinically diagnosed cases and another for the laboratory-confirmed cases.
+
+Furthermore, we want to provide an annual plot, while the data is quarterly. We'll aggregate the data by year.
+
+**Step 1: Preparing the annual data**
+
+First, we will aggregate the quarterly data into annual data.
+
+```{r}
+# The `sub` function is used to extract the year from the 'period' column
+tb_data$year <- as.numeric(sub("Q[1-4]", "", tb_data$period))
+```
+
+- The `sub()` function extracts the year from the `period` column by removing the "Q[1-4]" pattern, leaving only the year part. This information is then stored in a new column named `year`.
+
+```{r}
+# Using dplyr's `group_by` and `summarise` to aggregate the data by year
+annual_data <- tb_data %>%
+  group_by(year) %>%
+  summarise(hiv_test = sum(hivtest), 
+            hiv_positive = sum(hivtest_pos),
+            clin_confirmed = sum(new_clindx),
+            lab_confirmed = sum(new_labconf))
+```
+
+In this process, we take quarterly data and condense it into annual summaries using the powerful features of the `dplyr` package in R.
+
+- `group_by(year)`: This function groups the data by the 'year' column. Subsequent operations are then applied separately to each unique year in the dataset.
+
+- `summarise(clin_confirmed = sum(new_clindx), lab_confirmed = sum(new_labconf))`: The `summarise()` function calculates the sum of `new_clindx` and `new_labconf` for each group (each year). The results are stored in a new data frame named `annual_data`.
+
+This transformation is valuable for simplifying the analysis of trends over time, providing a clearer annual perspective on clinical and laboratory confirmations. 
+
+From now, the resulting `annual_data` data frame can be further explored and utilized for various analytical purposes.
+
+
+
+**Step 2: Create a Two Lines Plot**
+
+This code snippet utilizes the ggplot2 package in R to generate a line plot with two series, illustrating trends in clinically and laboratory confirmed cases over the years. Let's build up the components:
+
+```{r}
+# Using ggplot2 to create a line plot with two series
+p1 <- ggplot(annual_data, aes(x = year)) +
+  # Plotting the first line for clinically confirmed cases
+  geom_line(aes(y = clin_confirmed, group = 1, colour = "Clinically confirmed"), size = 1) +
+  geom_point(aes(y = clin_confirmed, colour = "Clinically confirmed"), size = 3) +
+  # Adding labels to the points
+  geom_text(aes(y = clin_confirmed, label = clin_confirmed, colour = "Clinically confirmed"), nudge_y = 50, size = 3.5, hjust = 0.5)
+
+p1
+```
+Decent effort, though there's room for improvement to achieve an optimal plot! 
+
+- **Defining the Plot Base**: 
+
+   * `ggplot(annual_data, aes(x = year))`: Sets up the base plot using the annual_data dataset, mapping year to the x-axis.
+
+- **Plotting Clinically Confirmed Cases**:
+
+   * `geom_line(aes(y = clin_confirmed, group = 1, colour = "Clinically confirmed"), size = 1)`: This adds a line for clinically confirmed cases (`clin_confirmed`). The `colour` is set to the literal string "Clinically confirmed", which is a placeholder at this stage.
+   
+   * `geom_point(aes(y = clin_confirmed, colour = "Clinically confirmed"), size = 3)`: Adds points for the same dataset, using the same `colour` setting.
+   
+   * `geom_text(aes(y = clin_confirmed, label = clin_confirmed, colour = "Clinically confirmed"), nudge_y = 50, size = 3.5, hjust = 0.5)`: Adds text labels with the same `colour` setting.
+  
+Now, let's add the second line: 
+
+```{r}
+# Plotting the second line for laboratory confirmed cases
+p2 <- p1 + 
+  geom_line(aes(y = lab_confirmed, group = 1, colour = "Laboratory confirmed"), size = 1) +
+  geom_point(aes(y = lab_confirmed, colour = "Laboratory confirmed"), size = 3) +
+  # Adding labels to the points
+  geom_text(aes(y = lab_confirmed, label = lab_confirmed, colour = "Laboratory confirmed"),
+            nudge_y = 50, size = 3.5, hjust = 0.5)
+
+p2
+```
+
+
+
+- **Plotting Laboratory Confirmed Cases**:
+
+   * `geom_line(aes(y = lab_confirmed, group = 1, colour = "Laboratory confirmed"), size = 1)`: Adds a line for laboratory confirmed cases (`lab_confirmed`), with `colour` set to "Laboratory confirmed".
+   
+   * `geom_point(aes(y = lab_confirmed, colour = "Laboratory confirmed"), size = 3)` and `geom_text(...)`: Similar to the above, but for laboratory confirmed cases.
+
+We can now personalize the final plot according to our preferred style: 
+
+```{r}
+p2 +
+  # Setting the colors for the lines
+  scale_colour_manual(values = c("Clinically confirmed" = "blue", "Laboratory confirmed" = "magenta")) +
+  # Adding labels and title
+  labs(title = "Trends in detection of clinically and laboratory confirmed cases",
+       x = "Year",
+       y = "Number") +
+  # Using a minimal theme for a clean plot
+  theme_minimal() +
+  # Adjusting the legend and title positioning
+  theme(legend.title = element_blank(),
+        legend.position = "bottom",
+        plot.title = element_text(hjust = 0.5))
+```
+
+
+- **Applying Manual Color Settings**:
+
+   * `scale_colour_manual(values = c("Clinically confirmed" = "blue", "Laboratory confirmed" = "magenta"))`: This is where the actual colors are applied. The placeholder strings "Clinically confirmed" and "Laboratory confirmed" are mapped to actual colors (blue and magenta, respectively). This ensures that all elements (lines, points, and text) associated with clinically confirmed cases are colored blue, while those for laboratory confirmed cases are colored magenta.
+
+- **Finalizing the Plot**:
+
+   * Title, axis labels, and themes are set up to finalize the appearance of the plot.
+
+
+::: recap
+
+This step-by-step construction of the plot ensures that each aspect of the data is accurately represented and easily interpretable. The use of dual line plots allows for the comparison of two different datasets within the same visual frame, offering a comprehensive view of the TB detection trends in Benin.
+:::
+
+
+::: r-practice
+
+**Practice 1**
+
+
+Build your own customized two-line plot by changing those components:
+
+- _Variables_: Use `hivtest` and `hivtest_pos` insted of `new_clind`and `new_labconf`.
+- _Line Color_: Choose different colors for the lines to represent different data categories.
+ 
+- _theme()_: Experiment with different {ggplot2} themes to change the look and feel of the plot, like `theme_light()`, `theme_bw()`, etc.
+
+:::
+
+
+In this practice session, you can experiment with customizing your own two-line plot. Change the line colors by modifying the `custom_colors` vector, and explore different ggplot2 themes using the `theme()` function. This hands-on practice will help you gain a better understanding of how to tailor visualizations to suit your specific needs. Feel free to iterate and observe the impact of your adjustments on the plot's appearance.
+
+
+# Visualizing the Trends in TB Detection: Overall Trend
+
+
+**Approach 1: Using `geom_ribbon()`**
+
+To gain insights into the overall trend of TB detection, we will aggregate the data and utilize the `geom_ribbon()` function in ggplot2. In this approach, we'll sum the two indicators, 'new_clindx' and 'new_labconf,' to obtain the total number of TB cases and then visualize it over the years.
+
+
+```{r}
+# Create a new column that is the sum of 'new_clindx' and 'new_labconf'
+tb_data$total_cases <- tb_data$new_clindx + tb_data$new_labconf
+```
+
+
+- Calculating Total Cases:
+
+   * We create a new column, `total_cases`, by summing `new_clindx` and `new_labconf` for each row.
+
+
+```{r}
+# Aggregate the data by year
+annual_sum_data <- tb_data %>%
+  group_by(year) %>%
+  summarise(total_cases = sum(total_cases))
+
+annual_sum_data
+```
+
+
+
+- Aggregating Data by Year:
+
+   * Using `group_by` and `summarise`, we aggregate the data by year, obtaining the total number of TB cases each year.
+
+```{r}
+# Create dummy confidence interval bounds as an example
+annual_sum_data$lower <- annual_sum_data$total_cases * 0.9
+annual_sum_data$upper <- annual_sum_data$total_cases * 1.1
+```
+
+- Creating Confidence Interval Bounds:
+
+   * For illustrative purposes, dummy confidence interval bounds (lower and upper) are created as 90% of and 110% of the total cases, respectively.
+   
+```{r}
+# Create the plot with a ribbon
+ggplot(annual_sum_data, aes(x = year, y = total_cases)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), fill = "pink", alpha = 0.4) +
+  geom_line(size = 1, colour = "magenta") +
+  geom_point(size = 3, colour = "magenta") +
+  labs(title = "Number of Confirmed TB Cases (Overall), 2015-2018",
+       x = "Year",
+       y = "Cases") +
+  theme_minimal()
+```
+
+
+- Creating the Plot with `geom_ribbon()`:
+
+   * The `geom_ribbon()` function is employed to create a shaded area around the line, representing the confidence interval. The fill color is set to "pink", and alpha is adjusted for transparency.
+
+- Adding Line and Points:
+
+   * A magenta line represents the trend, and magenta points mark each data point.
+
+- Labels and Title:
+
+   * The plot is labeled with a title, and axes are labeled accordingly.
+
+- Theme:
+
+   * We opt for a minimal theme (`theme_minimal()`) for a clean and straightforward visualization.
+
+
+
+::: side-note
+
+The utilization of `geom_ribbon()` with dummy confidence interval bounds provides a visual representation of the overall trend in TB detection. This approach allows for a quick assessment of the variability in the data and provides a nuanced perspective on the yearly fluctuations in confirmed TB cases. Adjustments to the confidence interval bounds can be made based on the desired level of certainty or variability representation.
+
+:::
+
+
+
+**Approach 2: Using `geom_smooth()`**
+
+In this alternative approach, we employ the `geom_smooth()` function to visualize the overall trend in TB detection. This function adds a smoothed conditional mean to the plot, providing a clearer representation of the trend in the presence of potentially noisy data.
+
+```{r, warning=FALSE, message=FALSE}
+# Create the plot with a smoothed line
+ggplot(annual_sum_data, aes(x = year, y = total_cases)) +
+  geom_smooth(method = "loess", se = TRUE, colour = "magenta", fill = "pink") +
+  geom_point(size = 3, shape = 1, colour = "magenta") +
+  labs(title = "Number of Confirmed TB Cases (Overall), 2015-2018",
+       x = "Year",
+       y = "Cases") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 16),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14))
+```
+
+
+- Creating a Smoothed Line:
+
+   * The `geom_smooth()` function is employed to add a smoothed line to the plot, representing the overall trend. The `method = "loess"` argument specifies the smoothing method, and `se = TRUE` includes a shaded area around the line, indicating the confidence interval.
+
+
+- Adding Data Points:
+
+   * Data points are overlaid on the smoothed line using `geom_point()`, enhancing the visibility of individual observations.
+
+- Labels and Title:
+
+   * The plot is labeled with a title, and axes are labeled accordingly.
+
+- Themes for Clarity:
+
+   * `theme_minimal()` is utilized to create a clean and uncluttered backdrop, enhancing the focus on the trend. Adjustments to the theme elements contribute to improved readability and aesthetics.
+
+
+
+::: side-note
+
+The use of `geom_smooth()` with the "loess" method provides a smoothed representation of the overall trend, reducing the impact of noise in the data. The shaded area around the line offers insights into the variability of the trend, and the minimal theme ensures a visually appealing and clear presentation. This approach is particularly useful for discerning patterns and trends in datasets with inherent fluctuations.
+
+:::
+
+
+
+
+::: r-practice
+
+**Practice 2**
+
+Based on the previous code you can: 
+
+- Adjust the smoothing parameters to see how they affect the trend line.
+
+- Change the color and fill of the `geom_smooth()` to personalize the plot.
+
+:::
+
+In this practice session, we encourage you to explore the flexibility and power of ggplot2's `geom_smooth()` function. By adjusting its parameters, you can gain deeper insights into how the data visualization changes with different smoothing levels and aesthetic choices. 
+
+
+
+# Enhancing the Plot with a Second Y-Axis
+
+**Understanding the Concept of a Secondary Y-Axis**
+
+A secondary y-axis is employed when we want to visualize two different measures with distinct scales on the same plot. This is useful when the variables being plotted have different units or magnitudes, making it challenging to compare them directly on a single scale. For instance, combining the total number of cases with a rate per 100,000 population in the context of a time-series plot may warrant the use of a secondary y-axis.
+
+**Creating the Plot with a Secondary Y-Axis**
+
+In the provided code snippet, we aim to enhance the plot by incorporating a secondary y-axis. Here's a breakdown:
+
+```{r}
+# Annual TB data with population and total_cases
+tb_data <- data.frame(year = c(2015, 2016, 2017, 2018),
+                      population = c(10932783, 11260085, 11596779, 11940683),
+                      total_cases = c(3485, 3333, 3088, 3543))
+```
+
+
+```{r}
+# Calculate the TB rate per 100k
+tb_data$rate_per_100k <- tb_data$total_cases / (tb_data$population/100000)
+```
+
+
+- Data preparation:
+
+   * We create a dataframe (`tb_data`) containing the year, population, total_cases, and calculate the rate per 100,000 population.
+
+```{r}
+# Calculate the scaling factor for the rate per 100k to align with the total_cases on the plot
+scaling_factor <- max(tb_data$total_cases) / max(tb_data$rate_per_100k)
+```
+
+- Scaling factor calculation:
+
+   * A scaling factor is computed to align the rate per 100k with the total_cases on the plot. This ensures proper visualization without one variable overshadowing the other.
+   
+
+```{r}
+# Create the plot with a secondary y-axis
+ggplot(tb_data, aes(x = year)) +
+  geom_bar(aes(y = total_cases), stat = "identity", fill = "blue", alpha = 0.6) +
+  geom_line(aes(y = rate_per_100k * scaling_factor, group = 1), color = "red", size = 1) +
+  geom_point(aes(y = rate_per_100k * scaling_factor), color = "red") +
+  geom_text(aes(y = rate_per_100k * scaling_factor, label = round(rate_per_100k, 1)), vjust = -0.5, color = "red") +
+  scale_y_continuous(sec.axis = sec_axis(~ . / scaling_factor, name = "Rate TB cases per 100,000")) +
+  labs(title = "Time-series trend of national TB notifications, 2015-2018",
+       x = "Year",
+       y = "Number") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+
+- Plot Construction:
+
+   * The plot is constructed using ggplot2, where `geom_bar()` represents the total cases, and `geom_line()` and `geom_point()` depict the rate per 100,000.
+
+- Secondary Y-Axis Implementation:
+
+   * The secondary y-axis is introduced using `scale_y_continuous()` with the `sec_axis()` argument. The `~ . / scaling_factor` formula scales the secondary axis by the previously calculated scaling factor.
+
+
+- Labels and Title:
+
+   * The plot is labeled with a title, and axes are labeled accordingly.
+
+
+- Theme Adjustments:
+
+   * The theme is set to minimal, and adjustments are made to the x-axis text orientation for better readability.
+   
+   
+::: pro-tip
+
+When using a secondary y-axis, it's essential to choose an appropriate scaling factor. This ensures that the two different data sets are aligned and comparable on the plot.
+
+:::
+
+
+
+This approach provides a comprehensive visualization of both the total cases and the rate per 100,000 population on a single plot, facilitating a more nuanced understanding of the TB trends over time.
+
+
+
+
+::: r-practice
+
+**Practice 3**
+
+You can use the previous code in order to:
+
+- Experiment with different types of visual representations for the secondary y-axis.
+
+- Try using different scaling factors and observe how they affect the alignment between the two y-axes.
+
+:::
+
+
+This practice  is an opportunity for you to delve deeper into the customization of plots with dual y-axes using ggplot2. The secondary y-axis is a powerful tool for comparing different types of data on the same plot.
+
+
+
+::: challenge
+
+Get ready to transform numbers into narratives and data points into masterpieces! 🌟📊
+
+You are provided with some fake dataset about natioanal TB notifications between 2007 and 2018. 
+
+Produce a nice plot with secondary Y-axis. Your plot should not only be informative but also visually stunning.  
+
+Here are some key steps and functions to use: 
+
+1- Begin with `ggplot()` to initiate your plot.
+2- Apply `geom_bar())` for the bar plot.
+3- Calculate `scaled_rate` for line plot scaling.
+4- Add a line plot using `geom_line()`.
+5- Use `geom_point()` to add points on the line.
+6- Apply `geom_text()` to label the line plot.
+7- Implement `scale_y_continuous()` with `sec.axis` to align the secondary axis correctly.
+8- Use `labs()` for titles and axis labels.
+9- Apply `theme_minimal()` for a clean plot appearance.
+
+Lastly, feel free to experiment with these parameters to gain a deeper understanding of how they influence the visual appeal and clarity of your plot.
+:::
+
+# WRAP UP!
+
+Let's summarize the key learnings from our lesson on visualizing TB detection trends:
+
+- **Two Lines in the Same Plot**:
+
+   * Explored dual-line plotting to compare clinically diagnosed and laboratory-confirmed TB cases.
+   
+   * Utilized annual data aggregation for clearer trend analysis.
+
+- **Overall Trend Visualization**:
+
+   * Approach 1: geom_ribbon() - Demonstrated using a ribbon to represent ranges or confidence intervals, offering insights into data variability.
+   
+   * Approach 2: geom_smooth() - Employed a smoothed trend line with a confidence interval for highlighting underlying patterns.
+   
+
+- **Enhancing with a Secondary Y-Axis**:
+
+  * Discussed the concept and application of a secondary y-axis for comparing different data sets.
+  
+  * Created plots combining total TB cases and rates per 100,000 population, showcasing dual aspects of the data.
+
+Through these techniques, you've gained skills in effectively visualizing and interpreting epidemiological time series data, crucial for understanding disease trends and informing public health strategies.
+
+
+# Answer Key
+
+**Practice 1**
+
+```{r}
+# Customized Two-Line Plot Practice
+# Using dplyr's `group_by` and `summarise` to aggregate the data by year
+
+# Choose different colors for the lines
+custom_colors <- c("HIV tested" = "green", "HIV positive" = "orange")
+
+# Experiment with different ggplot2 themes
+ggplot(annual_data, aes(x = year)) +
+  ## first line
+  geom_line(aes(y = hiv_test, group = 1, colour = "HIV tested"), size = 1) +
+  geom_point(aes(y = hiv_test, colour = "HIV tested"), size = 3) +
+  geom_text(aes(y = hiv_test, label = hiv_test, colour = "HIV tested"), nudge_y = 50, size = 3.5, hjust = 0.5) +
+  ## second line
+  geom_line(aes(y = hiv_positive, group = 1, colour = "HIV positive"), size = 1) +
+  geom_point(aes(y = hiv_positive, colour = "HIV positive"), size = 3) +
+  geom_text(aes(y = hiv_positive, label = hiv_positive, colour = "HIV positive"), nudge_y = 50, size = 3.5, hjust = 0.5) +
+  scale_colour_manual(values = custom_colors) +
+  labs(title = "Customized Two-Line Plot",
+       x = "Year",
+       y = "Number") +
+  theme_light()  # Experiment with different themes here
+```
+
+
+
+**Practice 2**
+
+```{r}
+# Experiment with different smoothing parameters
+# and customize the color and fill of the geom_smooth()
+
+custom_smooth_plot <- ggplot(annual_sum_data, aes(x = year, y = total_cases)) +
+  # Adjust the span parameter to control the smoothing
+  geom_smooth(method = "loess", se = TRUE, span = 0.5, colour = "darkblue", fill = "lightblue") +
+  geom_point(size = 3, shape = 1, colour = "darkblue") +
+  labs(title = "Customized Smoothed Trend Line - TB Cases (2015-2018)",
+       x = "Year",
+       y = "Cases") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 16),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14))
+
+# Display the customized plot
+print(custom_smooth_plot)
+```
+
+
+**Practice 3**
+
+
+```{r}
+# Experiment with different visual representations for the secondary y-axis
+# Try using different scaling factors to observe their impact on alignment
+
+custom_secondary_axis_plot <- ggplot(tb_data, aes(x = year)) +
+  geom_bar(aes(y = total_cases), stat = "identity", fill = "blue", alpha = 0.6) +
+  geom_line(aes(y = rate_per_100k * scaling_factor, group = 1), color = "red", size = 1) +
+  geom_point(aes(y = rate_per_100k * scaling_factor), color = "red") +
+  geom_text(aes(y = rate_per_100k * scaling_factor, label = round(rate_per_100k, 1)), vjust = -0.5, color = "red") +
+  
+  # Experiment with different secondary y-axis representations
+  scale_y_continuous(sec.axis = sec_axis(~ . / scaling_factor, name = "Rate TB cases per 100,000", breaks = seq(0, 3000, 500))) +
+  
+  labs(title = "Customized Secondary Y-Axis Visualization - TB Cases (2015-2018)",
+       x = "Year",
+       y = "Number") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+# Display the customized plot
+print(custom_secondary_axis_plot)
+```
+
+**Challenge**
+
+```{r}
+# Creating a data frame
+df <- data.frame(
+  Year = as.factor(2009:2018),
+  Number_NBR = c(88589, 84121, 86778, 92818, 94825, 86464, 87211, 97279, 102387, 103921),
+  Rate_NBR_per_100000 = c(57.4, 53.1, 53.3, 55.5, 55.2, 49.0, 48.1, 52.3, 53.6, 53.1)
+)
+
+# Calculating scaled rate for plotting
+scaled_rate <- df$Rate_NBR_per_100000 * max(df$Number_NBR) / max(df$Rate_NBR_per_100000)
+
+# Plotting
+ggplot(df, aes(x = Year)) +
+  geom_bar(aes(y = Number_NBR), stat = "identity", fill = "blue", alpha = 0.6) +
+  geom_line(aes(y = scaled_rate, group = 1), color = "red", size = 1) +
+  geom_point(aes(y = scaled_rate), color = "red") +
+  geom_text(aes(y = scaled_rate, label = round(Rate_NBR_per_100000, 1)), vjust = -0.5, color = "red") +
+  scale_y_continuous(sec.axis = sec_axis(~ . * max(df$Rate_NBR_per_100000) / max(df$Number_NBR), name = "Rate NBR per 100,000")) +
+  labs(title = "Time-series trend of national TB notifications, 2007-2018",
+       x = "Year",
+       y = "Number") +
+  theme_minimal()
+```
+
+
+# Contributors
+
+The following team members contributed to this lesson:
+
+`r tgc_contributors_list(ids = c("imad", "joy", "kendavidn"))`
+
+
+
+
+
+

@@ -1,0 +1,83 @@
+variable_name,variable_type,description,source document
+new_labconf,integer,"number of newly diagnosed, bacteriologically confirmed pulmonary tuberculosis cases notified in the period",From the TB health facility register
+ret_rel_labconf,integer,number of relapsed bacteriologically confirmed pulmonary tuberculosis cases notified in the period,From the TB health facility register
+ret_nrel_labconf,integer,number of retreated (excluding relapsed) bacteriologically confirmed pulmonary tuberculosis cases notified in the period,From the TB health facility register
+oth_labconf,integer,number of other classified (including those with previous treatment history unknown) bacteriologically confirmed pulmonary tuberculosis cases notified in the period,From the TB health facility register
+new_clindx,integer,"number of newly diagnosed, clinically diagnosed pulmonary tuberculosis cases notified in the period",From the TB health facility register
+ret_rel_clindx,integer,number of relapsed clinically diagnosed pulmonary tuberculosis cases notified in the period,From the TB health facility register
+ret_nrel_clindx,integer,number of retreated (excluding relapsed) clinically diagnosed pulmonary tuberculosis cases notified in the period,From the TB health facility register
+oth_clindx,integer,number of other classified (including those with previous treatment history unknown) clinically diagnosed pulmonary tuberculosis cases notified in the period,From the TB health facility register
+new_ep,integer,"number of newly diagnosed, extrapulmonary pulmonary tuberculosis cases notified in the period",From the TB health facility register
+ret_rel_ep,integer,number of relapsed extrapulmonary pulmonary tuberculosis cases notified in the period,From the TB health facility register
+ret_nrel_ep,integer,number of retreated (excluding relapsed) extrapulmonary pulmonary tuberculosis cases notified in the period,From the TB health facility register
+oth_ep,integer,number of other classified (including those with previous treatment history unknown) extrapulmonary pulmonary tuberculosis cases notified in the period,From the TB health facility register
+newrel_04m,integer,"number of new, relapse and previous history unknown cases notified, regardless of disease site, in the specific age and sex subgroup",From the TB health facility register
+newrel_514m,integer,"number of new, relapse and previous history unknown cases notified, regardless of disease site, in the specific age and sex subgroup",From the TB health facility register
+newrel_1524m,integer,"number of new, relapse and previous history unknown cases notified, regardless of disease site, in the specific age and sex subgroup",From the TB health facility register
+newrel_2534m,integer,"number of new, relapse and previous history unknown cases notified, regardless of disease site, in the specific age and sex subgroup",From the TB health facility register
+newrel_3544m,integer,"number of new, relapse and previous history unknown cases notified, regardless of disease site, in the specific age and sex subgroup",From the TB health facility register
+newrel_4554m,integer,"number of new, relapse and previous history unknown cases notified, regardless of disease site, in the specific age and sex subgroup",From the TB health facility register
+newrel_5564m,integer,"number of new, relapse and previous history unknown cases notified, regardless of disease site, in the specific age and sex subgroup",From the TB health facility register
+newrel_65m,integer,"number of new, relapse and previous history unknown cases notified, regardless of disease site, in the specific age and sex subgroup",From the TB health facility register
+newrel_04f,integer,"number of new, relapse and previous history unknown cases notified, regardless of disease site, in the specific age and sex subgroup",From the TB health facility register
+newrel_514f,integer,"number of new, relapse and previous history unknown cases notified, regardless of disease site, in the specific age and sex subgroup",From the TB health facility register
+newrel_1524f,integer,"number of new, relapse and previous history unknown cases notified, regardless of disease site, in the specific age and sex subgroup",From the TB health facility register
+newrel_2534f,integer,"number of new, relapse and previous history unknown cases notified, regardless of disease site, in the specific age and sex subgroup",From the TB health facility register
+newrel_3544f,integer,"number of new, relapse and previous history unknown cases notified, regardless of disease site, in the specific age and sex subgroup",From the TB health facility register
+newrel_4554f,integer,"number of new, relapse and previous history unknown cases notified, regardless of disease site, in the specific age and sex subgroup",From the TB health facility register
+newrel_5564f,integer,"number of new, relapse and previous history unknown cases notified, regardless of disease site, in the specific age and sex subgroup",From the TB health facility register
+newrel_65f,integer,"number of new, relapse and previous history unknown cases notified, regardless of disease site, in the specific age and sex subgroup",From the TB health facility register
+newrel_um,integer,"number of new, relapse and previous history unknown cases notified, regardless of disease site, in the specific sex subgroup (age unknown)",From the TB health facility register
+newrel_uf,integer,"number of new, relapse and previous history unknown cases notified, regardless of disease site, in the specific sex subgroup (age unknown)",From the TB health facility register
+presumptive_test,integer,number of patients with presumptive TB undergoing bacteriological test,From the TB health facility register
+presumptive_testpos,integer,number of patients with presumptive TB who had a positive bacteriological test,From the TB health facility register
+hivtest,integer,number of cases notified (new and relapse) with hiv status known,From the TB health facility register
+hivtest_pos,integer,number of cases notified (new and relapse) with hiv status positive,From the TB health facility register
+hiv_cpt,integer,number of HIV positive cases notified (new and relapse) on pre-ART contrimoxazole prophylaxis,From the TB health facility register
+hiv_art,integer,number of HIV positive cases notified (new and relapse) on ART treatment,From the TB health facility register
+newrel_labconf_coh,integer,number of bacteriologically confirmed (pulmonary and extrapulmonary) new and relapse cases started on treatment and for whom outcomes are expected to be reported. These should exclude cases moved to second-line treatment.,From the treatment outcome column of the health facility register
+newrel_labconf_cur,integer,number of bacteriologically confirmed new or relapse cases (both pulmonary and extrapulmonary) started on treatment and for whom the respective outcome is indicated as cured (and backed by at least two clear sputum smear results),From the treatment outcome column of the health facility register
+newrel_labconf_cmplt,integer,"number of new or relapse cases started on treatment and for whom the respective outcome is indicated as completed, that were bacteriological confirmed  diagnosis  ",From the treatment outcome column of the health facility register
+newrel_labconf_fail,integer,number of bacteriologically confirmed new or relapse cases (both pulmonary and extrapulmonary) started on treatment for whom the respective outcome is indicated as failed,From the treatment outcome column of the health facility register
+newrel_labconf_died,integer,number of bacteriologically confirmed new or relapse cases (both pulmonary and extrapulmonary) who died while under treatment,From the treatment outcome column of the health facility register
+newrel_labconf_lost,integer,number of bacteriologically confirmed new or relapse cases (both pulmonary and extrapulmonary) started on treatment and for whom the respective outcome is indicated as lost to followup,From the treatment outcome column of the health facility register
+newrel_labconf_neval,integer,number of bacteriologically confirmed new or relapse cases (both pulmonary and extrapulmonary) started on treatment but with unavailable treatment outcome information,From the treatment outcome column of the health facility register
+newrel_clindx_coh,integer,number of clinically diagnosed new or relapse cases (pulmonary or extrapulmonary) started on treatment and for whom outcomes are expected to be reported . These should exclude cases moved to second-line treatment.,From the treatment outcome column of the health facility register
+newrel_clindx_cmplt,integer,number of clinically diagnosed new or relapse cases (pulmonary or extrapulmonary) started on treatment and for whom the respective outcome is indicated as completed,From the treatment outcome column of the health facility register
+newrel_clindx_fail,integer,number of clinically diagnosed new or relapse cases (pulmonary or extrapulmonary) started on treatment and for whom the respective outcome is indicated as failed  ,From the treatment outcome column of the health facility register
+newrel_clindx_died,integer,number of clinically diagnosed new or relapse cases (pulmonary or extrapulmonary) who died while under treatment,From the treatment outcome column of the health facility register
+newrel_clindx_lost,integer,"number of new or relapse cases who died while under treatment, that were clinically diagnosed   ",From the treatment outcome column of the health facility register
+newrel_clindx_neval,integer,number of new or relapse cases started on treatment but whose treatment outcome is not indicated that were clinically diagnosed,From the treatment outcome column of the health facility register
+ret_nrel_coh,integer,number of retreated cases (excluding relapses) started on treatment and for whom outcomes are expected to be reported,From the treatment outcome column of the health facility register
+ret_nrel_cur,integer,number of retreated cases (excluding relapses) started on treatment and for whom the respective outcome is indicated as cured (and backed by at least two clear sputum smear results),From the treatment outcome column of the health facility register
+ret_nrel_cmplt,integer,number of retreated cases (excluding relapses) started on treatment and for whom the respective outcome is indicated as completed,From the treatment outcome column of the health facility register
+ret_nrel_fail,integer,number of retreated cases (excluding relapses) started on treatment and for whom the respective outcome is indicated as failed,From the treatment outcome column of the health facility register
+ret_nrel_died,integer,number of retreated cases (excluding relapses) who died while under treatment,From the treatment outcome column of the health facility register
+ret_nrel_lost,integer,number of retreated cases (excluding relapses) started on treatment and for whom the respective outcome is indicated as lost to followup,From the treatment outcome column of the health facility register
+ret_nrel_neval,integer,number of retreated cases (excluding relapses) started on treatment but with unavailable treatment outcome information,From the treatment outcome column of the health facility register
+tbhiv_coh,integer,number of HIV positive new and relapse cases started on treatment and for whom outcomes are expected to be reported  ,From the treatment outcome column of the health facility register
+tbhiv_cur,integer,number of HIV positive new or relapse cases started on treatment and for whom the respective outcome is indicated as cured (and backed by at least two clear sputum smear results),From the treatment outcome column of the health facility register
+tbhiv_cmplt,integer,number of HIV positive new or relapse cases started on treatment and for whom the respective outcome is indicated as completed,From the treatment outcome column of the health facility register
+tbhiv_fail,integer,number of HIV positive  new or relapse cases started on treatment and for whom the respective outcome is indicated as failed,From the treatment outcome column of the health facility register
+tbhiv_died,integer,number of HIV positive new or relapse cases who died while under treatment,From the treatment outcome column of the health facility register
+tbhiv_lost,integer,number of HIV positive new or relapse cases started on treatment and for whom the respective outcome is indicated as lost to followup,From the treatment outcome column of the health facility register
+tbhiv_neval,integer,number of HIV positive new or relapse cases started on treatment but with unavailable treatment outcome information,From the treatment outcome column of the health facility register
+hivtest_outc,integer,number of cases who had their HIV status known at completion of treatment,From the treatment outcome column of the health facility register
+hivtest_pos_outc,integer,number of cases who had a HIV positive diagnosis at completion of treatment,From the treatment outcome column of the health facility register
+hiv_cpt_outc,integer,number of  HIV positive cases who were on pre_ART cotrimoxazole prophylaxis at completion of treatment,From the treatment outcome column of the health facility register
+hiv_art_outc,integer,number of  HIV positive cases who were on ART at completion of treatment,From the treatment outcome column of the health facility register
+rdst_new,integer,number of new cases with a drug sensitivity test done at the point of diagnosis,Obtained from the laboratory register
+rdst_ret,integer,number of retreated (including relapse) cases with a drug sensitivity test done at the point of diagnosis,Obtained from the laboratory register
+rdst_unk,integer,number of treatment history unknown cases with a drug sensitivity test done at the point of diagnosis,Obtained from the laboratory register
+conf_rrmdr,integer,number of cases tested who are found with rifampicin resistant strain of tuberculosis,Obtained from the laboratory register
+conf_mdr,integer,number of cases tested who are found with rifampicin and isoniazid resistant strain of tuberculosis,Obtained from the laboratory register
+unconf_rrmdr_tx,integer,"number of cases initiated on RR/MDR treatment, in the absence of  DST",From the health facility register compared with the laboratiry register
+conf_rrmdr_tx,integer,number of cases initiated on RR/MDR treatment who had an accompanying DST done,From the health facility register and compared with laboratory register
+mdr_coh,integer,number of rrmdr cases started on treatment and for whom outcomes are expected to be reported,From the treatment outcome column of the health facility register
+mdr_cur,integer,number of rrmdr cases started on treatment and for whom the respective outcome is indicated as cured (and backed by at least two clear sputum smear results),From the treatment outcome column of the health facility register
+mdr_cmplt,integer,number of rrmdr cases started on treatment and for whom the respective outcome is indicated as completed,From the treatment outcome column of the health facility register
+mdr_fail,integer,number of rrmdr casesstarted on treatment and for whom the respective outcome is indicated as failed,From the treatment outcome column of the health facility register
+mdr_died,integer,number of rrmdr cases who died while under treatment,From the treatment outcome column of the health facility register
+mdr_lost,integer,number of rrmdr cases started on treatment and for whom the respective outcome is indicated as lost to followup,From the treatment outcome column of the health facility register
+mdr_neval,integer,number of rrmdr cases started on treatment but with unavailable treatment outcome information,From the treatment outcome column of the health facility register
+e_pop_num,integer,The population projection used in the analysis,Provided by the CRVS department in respective ministry

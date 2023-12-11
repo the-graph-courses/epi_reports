@@ -1,0 +1,65 @@
+rowname,DHS_name,question
+Dataset,V000,Country code and phase
+F_clusterId,V001,Cluster number
+F_interview.cmc,V008,Date of interview (CMC)
+F_dob.cmc,V011,Date of birth (CMC)
+F_HIVresult,WHIV03,Woman's Blood test result
+F_currAge,V012,Respondent's current age
+F_maritalStatus,V501,Current marital status
+F_maritalHistory,V502,Currently/formerly/never in union
+F_number_of_unions,V503,Number of unions
+F_Date_of_first_marriage,V509,Date of first cohabitation (CMC)
+F_Age_at_first_marriage,V511,Age at first cohabitation
+ F_Years_since_first_marriage	,V512,Years since first cohabitation
+F_Marital_duration,V513,Cohabitation duration (grouped)
+F_Age_at_first_intercourse,V525,Age at first sex
+F_Time_since_last_intercourse,V527,Time since last sex
+F_Imp_Age_at_first_intercourse,V531,Age at first sex (imputed)
+F_flag_age_first_intercourse,V532,Flag for V531
+F_ever_married,V535,Ever been married or in union
+F_Recent_sexual_activity,V536,Recent sexual activity
+F_lives_with_spouse,V504,Currently residing with husband/partner
+M_clusterId,MV001,Cluster number
+M_interview.cmc,MV008,Date of interview (CMC)
+M_dob.cmc,MV011,Date of birth (CMC)
+M_HIVresult,MHIV03,Man's Blood test result
+M_currAge,MV012,Current age
+M_maritalStatus,MV501,Current marital status
+M_maritalHistory,MV502,Currently/formerly/never in union
+M_number_of_unions,MV503,Number of unions
+M_Date_of_first_marriage,MV509,Date of first cohabitation (CMC)
+M_Age_at_first_marriage,MV511,Age at first cohabitation
+ M_Years_since_first_marriage	,MV512,Years since first cohabitation
+M_Marital_duration,MV513,Cohabitation duration (grouped)
+M_Age_at_first_intercourse,MV525,Age at first sex
+M_Time_since_last_intercourse,MV527,Time since last sex
+M_circumcised,MV483,Respondent circumcised
+M_Imp_Age_at_first_intercourse,MV531,Age at first sex (imputed)
+F_province,V024,Region
+F_urbanRural,V025,Type of place of residence
+F_educLevel,V106,Highest educational level
+F_EducYear,V107,Highest year of education
+F_Literacy,V155,Literacy
+F_wealthRaw,V191,Wealth index factor score (5 decimals)
+F_condomLastTime,V761,Condom used during last sex with most recent partner
+F_everTestedHIVAIDS,V781,Ever been tested for HIV
+M_province,MV024,Region
+M_urbanRural,MV025,Type of place of residence
+M_educLevel,MV106,Educational level
+M_EducYear,MV107,Highest year of education (at level in MV106)
+M_Literacy,MV155,Literacy
+M_wealthRaw,MV191,Wealth index factor score (5 decimals)
+M_condomLastTime,MV761,Condom used during last sex with most recent partner
+M_everTestedHIVAIDS,MV781,Ever been tested for HIV
+M_ever_married,MV535,Ever been married or in union
+M_Recent_sexual_activity,MV536,Recent sexual activity
+M_lives_with_spouse,MV504,Currently residing with wife/partner
+M_numWives,MV505,Number of wives/partners
+F_numOtherWives,V505,Number of other wives
+F_Wife_rank,V506,Respondent's rank among wives
+Months_of_abstinence,V537,Months of abstinence
+How_previous_marriage_or_union_ended,V538,NA - How previous marriage or union ended
+F_Lifetime_number_of_sexual_partners,V836,Total lifetime number of sex partners
+F_Heard_of_drugs_to_help_infected_people_to_live_longer,V837,NA - Heard of drugs to help HIV infected people live longer
+M_Lifetime_number_of_sexual_partners,MV836,Total lifetime number of sex partners
+M_Heard_of_drugs_to_help_infected_people_to_live_longer,MV837,NA - Heard of drugs to help HIV infected people live longer

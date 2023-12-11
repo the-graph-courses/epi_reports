@@ -1,0 +1,375 @@
+---
+title: '\ '
+output:
+  html_document:
+    number_sections: true
+    toc: true
+    toc_float: true
+    css: !expr here::here("global/style/style.css")
+    highlight: kate
+    pandoc_args: --shift-heading-level-by=-1
+  word_document:
+    toc: true
+editor_options:
+  markdown:
+    wrap: 100
+  canonical: true
+  chunk_output_type: inline
+---
+
+```{r, include = FALSE, warning = FALSE, message = FALSE}
+### TEMPLATE FOR EPI REPORTS LESSONS
+
+# require pacman 
+if(!require(pacman)) install.packages("pacman")
+
+# Source functions 
+source(here::here("global/functions/lesson_functions.R"))
+
+# knitr settings
+knitr::opts_chunk$set(warning = F, message = F, class.source = "tgc-code-block", error = T)
+```
+
+## Introduction
+
+Welcome to this lesson on group comparisons in data visualization. This is an important topic in data analysis, as it allows us to understand differences and similarities in our data across different segments or groups.
+
+In this lesson, we'll explore a variety of visualization techniques. We'll discuss bar plots for showing frequency among categories, box plots for illustrating data distribution, and we'll touch on error bars and density plots for demonstrating data variability and distribution.
+
+By the end, you'll have a solid understanding of how to use these tools to visualize and compare groups in your data, enhancing your ability to draw meaningful insights from your datasets. Let's get started.
+
+## Learning objectives
+
+By the end of this lesson, you will be able to:
+
+1.  Distinguish between bar plots, column plots, and histograms.
+2.  Visualize different summary metrics among different categories and groups.
+3.  Implement box plots to illustrate data distribution across various groups.
+4.  Apply error bars to represent data variability.
+
+## Packages
+
+For this lesson we will use the {tidyverse} package
+
+```{r}
+pacman::p_load(tidyverse, here)
+```
+
+## Data
+
+The data for this lesson comes from Benin (tbd)
+
+
+```{r}
+tb_benin <- read_csv(here("data/raw/tbhistoric_benin/BEN long format 2011 - 2017.csv"))
+```
+
+```{r warning=FALSE}
+tb_benin_mini <- tb_benin %>%
+  filter(str_detect(variable_name, 'newrel_clin|newrel_lab'),
+         str_detect(period, '2017'))
+```
+
+
+```{r warning=FALSE}
+
+quart_totals <- tb_benin_mini %>% group_by(period, variable_name) %>% 
+  summarise(total = sum(value))
+quart_totals
+
+wide_totals <- quart_totals %>% pivot_wider(names_from = variable_name,
+                             values_from = total)
+```
+
+Next I want to make it longer again so we end up with these columns:
+- period: self explantory
+- dx_method: factor with 2 levels (clinical, bateriological)
+- status: factor with 7 levels (coh, cured, completed, failed, died, lost, unavailable)
+
+```{r}
+# More pivoting...
+
+```
+
+
+## Understanding Barplots, Histograms, and Col Plots
+
+In data visualization, the choice of plot type depends on the data and the goal of the analysis. Barplots, histograms, and col plots each have their unique applications. For instance, a barplot is perfect for comparing a numerical and categorical variable. In R, this can be achieved using the `geom_bar()` function from the `ggplot2` package. For example:
+
+```{r}
+# Barplot
+ggplot(mtcars, aes(x = factor(cyl), y = mpg)) +
+  geom_bar(stat = "identity")
+```
+
+Histograms, on the other hand, are best for showcasing the distribution of a single numerical variable. Using `geom_histogram()`, we can easily create histograms:
+
+```{r}
+# Histogram
+ggplot(mtcars, aes(x = mpg)) +
+  geom_histogram(binwidth = 5)
+```
+
+Col plots, or column plots, are used to compare multiple numerical variables. These can be created using the `geom_col()` function:
+
+```{r}
+# Col Plot
+ggplot(mtcars, aes(x = factor(cyl), y = mpg)) +
+  geom_col()
+```
+
+## Diving Deeper into Barplots: Stacked and Grouped Barplots
+
+Building on the concept of barplots, we can further distinguish between stacked and grouped barplots. Stacked barplots are incredibly useful when you want to show total counts across categories, with the contribution of each subgroup. This can be done by setting `position = "stack"` in `geom_bar()`.
+
+```{r}
+# Stacked Barplot
+ggplot(mtcars, aes(x = factor(cyl), fill = factor(vs))) +
+  geom_bar(position = "stack")
+```
+
+On the other hand, grouped barplots are more effective when comparing subgroups across multiple categories. This can be done by setting `position = "dodge"` in `geom_bar()`.
+
+```{r}
+# Grouped Barplot
+ggplot(mtcars, aes(x = factor(cyl), fill = factor(vs))) +
+  geom_bar(position = "dodge")
+```
+
+## Enhancing Barplots: Adding Error Bars
+
+Going a step further with barplots, we can add error bars as a graphical representation of data variability. This is a critical aspect, especially in scientific research where it's important to represent the degree of uncertainty or variability in the data.
+
+```{r}
+# Calculate standard errors
+mtcars_summary <- mtcars %>%
+  group_by(cyl) %>%
+  summarise(mean_mpg = mean(mpg), se_mpg = sd(mpg) / sqrt(n()), .groups = "drop")
+
+# Barplot with Error Bars
+ggplot(mtcars_summary, aes(x = factor(cyl), y = mean_mpg)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  geom_errorbar(aes(ymin = mean_mpg - se_mpg, ymax = mean_mpg + se_mpg), width = 0.2)
+```
+
+## Exploring New Forms: Geom_ribbon and Area Plots
+
+Moving beyond barplots, let's explore `geom_ribbon()` and area plots. These types of plots are particularly useful when visualizing a range of values or a progression of data over time, such as stock prices or temperature changes.
+
+```{r}
+# Area Plot
+ggplot(mtcars, aes(x = factor(cyl), y = mpg)) +
+  geom_area(stat = "identity", fill = "skyblue")
+
+# Ribbon Plot
+ggplot(mtcars_summary, aes(x = factor(cyl), y = mean_mpg)) +
+  geom_ribbon(aes(ymin = mean_mpg - se_mpg, ymax = mean_mpg + se_mpg), alpha = 0.5)
+```
+
+## Venturing into Circular Plots: Pie Charts and Donut Plots
+
+Lastly, let's delve into pie charts and donut plots. While these types of plots can be visually appealing, they should be used sparingly due to their potential to mislead. They are most effective when comparing parts of a whole for a single category, and when there are few categories to compare.
+
+```{r}
+# Pie Chart
+ggplot(mtcars, aes(x = "", fill = factor(cyl))) +
+  geom_bar(width = 1) +
+  coord_polar("y", start = 0)
+
+# Donut Plot
+ggplot(mtcars, aes(x = "", fill = factor(cyl))) +
+  geom_bar(width = 1) +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  geom_rect(aes(xmin = -1, xmax = 1, ymin = -1, ymax = 1), fill = "white")
+```
+
+Through this lesson, we've traversed a range of plot typesAbsolutely, here's how the lesson can be structured with each part connected together:
+
+## Understanding Barplots, Histograms, and Col Plots
+
+In data visualization, the choice of plot type depends on the data and the goal of the analysis. Barplots, histograms, and col plots each have their unique applications. For instance, a barplot is perfect for comparing a numerical and categorical variable. In R, this can be achieved using the `geom_bar()` function from the `ggplot2` package. For example:
+
+```{r}
+# Barplot
+ggplot(mtcars, aes(x = factor(cyl), y = mpg)) +
+  geom_bar(stat = "identity")
+```
+
+Histograms, on the other hand, are best for showcasing the distribution of a single numerical variable. Using `geom_histogram()`, we can easily create histograms:
+
+```{r}
+# Histogram
+ggplot(mtcars, aes(x = mpg)) +
+  geom_histogram(binwidth = 5)
+```
+
+Col plots, or column plots, are used to compare multiple numerical variables. These can be created using the `geom_col()` function:
+
+```{r}
+# Col Plot
+ggplot(mtcars, aes(x = factor(cyl), y = mpg)) +
+  geom_col()
+```
+
+## Diving Deeper into Barplots: Stacked and Grouped Barplots
+
+Building on the concept of barplots, we can further distinguish between stacked and grouped barplots. Stacked barplots are incredibly useful when you want to show total counts across categories, with the contribution of each subgroup. This can be done by setting `position = "stack"` in `geom_bar()`.
+
+```{r}
+# Stacked Barplot
+ggplot(mtcars, aes(x = factor(cyl), fill = factor(vs))) +
+  geom_bar(position = "stack")
+```
+
+On the other hand, grouped barplots are more effective when comparing subgroups across multiple categories. This can be done by setting `position = "dodge"` in `geom_bar()`.
+
+```{r}
+# Grouped Barplot
+ggplot(mtcars, aes(x = factor(cyl), fill = factor(vs))) +
+  geom_bar(position = "dodge")
+```
+
+## Enhancing Barplots: Adding Error Bars
+
+Going a step further with barplots, we can add error bars as a graphical representation of data variability. This is a critical aspect, especially in scientific research where it's important to represent the degree of uncertainty or variability in the data.
+
+```{r}
+# Calculate standard errors
+mtcars_summary <- mtcars %>%
+  group_by(cyl) %>%
+  summarise(mean_mpg = mean(mpg), se_mpg = sd(mpg) / sqrt(n()), .groups = "drop")
+
+# Barplot with Error Bars
+ggplot(mtcars_summary, aes(x = factor(cyl), y = mean_mpg)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  geom_errorbar(aes(ymin = mean_mpg - se_mpg, ymax = mean_mpg + se_mpg), width = 0.2)
+```
+
+## Exploring New Forms: Geom_ribbon and Area Plots
+
+Moving beyond barplots, let's explore `geom_ribbon()` and area plots. These types of plots are particularly useful when visualizing a range of values or a progression of data over time, such as stock prices or temperature changes.
+
+```{r}
+# Area Plot
+ggplot(mtcars, aes(x = factor(cyl), y = mpg)) +
+  geom_area(stat = "identity", fill = "skyblue")
+
+# Ribbon Plot
+ggplot(mtcars_summary, aes(x = factor(cyl), y = mean_mpg)) +
+  geom_ribbon(aes(ymin = mean_mpg - se_mpg, ymax = mean_mpg + se_mpg), alpha = 0.5)
+```
+
+## Venturing into Circular Plots: Pie Charts and Donut Plots
+
+Lastly, let's delve into pie charts and donut plots. While these types of plots can be visually appealing, they should be used sparingly due to their potential to mislead. They are most effective when comparing parts of a whole for a single category, and when there are few categories to compare.
+
+```{r}
+# Pie Chart
+ggplot(mtcars, aes(x = "", fill = factor(cyl))) +
+  geom_bar(width = 1) +
+  coord_polar("y", start = 0)
+
+# Donut Plot
+ggplot(mtcars, aes(x = "", fill = factor(cyl))) +
+  geom_bar(width = 1) +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  geom_rect(aes(xmin = -1, xmax = 1, ymin = -1, ymax = 1), fill = "white")
+```
+
+Through this lesson, we've traversed a range of plot types \## Other divs
+
+::: key-point
+An example of a "key point" div.
+:::
+
+::: watch-out
+An example of a "watch out" div.
+:::
+
+::: challenge
+An example of a "challenge" div.
+:::
+
+::: vocab
+An example of a "vocab" div.
+:::
+
+::: recap
+An example of a "recap" div.
+:::
+
+::: rstudio-cloud
+An example of an "rstudio-cloud" div. For steps specific to those working on the cloud.
+:::
+
+::: error
+An example of an "error" div. Anticipate and provide solutions to common errors.
+:::
+
+::: reminder
+**Remember XYZ syntax**
+
+An example of a "reminder" div with a within-div title.
+:::
+
+::: side-note
+An example of a "side note" div.
+
+```{r}
+"a 'side note' div with a code chunk"
+```
+:::
+
+::: pro-tip
+An example of a "pro tip" div.
+
+```{r eval = F}
+"a 'pro tip' div with a non-evaluated code chunk"
+```
+:::
+
+## Wrap Up! {.unnumbered}
+
+I hope this first lesson has allowed you to see how intuitive and useful the {dplyr} verbs are! This is the first of a series of basic data wrangling verbs: see you in the next lesson to learn more.
+
+![Fig: Basic Data Wrangling Dplyr Verbs.](images/custom_dplyr_basic_1.png){width="400"}
+
+## Solutions {.unlisted .unnumbered}
+
+1)  From the `yaounde` data frame, select the `age_category` column.
+
+`Q_age_category <- yaounde %>% select(age_category)`
+
+2)  From the `yaounde` data frame, select the 14th and 22nd columns. `Q_cols_14_22 <- yaounde %>% select(14, 22)`
+
+3)  What package does the `select()` function come from?
+
+B. {dplyr}
+
+## Contributors {.unlisted .unnumbered}
+
+The following team members contributed to this lesson:
+
+```{r echo = F}
+# This function uses information stored in global/contributors/contributors.csv
+# Only team members who contributed "substantially" to a specific lesson should be listed here
+# See https://tinyurl.com/icjme-authorship for notes on "substantial" contribution
+.tgc_contributors_list(
+  ids = c(
+    "admin",
+    "kendavidn",
+    "joy"
+  ))
+```
+
+## References {.unlisted .unnumbered}
+
+Some material in this lesson was adapted from the following sources:
+
+-   Horst, Allison. "Allisonhorst/Dplyr-Learnr: A Colorful Introduction to Some Common Functions in Dplyr, Part of the Tidyverse." GitHub. Accessed April 6, 2022. <https://github.com/allisonhorst/dplyr-learnr.>
+
+<!-- (Chicago format. You can use https://www.citationmachine.net) -->
+
+`r .tgc_license()`

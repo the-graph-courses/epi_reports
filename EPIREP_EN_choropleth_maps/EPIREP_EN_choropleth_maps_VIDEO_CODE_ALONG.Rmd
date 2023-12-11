@@ -1,0 +1,332 @@
+---
+title: 'Creating Choropleth maps with {ggplot2}'
+output:
+  html_document:
+    number_sections: true
+    toc: true
+    toc_float: true
+    css: !expr here::here("global/style/style.css")
+    highlight: kate
+    pandoc_args: --shift-heading-level-by=-1
+  word_document:
+    toc: true
+editor_options:
+  markdown:
+    wrap: 100
+  canonical: true
+  chunk_output_type: inline
+---
+
+------------------------------------------------------------------------
+
+## Learning Objectives
+
+‣ **Choropleth Maps with {ggplot2}:**
+
+‣ Master `ggplot()` and `geom_sf()` functions for map visualization.
+
+‣ **Data Matching with Polygons**:
+
+‣ Obtain boundaries and disease-related data.
+
+‣ Combine data based on administrative levels.
+
+‣ **Color Scaling Techniques**:
+
+‣ Implement color scales for both continuous and discrete data types.
+
+‣ **Faceting for Map Visualization**:
+
+‣ Use `facet_wrap()` and `facet_grid()` to create small multiple maps.
+
+------------------------------------------------------------------------
+
+## An Introduction to Choropleth Maps
+
+‣ Useful for visualizing spatial patterns and variations across different regions.
+
+‣ 3 essential components:
+
+‣ **Geographic regions** - areas represented on the map (countries, states, districts, etc.)
+
+‣ **Data Values** - values assoicated with geographic regions (prevalence, incidence, etc.)
+
+‣ **Color Scale** - ranges of colors to represent the different data values
+
+![Malaria Risk Levels in Nigeria](images/malaria_risk_levels_map_1.png)
+
+‣ **Advantages**:
+
+‣ Clear visuals highlighting spatial data trends
+
+‣ Intuitive designs comprehensible without expertise
+
+‣ **Limitations**:
+
+‣ Data classification and color choices can skew apperance
+
+‣ Larger regions might dominate, causing visual bias
+
+------------------------------------------------------------------------
+
+## Load Necessary Packages
+
+```{r}
+# Load necessary packages using pacman
+pacman::p_load(______, ______, ______)
+options(scipen = ______)  # Disable scientific notation for clearer numeric displays
+```
+
+------------------------------------------------------------------------
+
+## Data Preparation
+
+1.  Import Polygon Data
+
+‣ Attribute data showcasing malaria occurrences.
+
+```{r}
+# Import the Nigeria shapefile
+nga_adm1 <- sf::st_read(here::here("data/raw/NGA_adm_shapefile/NGA_adm1.shp"))
+```
+
+‣ Display Nigeria's administrative regions using a shapefile.
+
+```{r}
+# Let's visualize the shapefile
+ggplot()+
+  geom_sf(data = ______)+
+  labs(title = ______)
+```
+
+2.  Importing Attribute Data
+
+```{r}
+malaria_cases <- read_csv(here::here("data/malaria.csv"))
+malaria_cases
+```
+
+3.  Checking the Joined Data
+
+```{r}
+# Do they match?
+setdiff(______, ______)
+```
+
+```{r}
+# Remove "Water body" from our data
+nga_adm1 <- filter(______, ______)
+setdiff(______, ______)
+```
+
+4.  Join Data by Administrative Levels
+
+```{r}
+# Join datasets
+malaria <- malaria_cases %>% 
+  left_join(______, by = c(______ = ______)) %>% 
+  st_as_sf()
+```
+
+```{r}
+# Keep only essential columns
+malaria2 <- malaria %>% 
+  select(state_name, cases_2000, cases_2006, cases_2010, cases_2015, cases_2021, geometry)
+```
+
+------------------------------------------------------------------------
+
+## Crafting a Choropleth Map with {ggplot2}
+
+‣ Using the `fill` variable in `geom_sf()`.
+
+```{r}
+# Start with a basic plot setup
+ggplot(data = malaria2) + 
+  geom_sf(aes(______ = ______)) +   # Fill based on 2021 cases
+  labs(title = "Nigeria Malaria Distributed Cases") + 
+  theme_void()
+```
+
+### Customizing the Map
+
+‣ Customize the map to be more informative and appealing by adding various elements and styles.
+
+‣ Titles, axis labels, north arrow, scale bar, and themes...
+
+```{r}
+# Add enhancements to the map
+ggplot(data = malaria2) + 
+  geom_sf(aes(______)) +
+  labs(title = "Nigeria Malaria Distributed Cases (2021)",
+      ______) +               # Legend title
+  xlab(______) +              # X-axis label
+  ylab(______) +              # Y-axis label
+  ggspatial::annotation_north_arrow(location = ______) +   # North arrow
+  ggspatial::annotation_scale(location = ______) +         # Scale bar
+  theme_bw()                       # Monochrome theme
+```
+
+------------------------------------------------------------------------
+
+## Practice Question: Construct a Choropleth Map for 2015
+
+‣ Construct a choropleth map to display the distribition of Malaria cases in 2015, using the cases_2015 column from the malaria2 dataset. You can elevate your map's design and clarity by incorporating titles, axis lables, and any other pertinent labels.
+
+------------------------------------------------------------------------
+
+## Color Scaling
+
+### Continuous Color Scaling
+
+‣ Implement continuous color scaling on our map to represent varying magnitudes of malaria cases in 2021.
+
+‣ Using the `scale_fill_continuous()` function.
+
+```{r}
+# Begin with our basic plot
+ggplot(data = malaria2) +
+  geom_sf(aes(fill = ______)) +
+  scale_fill_continuous(low = ______, high = ______, name = ______) +
+  ggtitle("Distribution of Malaria Cases by Region in 2021") +
+  theme_bw()
+```
+
+------------------------------------------------------------------------
+
+### Discrete Color Scaling
+
+‣ Transition to discrete color scaling by first categorizing our data based on risk levels and then applying appropriate colors.
+
+‣ Manipulating data with `mutate()` & `case_when()`, then visualizing with `scale_fill_brewer()`.
+
+```{r}
+# Assign risk levels based on the number of cases in 2021
+malaria3 <- malaria2 %>%
+  mutate(risk = case_when(
+    ______ < quantile( ______,  ______) ~ 'low', 
+    ______ > quantile( ______,  ______) ~ 'high',
+    ______ ~  ______
+  ))
+
+table(malaria3$risk)
+```
+
+‣ Apply discrete color scaling with `scale_fill_brewer()`
+
+```{r}
+#Visualizing the data 
+ggplot(data = malaria3) +
+  geom_sf(aes(fill = fct_reorder(risk, cases_2021))) + #The risk levels are reordered in red based on the number of cases
+  scale_fill_brewer(palette = ______, ______) + 
+  theme_bw()
+```
+
+‣ Custom Discrete Palette with `scale_fill_manual()`
+
+```{r}
+# Create a manual color palette
+custom_palette <- c(______, ______, ______)
+ 
+# Apply the custom palette
+ggplot(data = malaria3) +
+  geom_sf(aes(fill = fct_reorder(risk, cases_2021))) +
+  scale_fill_manual(______ = ______, ______ = ______) +
+  ggtitle("Malaria Risk Levels by Region Based on 2021 Cases") +
+  theme_bw()
+```
+
+‣ Regions are now be distinctly colored based on risk levels: Low, Medium, and High.
+
+------------------------------------------------------------------------
+
+## Practice Question: Craft a Custom Palette for the Year 2000
+
+‣ Create your own color palette distinct from the initial one provided, and display the Malaria cases across Nigeria for 2000 using this custom color palette. Don't forget to incorporate additional aesthetic enhancements.
+
+------------------------------------------------------------------------
+
+## Facet Wrap vs. Grid
+
+‣ `facet_wrap()`: useful when you have a single variable with many levels and want to arrange the plots in a more space-efficient manner.
+
+‣ `facet_grid()`: useful when you have two discrete variables, and all combinations of the variables exist in the data.
+
+------------------------------------------------------------------------
+
+### Creating Small Multiples using `facet_wrap()`
+
+‣ Use `pivot_longer()` to consolidate yearly columns.
+
+```{r}
+malaria3_longer <- malaria3 %>%
+  pivot_longer(cols = ______, names_to =  ______, values_to =  ______)
+```
+
+‣ Remove the `cases_` prefix for cleaner visualization:
+
+```{r}
+malaria3_longer$year <- str_replace(______, ______, ______)
+```
+
+‣ Create a `ggplot` object and apply facet wrapping:
+
+```{r}
+ggplot(data = ______) +
+  geom_sf(aes(fill =______)) +
+  facet_wrap(______) +
+  scale_fill_continuous(low = ______, high = ______) + 
+  theme_void()
+```
+
+‣ Add another variable, risk, to the facet:
+
+```{r}
+ggplot() +
+  geom_sf(data = nga_adm1) + 
+  geom_sf(aes(fill = cases), data = filter(malaria3_longer, year %in% c( ______, ______))) +
+  facet_wrap(______ ~ ______)+
+  coord_sf(expand = TRUE)+
+  scale_fill_continuous(low = "green", high = "red")+
+  theme_void()
+```
+
+------------------------------------------------------------------------
+
+### Creating Small Multiples using `facet_grid()`
+
+‣ Use `facet_grid()` to create a grid of plots.
+
+```{r}
+ggplot() +
+  geom_sf(data = nga_adm1) + # need the 
+  geom_sf(aes(fill = cases), data = filter(malaria3_longer, year %in% c("2000", "2021"))) +
+  facet_grid(______)+
+  coord_sf(expand = TRUE)+
+  scale_fill_continuous(low = "green", high = "red")+
+  labs(title = "Distribution of Malaria cases and risk levels in Nigeria",
+       subtitle = "2000 & 2021")+
+  xlab("Longitude")+
+  ylab("Latitude")+
+  theme_void()
+```
+
+------------------------------------------------------------------------
+
+## Challenge Practice Question: Analyze the distribution of malaria cases for 2000 and 2021
+
+Your goal now is to analyze the distribution of malaria cases in Nigeria for the years 2000 and 2021. But you will first need to categorize the data into risk levels using the median (high/low), and then visualize this information on a map.
+
+------------------------------------------------------------------------
+
+## Learning Outcomes
+
+‣ Recognized the components of a choropleth map.
+
+‣ Prepare data specifically for the creation of a choropleth map.
+
+‣ Employed {ggplot2} in R to design a choropleth map.
+
+‣ Implemented continuous and discrete color scaling techniques.
+
+‣ Integrated various components to create small multiples using `facet_wrap()` and `facet_grid()`.

@@ -1,0 +1,568 @@
+---
+title: 'Mastering Time Series and Epicurves Visualization'
+output:
+  html_document:
+    number_sections: true
+    toc: true
+    toc_float: true
+    css: !expr here::here("global/style/style.css")
+    highlight: kate
+editor_options: 
+  chunk_output_type: inline
+---
+
+
+```{r, echo = F, message = F, warning = F}
+# Load packages 
+if(!require(pacman)) install.packages("pacman")
+pacman::p_load(rlang, tidyverse, knitr, here, reactable, gt, flextable)
+
+## functions
+source(here::here("global/functions/misc_functions.R"))
+
+## default render
+knitr::opts_chunk$set(class.source = "tgc-code-block")
+
+```
+
+# Introduction
+
+Time series visualization stands as a cornerstone in data analysis, especially when the focal point is data aggregated over various time intervals. Such visual representation enables analysts, researchers, and decision-makers to discern patterns, detect anomalies, and predict future trends, making it a powerful tool for insight generation.
+
+In the realm of epidemiology, the significance of time series visualization amplifies. Diseases spread, populations react, and policies adapt—all in the dynamic theater of time. Indicators such as infection rates, recovery rates, mortality rates, and vaccination progress can be meticulously tracked, allowing for informed responses to health crises. Such continuous monitoring and visualization enable real-time insights into disease progression and the effectiveness of interventions.
+
+
+[ADD LAST IMAGE HERE]
+
+# Learning Objectives
+
+Upon completing this lesson, participants will be able to:
+
+- Identify the fundamental elements of an epicurve.
+
+- Construct epicurves utilizing the ggplot2 package.
+
+- Execute essential transformations on time series data.
+
+- Highlight pivotal periods within an epicurve.
+
+- Overlay several curves onto a single plot.
+
+- Design coherent and detailed plots incorporating multiple curves.
+
+   
+# Packages
+
+The `pacman` is an external R package that manages the loading and installation of other R packages.
+
+```{r warning = F, message = F}
+# Load packages 
+if(!require(pacman)) install.packages("pacman")
+pacman::p_load(dplyr, ggplot2, tidyr, lubridate, outbreaks, scales)
+options(scipen=999)
+```
+
+The `pacman::p_load()` function facilitates the simultaneous loading of multiple R packages. For each package specified in the list `(dplyr, ggplot2, tidyr, lubridate, outbreaks)`, `p_load` performs the following checks:
+
+1. Determines whether the package is already installed; if not, it installs the package.
+2. Checks if the package is available in the R session; if not, it loads the package.
+
+------------------------------------------------------------------------
+
+# COVID-19 Cases in Africa
+
+We turn our attention to Africa to review current statistics on COVID-19. Utilizing the COVID-19 Data Hub, we have access to updated daily data, from new case counts to recoveries. Those interested in direct data analysis can utilize the [COVID19 package](https://cran.r-project.org/web/packages/COVID19/index.html) in R. For further details, this [blog post](https://rviews.rstudio.com/2021/12/08/the-r-package-covid19/) offers a nice overview.
+
+It's noteworthy that the COVID-19 Data Hub provides extensive data beyond country-level metrics, covering 230 countries, 760 regions, and over 12,000 local divisions. Let's proceed to explore the data.
+
+To initiate our analysis, we'll begin by loading the dataset that encapsulates the COVID-19 statistics for Africa. 
+
+```{r load_data}
+# Load the dataset into an R data frame
+covid19_africa <- read_csv(here::here("data/covid19_africa.csv"))
+
+covid19_africa
+```
+
+This `glimpse()` function from the `dplyr` package provides a concise summary of the dataset, allowing us to observe the variable types and get an initial sense of the data's structure.
+
+------------------------------------------------------------------------
+
+
+# Constructing an Epicurve with ggplot2
+
+In epidemiology, an epidemic curve (often referred to as an "epicurve") offers a visual display of the frequency of new cases over a specified time frame. By illustrating the progression and trajectory of disease outbreaks, these curves enable us to deduce crucial aspects such as the disease's source, mode of spread, and its duration.
+
+## Taking the First Step: A Basic Epicurve
+
+To get started, we'll construct a rudimentary epicurve for the COVID-19 infected cases in Africa.
+
+```{r}
+# Create a basic epicurve using ggplot2
+ggplot(covid19_africa, aes(x=Date,y=Infected)) +
+  geom_line()
+```
+
+Executing the above R code will give us a basic line graph where the x-axis represents the date and the y-axis represents the number of infected individuals.
+
+We employed the `geom_line()` which plots the data as a line graph. It ensures also the data points are connected, presenting a continuous view of the epidemic's progression.
+
+## Enhancing the Visual: Crafting a Detailed Epicurve
+
+But let's not stop there. We can enhance the visual appeal and readability of our graph by incorporating some customizations:
+
+```{r}
+# Refining the plot for clarity and appeal
+ggplot(covid19_africa, aes(x = Date, y = Infected)) +
+ geom_line(color = "blue", size = 1.2) +  # Modifying the line's aesthetics
+ labs(title = "COVID-19 Infection Trend in Africa",  # Setting a descriptive title
+       x = "Timeline (Date)", y = "Number of Infections") +    # Labeling the  axes comprehensively
+ theme_light() +                   # Choosing a light,    distraction-free theme
+ theme(plot.title = element_text(hjust = 0.5, face="bold"), # Enhancing the title's positioning and appearance
+      axis.line = element_line(color = "grey"))  # Refining the appearance of the axis lines
+```
+
+- **Line Attributes**: The `geom_line` function has been tailored with `color = "blue"` to render the line in blue, and `size = 1.5` adjusts the thickness.
+  
+- **Labels**: Using the `labs` function, a title is bestowed upon the graph, and both axes are aptly labeled.
+
+- **Theming**: The `theme_minimal()` function displays our plot with a clean, distraction-free look. We've further finessed the appearance with `theme()`, center-aligning the title and refining the axis lines for clearer visualization.
+
+As always with data visualization, these settings are malleable, and you can adapt them to resonate with your desired aesthetic and the nature of your data.
+
+Great, now that you have a grasp on how to customize your epicurve, here's a challenge to test your understanding and further enhance your skills.
+
+
+::: r-practice
+
+Build a you own custmized epicurve by changing those components: 
+
+- _Line Color_: Instead of the current blue, try choosing a different color that represents urgency oconcern, like red. Alternatively, you can select any color that you find visually appealing.
+ 
+- _Date Scale_: Instead of showing every single date, which might clutter the x-axis, try to display only specific intervals, say every month or every other week. This will make your graph much cleaner and more readable.
+
+:::
+
+
+------------------------------------------------------------------------
+
+## Spotlight on a Specific Duration:
+
+In visual analytics, there are times when one wishes to emphasize a particular time frame or period to draw the viewer's attention to specific trends or events. Highlighting a time frame can be useful, for example, when wanting to showcase a significant spike in cases, an important event, or perhaps, a policy's impact on data.
+
+For our current data visualization, let's focus on a specific period during the year 2020, namely from April to September This period might be of interest for various reasons - perhaps it witnessed a significant event, a rise in cases, or a policy change.
+
+Here's how we visualize it:
+
+```{r}
+# Setting the Time Frame:
+# Defining the start and end dates for the period of interest.
+start_date <- as_date("2020-04-01")
+end_date <- as_date("2020-09-30")
+
+# Creating the Graph:
+# We'll represent our data using a line graph and overlay it with a shaded region that represents the period of interest.
+ggplot(covid19_africa, aes(x = Date, y = Infected)) +
+    geom_rect(aes(xmin=start_date, xmax=end_date, ymin=-Inf, ymax=Inf), 
+              fill="yellow", alpha=0.2, inherit.aes=TRUE) +  # Shaded area for emphasis
+    geom_line(color = "blue", size = 0.5) +  # Data line
+    labs(title = "COVID-19 Infections in Africa", 
+         x = "Date", y = "Number of Infections") +    
+    theme_minimal() 
+
+```
+
+
+- **Defining the Time Frame**: The `as_date()` function helps us define the specific range we want to emphasize.
+
+- **Highlighting with `geom_rect`**: This function in `ggplot2` creates rectangles. By defining the `xmin` and `xmax` as our chosen dates and setting `ymin` and `ymax` to span the entire y-axis, we can craft a rectangle that accentuates our period. The choice of yellow as the fill color ensures the rectangle stands out, while the `alpha=0.2` setting provides a touch of transparency, ensuring the data beneath remains visible.
+
+- **Plotting the Data**: The function `geom_line()` helps us represent our data, with the line color set to blue.
+
+- **Titling and Theming**: We use `labs` as usual to add an appropriate title and label our axes. The `theme_minimal()` provides a clutter-free, clean look to our graph.
+
+This enhanced visualization ensures that viewers can quickly discern the significance of the period in focus, set against the backdrop of the larger dataset.
+
+------------------------------------------------------------------------
+
+## Zooming in on a Particular Region/Country:
+
+Focusing on specific regions or countries can offer a detailed perspective on local trends, thereby enabling a more nuanced understanding. For this exercise, we'll zoom in on Northern Africa to analyze the progression of COVID-19 cases within this region.
+
+Before visualizing, we need to filter our dataset to retain only data corresponding to Northern Africa.
+
+```{r}
+# Extracting data specific to Northern Africa
+covid19_northern_africa <- filter(covid19_africa, Region == "Northern Africa")
+```
+
+Once we have the subset, we'll create a line plot representing the number of cases in each country of Northern Africa over time.
+
+```{r}
+# Start plotting using ggplot
+ggplot(covid19_northern_africa, aes(x = Date, y = Infected, color = Country)) +  # Define the main plot aesthetics: x-axis as Date, y-axis as Infected, and color-coded by Country
+  geom_line(size = 0.5) +  # Add a line for each country's infection numbers. Set the line width to 1 for readability.
+  labs(title = "COVID-19 Case Progression in Northern Africa",  # Set the title of the plot
+       x = "Date",  # Label for the x-axis
+       y = "Number of Cases") +  # Label for the y-axis   
+  theme_minimal() +  # Apply a minimal theme for a clean look
+  theme(plot.title = element_text(hjust = 0.5),  # Center the title of the plot
+        axis.line = element_line(color = "black"),  # Set axis line color to black
+        legend.position = "right")  # Position the legend to the right side of the plot
+
+```
+
+
+- **Color-Coded by Country**: Using the `color = Country` argument within the `aes` function, we differentiate each country by color, providing clear distinctions between the data series.
+
+- **The Line Plot**: The `geom_line()` function plots the cases over time. By setting `size = 1`, we define a moderate line width, ensuring readability.
+
+- **Labels and Themes**: With `labs()`, we add titles and axis labels. The `theme_minimal()` provides a clean appearance, and additional `theme` customizations enhance readability, such as center-aligning the title and refining axis lines.
+
+By zooming in on specific regions or countries, analysts, policymakers, and public health experts can closely monitor local trends and implement interventions tailored to regional conditions.
+
+::: r-practice
+
+Practice Time! Can you craft a similar visualization for a different region, maybe "Central Africa"?
+
+:::
+
+
+
+------------------------------------------------------------------------
+
+## Fine-tuning the Time Axis
+
+Visualization is as much an art as it is a science. At times, the default display may overwhelm with too much detail. In such cases, we might desire a less cluttered timeline, perhaps showing data points every few months.
+
+```{r}
+# Modifying the date axis for clarity
+ggplot(covid19_northern_africa, aes(x = Date, y = Infected, color = Country)) +
+  geom_line() +
+  labs(title = "Tracing COVID-19 Cases in Northern Africa", 
+       x = "Timeline", y = "Reported Cases") +
+  scale_x_date(date_breaks = '4 months', 
+               date_labels = '%m-%Y') +
+  theme_minimal() +                          
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.line = element_line(color = "black")) 
+```
+
+:::  pro-tip
+
+In ggplot2, the `scale_x_date()` function serves as a powerful tool to modify date representation on the x-axis. By playing with the `date_labels` parameter, you can dictate how dates get displayed. Some commonly used formats are:
+- `%Y`: Just the year (like "2023").
+- `%m-%d`: Month and day, resembling "01-15".
+- `%B`: The month in full (such as "January").
+... and several others (see `?scale_x_date()`).
+
+:::
+
+
+
+------------------------------------------------------------------------
+
+## Breaking Down the Visualization of COVID-19 Spread by Country
+
+When examining regional data, it's often beneficial to emphasize information from a single country, while still retaining context from its neighbors. To demonstrate, let's accentuate Morocco's data. 
+
+For Establishing a color guide, we can use the `ifelse()` function to set Morocco's color to red and all other countries to grey. 
+
+The `unique()` function ensures we're not duplicating any color assignments.
+
+```{r}
+# Establishing a color guide. Here we're using ifelse to set Morocco to red and all other countries to grey.
+palette <- ifelse(unique(covid19_northern_africa$Country) == "Morocco", "red", "grey")
+
+# Visualization emphasizing Morocco's data
+ggplot(covid19_northern_africa, aes(x = Date, y = Infected, color = Country)) +
+  geom_line(aes(linetype = Country)) +  # Different linetypes for different countries. This further distinguishes each country's data trajectory.
+  scale_color_manual(values = palette) +  # Applying our custom color palette
+  labs(title = "Emphasizing Morocco's COVID-19 Cases Amidst its Neighbors", 
+       x = "Timeline", y = "Reported Cases") +
+  scale_x_date(date_breaks = '4 months', 
+               date_labels = '%m-%Y') +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.line = element_line(color = "black")) 
+```
+
+Through this visualization technique, Morocco's data line stands out in a bold red, while its neighboring countries in Northern Africa appear in a subdued grey. This contrast ensures that Morocco's data trajectory can be immediately identified, even when presented alongside its regional counterparts.
+
+
+
+------------------------------------------------------------------------
+
+## Facettin Epidemic Curves
+
+Visualizing data provides insights, but to extract the full story, we need to be precise about the details. When mapping out COVID-19 cases, it's crucial to understand which curve corresponds to which country. So, how can we make these representations clearer?
+
+One of the most effective ways is to display these epidemic curves individually. This can be achieved using the `facet_wrap()` function in R. It separates the data by country, dedicating a unique plot for each, which aids in a clearer understanding.
+
+```{r}
+ggplot(covid19_northern_africa, aes(x = Date, y = Infected, color = Country)) +
+  # Add line graph for each country's data
+  geom_line() +
+  # Set plot and axis titles
+  labs(title = "Epidemic Curves of COVID-19 in Africa", 
+       x = "Time Frame", y = "Reported Cases") +
+  # Adjust x-axis date breaks and format
+  scale_x_date(date_breaks = '4 months', 
+               date_labels = '%m-%y') +
+  # Apply minimal theme
+  theme_minimal() +
+  # Additional theme adjustments
+  theme(
+    plot.title = element_text(hjust = 0.5),      # Center plot title
+    axis.line = element_line(color = "black"),   # Black axis lines
+    axis.text.x = element_text(angle = 45, hjust = 1)  # Rotate x-axis labels
+  ) +
+  # Separate plots for each country
+  facet_wrap(~Country)
+```
+
+
+------------------------------------------------------------------------
+
+### Tracking the Overall Spread:Cumulative Cases Visualization
+
+Cumulative cases offer a broader perspective on the pandemic by presenting the total infections accumulated from the onset up to a particular date. By observing the cumulative data, one can discern not only daily changes but also the overall trajectory and magnitude of the outbreak.
+
+```{r}
+
+# Specify countries and associated colors
+highlighted_countries <- c("Algeria", "Egypt", "Libya", "Mauritania", "Morocco", "Tunisia")
+highlighted_colors <- c("red", "blue", "green", "yellow", "orange", "pink")
+
+
+# Computing the running total of cases for each country
+covid19_northern_africa_cumulative <- covid19_northern_africa %>%
+    group_by(Country) %>%
+    arrange(Date) %>%
+    mutate(Cumulative_Infected = cumsum(Infected))
+
+# Crafting the visualization for cumulative cases
+ggplot(covid19_northern_africa_cumulative, aes(x = Date, y = Cumulative_Infected, color = Country)) +
+    geom_line() +
+    labs(title = "Cumulated COVID-19 Infections in Northern Africa", 
+         x = "Timeline", y = "Aggregate Infections Up To Date") +
+    scale_color_manual(values = setNames(highlighted_colors, highlighted_countries), 
+                       guide = guide_legend(title = "Nations")) +
+    scale_x_date(date_breaks = '4 months', 
+                 date_labels = '%m-%y') +
+    theme_minimal() +
+    theme(plot.title = element_text(hjust = 0.5),
+          axis.line = element_line(color = "black"),
+          axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+This graph's unique value lies in its representation of total cases up to any chosen point in time for each nation. By juxtaposing daily increments with accumulated totals, those analyzing the data can derive a more comprehensive understanding of the virus's spread and its potential impact on the region.
+
+
+
+
+------------------------------------------------------------------------
+
+## Diving Deeper with Specific Countries
+
+For more in-depth analysis, sometimes it's necessary to concentrate on a single country. Let's take the case of Tunisia as an example. From our initial visual inspection, we observe that Tunisia has experienced multiple waves of infections. This makes it a compelling case to study, as understanding these waves can provide insights into the dynamics of the virus spread.
+
+
+
+### Why Transform Data Formats?
+
+When working with time-series data, particularly for different variables like "Recovered," "Infected," and "Death," it's sometimes easier to work with the data in a "long" format rather than a "wide" format.
+
+
+The transformation from wide to long format makes certain operations, especially visualizations, more straightforward and efficient.
+::: side-note
+
+- **Wide Format:** Here, each row represents an observation with a column for every variable. For instance, you'd have separate columns for "Recovered," "Infected," and "Death."
+
+- **Long Format:** In this format, each row is a single observation for a particular variable. So, for a given date, you'd have separate rows for "Recovered," "Infected," and "Death."
+
+:::
+
+
+### How to Transform the Data?
+
+The `gather()` function from the `tidyr` package in R is a handy tool for this transformation. It helps convert data from the wide format to the long format.
+
+```{r}
+# Load the tidyr package
+library(tidyr)
+
+# Transform the data
+covid_long <- covid19_northern_africa %>% 
+  select(Country, Date, Recovered, Infected, Death) %>%  # Select relevant columns
+  gather(Case_Type, Cases, c(Recovered, Infected, Death))  # Convert to long format
+
+# Display the transformed data
+covid_long
+```
+
+In the transformed `covid_long` data frame, the `Case_Type` column will specify the type of case (i.e., "Recovered," "Infected," or "Death"), and the `Cases` column will indicate the corresponding count for that type on a given date. This structure is particularly beneficial when plotting data to discern patterns and trends over time for each case type.
+
+
+------------------------------------------------------------------------
+
+## Visualizing Combined Trends with Area Plots
+
+Understanding the evolution of multiple indicators over time can be a challenging task. Especially when these indicators are interrelated, it's essential to present the data in a manner that's easy to comprehend. Here, the area plot comes to the rescue.
+
+
+::: vocab
+An area chart effectively illustrates the magnitude of change over time for one or more series. By emphasizing the area between lines with colors or hatchings, it draws attention to the total value across a trend. It's especially useful when comparing two or more correlated indicators, as the filled areas provide a clear visual representation of the differences between them.
+:::
+
+For a hands-on understanding, let's focus on the COVID-19 data for Morocco, concentrating specifically on "Infected" and "Recovered" cases.
+
+```{r}
+# Filter out data specific to Morocco and the case types "Infected" and "Recovered"
+morocco_data <- covid_long %>%
+    filter(Country == "Morocco", Case_Type %in% c("Infected", "Recovered"))
+
+# Cumulatively sum the cases for a comprehensive view
+morocco_data <- morocco_data %>%
+    group_by(Case_Type) %>%
+    arrange(Date) %>%
+    mutate(Cumulative_Cases = cumsum(Cases))
+
+# Plot the data using an area plot
+ggplot(morocco_data, aes(x = Date, y = Cumulative_Cases, fill = Case_Type)) +
+    geom_area(alpha = 0.6) +  # 'geom_area()' fills the area under the curve; 'alpha' controls the transparency
+    labs(title = "COVID-19 Cumulative Infected and Recovered Cases in Morocco",
+         x = "Date",
+         y = "Cumulative Cases",
+         fill = "Case Type") +
+    theme_minimal() +
+    theme(plot.title = element_text(hjust = 0.5),
+          axis.line = element_line(color = "black"),
+          axis.text.x = element_text(angle = 45, hjust = 1)) +
+    scale_x_date(date_breaks = '3 months', date_labels = '%m-%y')
+```
+
+
+In this plot, the filled areas for "Infected" and "Recovered" cases offer a visual representation of how the pandemic unfolded in Morocco, showing the extent of infections and recoveries side by side. This visualization technique can be invaluable in deciphering patterns and making informed decisions.
+
+
+
+------------------------------------------------------------------------
+
+## Incorporating a Secondary Y-Axis
+
+In data visualization, especially when dealing with multiple data series that have different scales but are related, it's often challenging to depict them on a single plot without one overshadowing the other. Here is where a secondary Y-axis can be invaluable.
+
+From an epidemiological perspective, using a secondary Y-axis allows researchers and decision-makers to simultaneously observe two different yet interrelated metrics. For instance, when studying an infectious disease, it's crucial not just to know the number of infected individuals, but also to understand other metrics like the death rate. This duality provides a holistic view of the disease's impact. 
+
+
+::: side-note
+
+While the raw count of cases can provide an understanding of the disease's spread, the death rate (usually expressed as a percentage) can give insights into the disease's severity, the effectiveness of treatments, and the health system's capacity.
+
+
+:::
+
+
+```{r}
+# Filter and preprocess data for Morocco
+morocco_death_rate <- covid19_africa %>%
+  filter(Country == "Morocco") %>%
+  select(Date, Infected, Death) %>%
+  mutate(Death_rate = ((Death / (Infected))*100)) %>%
+    na.omit()
+
+# Compute the maximum values for both the infected cases and death rate
+max_cases <- max(morocco_death_rate$Infected)
+max_rate <- max(morocco_death_rate$Death_rate)
+
+# Define a scaling factor based on the ratio of maximum infected cases to the maximum death rate
+scaling_factor <- max_cases / max_rate
+library(ggplot2)
+
+# Construct the plot
+ggplot(data = morocco_death_rate, aes(x = Date)) +
+  # Bar plot representing the number of infected individuals
+  geom_col(aes(y = Infected, fill = "Infected"), alpha = 0.7) +
+  # Line plot for the death rate (scaled by the previously defined factor)
+  geom_col(aes(y = Death_rate * scaling_factor, fill = "Death rate"), color = "red") +
+  # Add a secondary y-axis for the death rate
+  scale_y_continuous(name = "Infected", 
+                     sec.axis = sec_axis(~./scaling_factor, name = "Death rate (%)")) +
+  labs(title = "Infected Cases and Death Rate of COVID-19 in Morocco",
+       x = "Date") +
+  theme_minimal() +
+  scale_fill_manual(values = c("Infected" = "blue", "Death rate" = "red")) +
+  scale_color_manual(values = c("Infected" = "blue", "Death rate" = "red")) +
+  guides(fill = guide_legend(title = "Metrics"))
+```
+
+In this visualization, the primary Y-axis depicts the infected count, while the secondary Y-axis (on the right side) displays the death rate. This dual representation provides a comprehensive snapshot of the COVID-19 situation in Morocco, enabling a better understanding of the disease's trajectory and impact. However, it's essential to note that while dual y-axes can be informative, they can also sometimes lead to misinterpretations if not labeled and scaled appropriately. Always ensure clarity when using this approach.
+
+
+::: watch-out
+However, a word of caution: dual y-axes, while powerful, demand careful construction to avoid misinterpretation. Proper scaling and labeling are paramount to ensure viewers grasp the data's essence without misconstruing relationships or magnitudes.
+:::
+
+
+
+-------------------------------------------------------------------
+
+# WRAP UP! {.unnumbered}
+
+## Visualization and Analysis of Epidemiological Data: A Wrap-Up
+
+The journey through these sections provided a comprehensive dive into the world of data visualization, specifically tailored to epidemiological time series. Here's a brief wrap-up of the key insights and methodologies we've explored:
+
+### 1. **Epidemiological Curves and Data Faceting**
+- We began by understanding the significance of "epicurves" which are foundational in epidemiological studies to track the progress of diseases.
+- The use of `facet_wrap()` allows us to neatly categorize data from different countries, providing a side-by-side comparison of disease progression.
+
+
+### 2. **Area Plot Visualization**
+- The area plot was introduced as a powerful tool to represent bivariate or multivariate data over time.
+- Through the Morocco case study, we demonstrated how area plots can effectively display the evolution of multiple interlinked indicators, such as infection and recovery rates.
+
+### 3. **Leveraging a Secondary Y-Axis**
+- Dual Y-axes have a unique advantage in simultaneously visualizing two related metrics with different scales.
+- From an epidemiological perspective, this approach provides a comprehensive view, for example, comparing raw infection counts with death rates as percentages. 
+
+
+------------------------------------------------------------------------
+
+# Answer Key {.unnumbered}
+
+## Building a Customized Epicurve
+
+```{r}
+# Constructing a customized epicurve
+ggplot(covid19_africa, aes(x = Date, y = Infected)) +
+  # Changing the line color to red
+  geom_line(color = "red", size = 1.2) +
+  
+  # Setting a descriptive title and labeling the axes
+  labs(title = "COVID-19 Infection Trend in Africa", 
+       x = "Timeline (Date)", y = "Number of Infections") +
+  
+  # Choosing a light theme for clarity
+  theme_light() +
+  
+  # Enhancing the title's appearance and positioning the axis lines
+  theme(plot.title = element_text(hjust = 0.5, face="bold"),  
+        axis.line = element_line(color = "grey")) +
+  
+  # Adjusting the x-axis to display dates at monthly intervals
+  scale_x_date(date_breaks = '4 month', date_labels = '%m-%Y') 
+
+```
+
+------------------------------------------------------------------------
+
+# Contributors {.unlisted .unnumbered}
+
+The following team members contributed to this lesson:
+
+`r tgc_contributors_list(ids = c("imad", "joy", "kendavidn"))` 
+
+
+
