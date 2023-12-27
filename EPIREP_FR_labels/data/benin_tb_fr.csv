@@ -1,0 +1,712 @@
+periode,date_periode,hopital,resultat,cas,diagnosis_type
+2015Q4,2015-10-01,St Jean De Dieu,echec,0,bacteriologique
+2015Q4,2015-10-01,St Jean De Dieu,non_evalue,0,bacteriologique
+2015Q4,2015-10-01,St Jean De Dieu,decede,0,bacteriologique
+2015Q4,2015-10-01,St Jean De Dieu,perdu,0,bacteriologique
+2015Q4,2015-10-01,St Jean De Dieu,termine,0,bacteriologique
+2015Q4,2015-10-01,St Jean De Dieu,gueri,11,bacteriologique
+2015Q3,2015-07-01,St Jean De Dieu,echec,0,bacteriologique
+2015Q3,2015-07-01,St Jean De Dieu,non_evalue,0,bacteriologique
+2015Q3,2015-07-01,St Jean De Dieu,decede,0,bacteriologique
+2015Q3,2015-07-01,St Jean De Dieu,perdu,0,bacteriologique
+2015Q3,2015-07-01,St Jean De Dieu,termine,0,bacteriologique
+2015Q3,2015-07-01,St Jean De Dieu,gueri,11,bacteriologique
+2016Q1,2016-01-01,St Jean De Dieu,echec,0,bacteriologique
+2016Q1,2016-01-01,St Jean De Dieu,non_evalue,0,bacteriologique
+2016Q1,2016-01-01,St Jean De Dieu,decede,1,bacteriologique
+2016Q1,2016-01-01,St Jean De Dieu,perdu,0,bacteriologique
+2016Q1,2016-01-01,St Jean De Dieu,termine,0,bacteriologique
+2016Q1,2016-01-01,St Jean De Dieu,gueri,14,bacteriologique
+2015Q2,2015-04-01,St Jean De Dieu,echec,0,bacteriologique
+2015Q2,2015-04-01,St Jean De Dieu,non_evalue,0,bacteriologique
+2015Q2,2015-04-01,St Jean De Dieu,decede,0,bacteriologique
+2015Q2,2015-04-01,St Jean De Dieu,perdu,0,bacteriologique
+2015Q2,2015-04-01,St Jean De Dieu,termine,0,bacteriologique
+2015Q2,2015-04-01,St Jean De Dieu,gueri,7,bacteriologique
+2015Q1,2015-01-01,St Jean De Dieu,echec,0,bacteriologique
+2015Q1,2015-01-01,St Jean De Dieu,non_evalue,0,bacteriologique
+2015Q1,2015-01-01,St Jean De Dieu,decede,0,bacteriologique
+2015Q1,2015-01-01,St Jean De Dieu,perdu,0,bacteriologique
+2015Q1,2015-01-01,St Jean De Dieu,termine,0,bacteriologique
+2015Q1,2015-01-01,St Jean De Dieu,gueri,7,bacteriologique
+2016Q4,2016-10-01,St Jean De Dieu,echec,0,bacteriologique
+2016Q4,2016-10-01,St Jean De Dieu,non_evalue,1,bacteriologique
+2016Q4,2016-10-01,St Jean De Dieu,decede,1,bacteriologique
+2016Q4,2016-10-01,St Jean De Dieu,perdu,0,bacteriologique
+2016Q4,2016-10-01,St Jean De Dieu,termine,1,bacteriologique
+2016Q4,2016-10-01,St Jean De Dieu,gueri,5,bacteriologique
+2016Q2,2016-04-01,St Jean De Dieu,echec,0,bacteriologique
+2016Q2,2016-04-01,St Jean De Dieu,non_evalue,0,bacteriologique
+2016Q2,2016-04-01,St Jean De Dieu,decede,0,bacteriologique
+2016Q2,2016-04-01,St Jean De Dieu,perdu,0,bacteriologique
+2016Q2,2016-04-01,St Jean De Dieu,termine,0,bacteriologique
+2016Q2,2016-04-01,St Jean De Dieu,gueri,5,bacteriologique
+2016Q3,2016-07-01,St Jean De Dieu,echec,0,bacteriologique
+2016Q3,2016-07-01,St Jean De Dieu,non_evalue,0,bacteriologique
+2016Q3,2016-07-01,St Jean De Dieu,decede,0,bacteriologique
+2016Q3,2016-07-01,St Jean De Dieu,perdu,0,bacteriologique
+2016Q3,2016-07-01,St Jean De Dieu,termine,1,bacteriologique
+2016Q3,2016-07-01,St Jean De Dieu,gueri,5,bacteriologique
+2017Q1,2017-01-01,St Jean De Dieu,echec,0,bacteriologique
+2017Q1,2017-01-01,St Jean De Dieu,non_evalue,0,bacteriologique
+2017Q1,2017-01-01,St Jean De Dieu,decede,0,bacteriologique
+2017Q1,2017-01-01,St Jean De Dieu,perdu,0,bacteriologique
+2017Q1,2017-01-01,St Jean De Dieu,termine,0,bacteriologique
+2017Q1,2017-01-01,St Jean De Dieu,gueri,6,bacteriologique
+2017Q4,2017-10-01,St Jean De Dieu,echec,0,bacteriologique
+2017Q4,2017-10-01,St Jean De Dieu,non_evalue,0,bacteriologique
+2017Q4,2017-10-01,St Jean De Dieu,decede,0,bacteriologique
+2017Q4,2017-10-01,St Jean De Dieu,perdu,0,bacteriologique
+2017Q4,2017-10-01,St Jean De Dieu,termine,0,bacteriologique
+2017Q4,2017-10-01,St Jean De Dieu,gueri,6,bacteriologique
+2017Q2,2017-04-01,St Jean De Dieu,echec,1,bacteriologique
+2017Q2,2017-04-01,St Jean De Dieu,non_evalue,0,bacteriologique
+2017Q2,2017-04-01,St Jean De Dieu,decede,0,bacteriologique
+2017Q2,2017-04-01,St Jean De Dieu,perdu,0,bacteriologique
+2017Q2,2017-04-01,St Jean De Dieu,termine,0,bacteriologique
+2017Q2,2017-04-01,St Jean De Dieu,gueri,11,bacteriologique
+2017Q3,2017-07-01,St Jean De Dieu,echec,0,bacteriologique
+2017Q3,2017-07-01,St Jean De Dieu,non_evalue,0,bacteriologique
+2017Q3,2017-07-01,St Jean De Dieu,decede,0,bacteriologique
+2017Q3,2017-07-01,St Jean De Dieu,perdu,0,bacteriologique
+2017Q3,2017-07-01,St Jean De Dieu,termine,0,bacteriologique
+2017Q3,2017-07-01,St Jean De Dieu,gueri,6,bacteriologique
+2015Q4,2015-10-01,St Jean De Dieu,non_evalue,0,clinique
+2015Q4,2015-10-01,St Jean De Dieu,decede,0,clinique
+2015Q4,2015-10-01,St Jean De Dieu,perdu,0,clinique
+2015Q4,2015-10-01,St Jean De Dieu,termine,8,clinique
+2015Q3,2015-07-01,St Jean De Dieu,echec,0,clinique
+2015Q3,2015-07-01,St Jean De Dieu,non_evalue,0,clinique
+2015Q3,2015-07-01,St Jean De Dieu,decede,0,clinique
+2015Q3,2015-07-01,St Jean De Dieu,perdu,0,clinique
+2015Q3,2015-07-01,St Jean De Dieu,termine,4,clinique
+2016Q1,2016-01-01,St Jean De Dieu,non_evalue,0,clinique
+2016Q1,2016-01-01,St Jean De Dieu,decede,0,clinique
+2016Q1,2016-01-01,St Jean De Dieu,perdu,0,clinique
+2016Q1,2016-01-01,St Jean De Dieu,termine,12,clinique
+2015Q2,2015-04-01,St Jean De Dieu,non_evalue,0,clinique
+2015Q2,2015-04-01,St Jean De Dieu,decede,0,clinique
+2015Q2,2015-04-01,St Jean De Dieu,perdu,0,clinique
+2015Q2,2015-04-01,St Jean De Dieu,termine,3,clinique
+2015Q1,2015-01-01,St Jean De Dieu,non_evalue,0,clinique
+2015Q1,2015-01-01,St Jean De Dieu,decede,0,clinique
+2015Q1,2015-01-01,St Jean De Dieu,perdu,0,clinique
+2015Q1,2015-01-01,St Jean De Dieu,termine,13,clinique
+2016Q4,2016-10-01,St Jean De Dieu,non_evalue,0,clinique
+2016Q4,2016-10-01,St Jean De Dieu,decede,0,clinique
+2016Q4,2016-10-01,St Jean De Dieu,perdu,0,clinique
+2016Q4,2016-10-01,St Jean De Dieu,termine,4,clinique
+2016Q2,2016-04-01,St Jean De Dieu,non_evalue,0,clinique
+2016Q2,2016-04-01,St Jean De Dieu,decede,0,clinique
+2016Q2,2016-04-01,St Jean De Dieu,perdu,0,clinique
+2016Q2,2016-04-01,St Jean De Dieu,termine,5,clinique
+2016Q3,2016-07-01,St Jean De Dieu,non_evalue,0,clinique
+2016Q3,2016-07-01,St Jean De Dieu,decede,0,clinique
+2016Q3,2016-07-01,St Jean De Dieu,perdu,0,clinique
+2016Q3,2016-07-01,St Jean De Dieu,termine,10,clinique
+2017Q1,2017-01-01,St Jean De Dieu,non_evalue,0,clinique
+2017Q1,2017-01-01,St Jean De Dieu,decede,0,clinique
+2017Q1,2017-01-01,St Jean De Dieu,perdu,0,clinique
+2017Q1,2017-01-01,St Jean De Dieu,termine,2,clinique
+2017Q4,2017-10-01,St Jean De Dieu,non_evalue,0,clinique
+2017Q4,2017-10-01,St Jean De Dieu,decede,0,clinique
+2017Q4,2017-10-01,St Jean De Dieu,perdu,0,clinique
+2017Q4,2017-10-01,St Jean De Dieu,termine,3,clinique
+2017Q2,2017-04-01,St Jean De Dieu,non_evalue,0,clinique
+2017Q2,2017-04-01,St Jean De Dieu,decede,0,clinique
+2017Q2,2017-04-01,St Jean De Dieu,perdu,0,clinique
+2017Q2,2017-04-01,St Jean De Dieu,termine,3,clinique
+2017Q3,2017-07-01,St Jean De Dieu,non_evalue,0,clinique
+2017Q3,2017-07-01,St Jean De Dieu,decede,0,clinique
+2017Q3,2017-07-01,St Jean De Dieu,perdu,0,clinique
+2017Q3,2017-07-01,St Jean De Dieu,termine,4,clinique
+2015Q4,2015-10-01,Hopital Savalou,echec,1,bacteriologique
+2015Q4,2015-10-01,Hopital Savalou,non_evalue,0,bacteriologique
+2015Q4,2015-10-01,Hopital Savalou,decede,1,bacteriologique
+2015Q4,2015-10-01,Hopital Savalou,perdu,0,bacteriologique
+2015Q4,2015-10-01,Hopital Savalou,termine,1,bacteriologique
+2015Q4,2015-10-01,Hopital Savalou,gueri,7,bacteriologique
+2015Q3,2015-07-01,Hopital Savalou,echec,1,bacteriologique
+2015Q3,2015-07-01,Hopital Savalou,non_evalue,0,bacteriologique
+2015Q3,2015-07-01,Hopital Savalou,decede,1,bacteriologique
+2015Q3,2015-07-01,Hopital Savalou,perdu,0,bacteriologique
+2015Q3,2015-07-01,Hopital Savalou,termine,0,bacteriologique
+2015Q3,2015-07-01,Hopital Savalou,gueri,3,bacteriologique
+2016Q1,2016-01-01,Hopital Savalou,echec,0,bacteriologique
+2016Q1,2016-01-01,Hopital Savalou,non_evalue,0,bacteriologique
+2016Q1,2016-01-01,Hopital Savalou,decede,1,bacteriologique
+2016Q1,2016-01-01,Hopital Savalou,perdu,0,bacteriologique
+2016Q1,2016-01-01,Hopital Savalou,termine,0,bacteriologique
+2016Q1,2016-01-01,Hopital Savalou,gueri,3,bacteriologique
+2015Q2,2015-04-01,Hopital Savalou,echec,0,bacteriologique
+2015Q2,2015-04-01,Hopital Savalou,non_evalue,0,bacteriologique
+2015Q2,2015-04-01,Hopital Savalou,decede,0,bacteriologique
+2015Q2,2015-04-01,Hopital Savalou,perdu,0,bacteriologique
+2015Q2,2015-04-01,Hopital Savalou,termine,0,bacteriologique
+2015Q2,2015-04-01,Hopital Savalou,gueri,7,bacteriologique
+2015Q1,2015-01-01,Hopital Savalou,echec,1,bacteriologique
+2015Q1,2015-01-01,Hopital Savalou,non_evalue,0,bacteriologique
+2015Q1,2015-01-01,Hopital Savalou,decede,0,bacteriologique
+2015Q1,2015-01-01,Hopital Savalou,perdu,0,bacteriologique
+2015Q1,2015-01-01,Hopital Savalou,termine,0,bacteriologique
+2015Q1,2015-01-01,Hopital Savalou,gueri,6,bacteriologique
+2016Q4,2016-10-01,Hopital Savalou,echec,0,bacteriologique
+2016Q4,2016-10-01,Hopital Savalou,non_evalue,0,bacteriologique
+2016Q4,2016-10-01,Hopital Savalou,decede,0,bacteriologique
+2016Q4,2016-10-01,Hopital Savalou,perdu,0,bacteriologique
+2016Q4,2016-10-01,Hopital Savalou,termine,1,bacteriologique
+2016Q4,2016-10-01,Hopital Savalou,gueri,3,bacteriologique
+2016Q2,2016-04-01,Hopital Savalou,echec,1,bacteriologique
+2016Q2,2016-04-01,Hopital Savalou,non_evalue,0,bacteriologique
+2016Q2,2016-04-01,Hopital Savalou,decede,1,bacteriologique
+2016Q2,2016-04-01,Hopital Savalou,perdu,0,bacteriologique
+2016Q2,2016-04-01,Hopital Savalou,termine,1,bacteriologique
+2016Q2,2016-04-01,Hopital Savalou,gueri,3,bacteriologique
+2016Q3,2016-07-01,Hopital Savalou,echec,0,bacteriologique
+2016Q3,2016-07-01,Hopital Savalou,non_evalue,0,bacteriologique
+2016Q3,2016-07-01,Hopital Savalou,decede,0,bacteriologique
+2016Q3,2016-07-01,Hopital Savalou,perdu,0,bacteriologique
+2016Q3,2016-07-01,Hopital Savalou,termine,0,bacteriologique
+2016Q3,2016-07-01,Hopital Savalou,gueri,6,bacteriologique
+2017Q1,2017-01-01,Hopital Savalou,echec,0,bacteriologique
+2017Q1,2017-01-01,Hopital Savalou,non_evalue,0,bacteriologique
+2017Q1,2017-01-01,Hopital Savalou,decede,0,bacteriologique
+2017Q1,2017-01-01,Hopital Savalou,perdu,0,bacteriologique
+2017Q1,2017-01-01,Hopital Savalou,termine,2,bacteriologique
+2017Q1,2017-01-01,Hopital Savalou,gueri,2,bacteriologique
+2017Q4,2017-10-01,Hopital Savalou,echec,1,bacteriologique
+2017Q4,2017-10-01,Hopital Savalou,non_evalue,0,bacteriologique
+2017Q4,2017-10-01,Hopital Savalou,decede,0,bacteriologique
+2017Q4,2017-10-01,Hopital Savalou,perdu,0,bacteriologique
+2017Q4,2017-10-01,Hopital Savalou,termine,0,bacteriologique
+2017Q4,2017-10-01,Hopital Savalou,gueri,4,bacteriologique
+2017Q2,2017-04-01,Hopital Savalou,echec,0,bacteriologique
+2017Q2,2017-04-01,Hopital Savalou,non_evalue,0,bacteriologique
+2017Q2,2017-04-01,Hopital Savalou,decede,0,bacteriologique
+2017Q2,2017-04-01,Hopital Savalou,perdu,0,bacteriologique
+2017Q2,2017-04-01,Hopital Savalou,termine,2,bacteriologique
+2017Q2,2017-04-01,Hopital Savalou,gueri,2,bacteriologique
+2017Q3,2017-07-01,Hopital Savalou,echec,0,bacteriologique
+2017Q3,2017-07-01,Hopital Savalou,non_evalue,0,bacteriologique
+2017Q3,2017-07-01,Hopital Savalou,decede,2,bacteriologique
+2017Q3,2017-07-01,Hopital Savalou,perdu,0,bacteriologique
+2017Q3,2017-07-01,Hopital Savalou,termine,2,bacteriologique
+2017Q3,2017-07-01,Hopital Savalou,gueri,4,bacteriologique
+2015Q4,2015-10-01,Hopital Savalou,non_evalue,0,clinique
+2015Q4,2015-10-01,Hopital Savalou,decede,0,clinique
+2015Q4,2015-10-01,Hopital Savalou,perdu,0,clinique
+2015Q4,2015-10-01,Hopital Savalou,termine,0,clinique
+2015Q3,2015-07-01,Hopital Savalou,non_evalue,0,clinique
+2015Q3,2015-07-01,Hopital Savalou,decede,1,clinique
+2015Q3,2015-07-01,Hopital Savalou,perdu,0,clinique
+2015Q3,2015-07-01,Hopital Savalou,termine,0,clinique
+2016Q1,2016-01-01,Hopital Savalou,non_evalue,0,clinique
+2016Q1,2016-01-01,Hopital Savalou,decede,0,clinique
+2016Q1,2016-01-01,Hopital Savalou,perdu,0,clinique
+2016Q1,2016-01-01,Hopital Savalou,termine,3,clinique
+2015Q2,2015-04-01,Hopital Savalou,non_evalue,0,clinique
+2015Q2,2015-04-01,Hopital Savalou,decede,0,clinique
+2015Q2,2015-04-01,Hopital Savalou,perdu,0,clinique
+2015Q2,2015-04-01,Hopital Savalou,termine,0,clinique
+2015Q1,2015-01-01,Hopital Savalou,non_evalue,0,clinique
+2015Q1,2015-01-01,Hopital Savalou,decede,0,clinique
+2015Q1,2015-01-01,Hopital Savalou,perdu,0,clinique
+2015Q1,2015-01-01,Hopital Savalou,termine,0,clinique
+2016Q4,2016-10-01,Hopital Savalou,non_evalue,0,clinique
+2016Q4,2016-10-01,Hopital Savalou,decede,0,clinique
+2016Q4,2016-10-01,Hopital Savalou,perdu,0,clinique
+2016Q4,2016-10-01,Hopital Savalou,termine,1,clinique
+2016Q2,2016-04-01,Hopital Savalou,non_evalue,0,clinique
+2016Q2,2016-04-01,Hopital Savalou,decede,0,clinique
+2016Q2,2016-04-01,Hopital Savalou,perdu,0,clinique
+2016Q2,2016-04-01,Hopital Savalou,termine,0,clinique
+2016Q3,2016-07-01,Hopital Savalou,non_evalue,0,clinique
+2016Q3,2016-07-01,Hopital Savalou,decede,0,clinique
+2016Q3,2016-07-01,Hopital Savalou,perdu,0,clinique
+2016Q3,2016-07-01,Hopital Savalou,termine,0,clinique
+2017Q1,2017-01-01,Hopital Savalou,non_evalue,0,clinique
+2017Q1,2017-01-01,Hopital Savalou,decede,0,clinique
+2017Q1,2017-01-01,Hopital Savalou,perdu,0,clinique
+2017Q1,2017-01-01,Hopital Savalou,termine,1,clinique
+2017Q4,2017-10-01,Hopital Savalou,non_evalue,0,clinique
+2017Q4,2017-10-01,Hopital Savalou,decede,0,clinique
+2017Q4,2017-10-01,Hopital Savalou,perdu,0,clinique
+2017Q4,2017-10-01,Hopital Savalou,termine,1,clinique
+2017Q2,2017-04-01,Hopital Savalou,non_evalue,0,clinique
+2017Q2,2017-04-01,Hopital Savalou,decede,0,clinique
+2017Q2,2017-04-01,Hopital Savalou,perdu,0,clinique
+2017Q2,2017-04-01,Hopital Savalou,termine,0,clinique
+2017Q3,2017-07-01,Hopital Savalou,non_evalue,0,clinique
+2017Q3,2017-07-01,Hopital Savalou,decede,0,clinique
+2017Q3,2017-07-01,Hopital Savalou,perdu,0,clinique
+2017Q3,2017-07-01,Hopital Savalou,termine,3,clinique
+2015Q4,2015-10-01,CHPP Akron,echec,1,bacteriologique
+2015Q4,2015-10-01,CHPP Akron,non_evalue,0,bacteriologique
+2015Q4,2015-10-01,CHPP Akron,decede,9,bacteriologique
+2015Q4,2015-10-01,CHPP Akron,perdu,0,bacteriologique
+2015Q4,2015-10-01,CHPP Akron,termine,1,bacteriologique
+2015Q4,2015-10-01,CHPP Akron,gueri,49,bacteriologique
+2015Q3,2015-07-01,CHPP Akron,echec,1,bacteriologique
+2015Q3,2015-07-01,CHPP Akron,non_evalue,0,bacteriologique
+2015Q3,2015-07-01,CHPP Akron,decede,8,bacteriologique
+2015Q3,2015-07-01,CHPP Akron,perdu,0,bacteriologique
+2015Q3,2015-07-01,CHPP Akron,termine,0,bacteriologique
+2015Q3,2015-07-01,CHPP Akron,gueri,53,bacteriologique
+2016Q1,2016-01-01,CHPP Akron,echec,2,bacteriologique
+2016Q1,2016-01-01,CHPP Akron,non_evalue,1,bacteriologique
+2016Q1,2016-01-01,CHPP Akron,decede,5,bacteriologique
+2016Q1,2016-01-01,CHPP Akron,perdu,0,bacteriologique
+2016Q1,2016-01-01,CHPP Akron,termine,0,bacteriologique
+2016Q1,2016-01-01,CHPP Akron,gueri,73,bacteriologique
+2015Q2,2015-04-01,CHPP Akron,echec,0,bacteriologique
+2015Q2,2015-04-01,CHPP Akron,non_evalue,1,bacteriologique
+2015Q2,2015-04-01,CHPP Akron,decede,2,bacteriologique
+2015Q2,2015-04-01,CHPP Akron,perdu,0,bacteriologique
+2015Q2,2015-04-01,CHPP Akron,termine,0,bacteriologique
+2015Q2,2015-04-01,CHPP Akron,gueri,62,bacteriologique
+2015Q1,2015-01-01,CHPP Akron,echec,0,bacteriologique
+2015Q1,2015-01-01,CHPP Akron,non_evalue,0,bacteriologique
+2015Q1,2015-01-01,CHPP Akron,decede,0,bacteriologique
+2015Q1,2015-01-01,CHPP Akron,perdu,0,bacteriologique
+2015Q1,2015-01-01,CHPP Akron,termine,1,bacteriologique
+2015Q1,2015-01-01,CHPP Akron,gueri,59,bacteriologique
+2016Q4,2016-10-01,CHPP Akron,echec,0,bacteriologique
+2016Q4,2016-10-01,CHPP Akron,non_evalue,0,bacteriologique
+2016Q4,2016-10-01,CHPP Akron,decede,4,bacteriologique
+2016Q4,2016-10-01,CHPP Akron,perdu,0,bacteriologique
+2016Q4,2016-10-01,CHPP Akron,termine,1,bacteriologique
+2016Q4,2016-10-01,CHPP Akron,gueri,54,bacteriologique
+2016Q2,2016-04-01,CHPP Akron,echec,2,bacteriologique
+2016Q2,2016-04-01,CHPP Akron,non_evalue,0,bacteriologique
+2016Q2,2016-04-01,CHPP Akron,decede,6,bacteriologique
+2016Q2,2016-04-01,CHPP Akron,perdu,0,bacteriologique
+2016Q2,2016-04-01,CHPP Akron,termine,2,bacteriologique
+2016Q2,2016-04-01,CHPP Akron,gueri,60,bacteriologique
+2016Q3,2016-07-01,CHPP Akron,echec,2,bacteriologique
+2016Q3,2016-07-01,CHPP Akron,non_evalue,0,bacteriologique
+2016Q3,2016-07-01,CHPP Akron,decede,3,bacteriologique
+2016Q3,2016-07-01,CHPP Akron,perdu,0,bacteriologique
+2016Q3,2016-07-01,CHPP Akron,termine,3,bacteriologique
+2016Q3,2016-07-01,CHPP Akron,gueri,46,bacteriologique
+2017Q1,2017-01-01,CHPP Akron,echec,0,bacteriologique
+2017Q1,2017-01-01,CHPP Akron,non_evalue,0,bacteriologique
+2017Q1,2017-01-01,CHPP Akron,decede,3,bacteriologique
+2017Q1,2017-01-01,CHPP Akron,perdu,0,bacteriologique
+2017Q1,2017-01-01,CHPP Akron,termine,6,bacteriologique
+2017Q1,2017-01-01,CHPP Akron,gueri,37,bacteriologique
+2017Q4,2017-10-01,CHPP Akron,echec,0,bacteriologique
+2017Q4,2017-10-01,CHPP Akron,non_evalue,0,bacteriologique
+2017Q4,2017-10-01,CHPP Akron,decede,5,bacteriologique
+2017Q4,2017-10-01,CHPP Akron,perdu,1,bacteriologique
+2017Q4,2017-10-01,CHPP Akron,termine,2,bacteriologique
+2017Q4,2017-10-01,CHPP Akron,gueri,52,bacteriologique
+2017Q2,2017-04-01,CHPP Akron,echec,0,bacteriologique
+2017Q2,2017-04-01,CHPP Akron,non_evalue,0,bacteriologique
+2017Q2,2017-04-01,CHPP Akron,decede,0,bacteriologique
+2017Q2,2017-04-01,CHPP Akron,perdu,0,bacteriologique
+2017Q2,2017-04-01,CHPP Akron,termine,0,bacteriologique
+2017Q2,2017-04-01,CHPP Akron,gueri,36,bacteriologique
+2017Q3,2017-07-01,CHPP Akron,echec,0,bacteriologique
+2017Q3,2017-07-01,CHPP Akron,non_evalue,0,bacteriologique
+2017Q3,2017-07-01,CHPP Akron,decede,5,bacteriologique
+2017Q3,2017-07-01,CHPP Akron,perdu,0,bacteriologique
+2017Q3,2017-07-01,CHPP Akron,termine,1,bacteriologique
+2017Q3,2017-07-01,CHPP Akron,gueri,36,bacteriologique
+2015Q4,2015-10-01,CHPP Akron,non_evalue,0,clinique
+2015Q4,2015-10-01,CHPP Akron,decede,3,clinique
+2015Q4,2015-10-01,CHPP Akron,perdu,0,clinique
+2015Q4,2015-10-01,CHPP Akron,termine,12,clinique
+2015Q3,2015-07-01,CHPP Akron,non_evalue,0,clinique
+2015Q3,2015-07-01,CHPP Akron,decede,0,clinique
+2015Q3,2015-07-01,CHPP Akron,perdu,0,clinique
+2015Q3,2015-07-01,CHPP Akron,termine,9,clinique
+2016Q1,2016-01-01,CHPP Akron,non_evalue,0,clinique
+2016Q1,2016-01-01,CHPP Akron,decede,0,clinique
+2016Q1,2016-01-01,CHPP Akron,perdu,0,clinique
+2016Q1,2016-01-01,CHPP Akron,termine,15,clinique
+2015Q2,2015-04-01,CHPP Akron,non_evalue,0,clinique
+2015Q2,2015-04-01,CHPP Akron,decede,0,clinique
+2015Q2,2015-04-01,CHPP Akron,perdu,0,clinique
+2015Q2,2015-04-01,CHPP Akron,termine,14,clinique
+2015Q1,2015-01-01,CHPP Akron,non_evalue,0,clinique
+2015Q1,2015-01-01,CHPP Akron,decede,1,clinique
+2015Q1,2015-01-01,CHPP Akron,perdu,0,clinique
+2015Q1,2015-01-01,CHPP Akron,termine,11,clinique
+2016Q4,2016-10-01,CHPP Akron,non_evalue,0,clinique
+2016Q4,2016-10-01,CHPP Akron,decede,0,clinique
+2016Q4,2016-10-01,CHPP Akron,perdu,0,clinique
+2016Q4,2016-10-01,CHPP Akron,termine,14,clinique
+2016Q2,2016-04-01,CHPP Akron,non_evalue,0,clinique
+2016Q2,2016-04-01,CHPP Akron,decede,0,clinique
+2016Q2,2016-04-01,CHPP Akron,perdu,0,clinique
+2016Q2,2016-04-01,CHPP Akron,termine,16,clinique
+2016Q3,2016-07-01,CHPP Akron,non_evalue,0,clinique
+2016Q3,2016-07-01,CHPP Akron,decede,0,clinique
+2016Q3,2016-07-01,CHPP Akron,perdu,0,clinique
+2016Q3,2016-07-01,CHPP Akron,termine,16,clinique
+2017Q1,2017-01-01,CHPP Akron,non_evalue,0,clinique
+2017Q1,2017-01-01,CHPP Akron,decede,0,clinique
+2017Q1,2017-01-01,CHPP Akron,perdu,0,clinique
+2017Q1,2017-01-01,CHPP Akron,termine,11,clinique
+2017Q4,2017-10-01,CHPP Akron,non_evalue,0,clinique
+2017Q4,2017-10-01,CHPP Akron,decede,2,clinique
+2017Q4,2017-10-01,CHPP Akron,perdu,2,clinique
+2017Q4,2017-10-01,CHPP Akron,termine,20,clinique
+2017Q2,2017-04-01,CHPP Akron,non_evalue,0,clinique
+2017Q2,2017-04-01,CHPP Akron,decede,0,clinique
+2017Q2,2017-04-01,CHPP Akron,perdu,0,clinique
+2017Q2,2017-04-01,CHPP Akron,termine,14,clinique
+2017Q3,2017-07-01,CHPP Akron,non_evalue,0,clinique
+2017Q3,2017-07-01,CHPP Akron,decede,0,clinique
+2017Q3,2017-07-01,CHPP Akron,perdu,0,clinique
+2017Q3,2017-07-01,CHPP Akron,termine,20,clinique
+2015Q4,2015-10-01,CS Abomey-Calavi,echec,2,bacteriologique
+2015Q4,2015-10-01,CS Abomey-Calavi,non_evalue,0,bacteriologique
+2015Q4,2015-10-01,CS Abomey-Calavi,decede,4,bacteriologique
+2015Q4,2015-10-01,CS Abomey-Calavi,perdu,2,bacteriologique
+2015Q4,2015-10-01,CS Abomey-Calavi,termine,1,bacteriologique
+2015Q4,2015-10-01,CS Abomey-Calavi,gueri,40,bacteriologique
+2015Q3,2015-07-01,CS Abomey-Calavi,echec,1,bacteriologique
+2015Q3,2015-07-01,CS Abomey-Calavi,non_evalue,0,bacteriologique
+2015Q3,2015-07-01,CS Abomey-Calavi,decede,5,bacteriologique
+2015Q3,2015-07-01,CS Abomey-Calavi,perdu,2,bacteriologique
+2015Q3,2015-07-01,CS Abomey-Calavi,termine,3,bacteriologique
+2015Q3,2015-07-01,CS Abomey-Calavi,gueri,43,bacteriologique
+2016Q1,2016-01-01,CS Abomey-Calavi,echec,0,bacteriologique
+2016Q1,2016-01-01,CS Abomey-Calavi,non_evalue,0,bacteriologique
+2016Q1,2016-01-01,CS Abomey-Calavi,decede,3,bacteriologique
+2016Q1,2016-01-01,CS Abomey-Calavi,perdu,0,bacteriologique
+2016Q1,2016-01-01,CS Abomey-Calavi,termine,2,bacteriologique
+2016Q1,2016-01-01,CS Abomey-Calavi,gueri,61,bacteriologique
+2015Q2,2015-04-01,CS Abomey-Calavi,echec,0,bacteriologique
+2015Q2,2015-04-01,CS Abomey-Calavi,non_evalue,0,bacteriologique
+2015Q2,2015-04-01,CS Abomey-Calavi,decede,5,bacteriologique
+2015Q2,2015-04-01,CS Abomey-Calavi,perdu,1,bacteriologique
+2015Q2,2015-04-01,CS Abomey-Calavi,termine,2,bacteriologique
+2015Q2,2015-04-01,CS Abomey-Calavi,gueri,48,bacteriologique
+2015Q1,2015-01-01,CS Abomey-Calavi,echec,0,bacteriologique
+2015Q1,2015-01-01,CS Abomey-Calavi,non_evalue,0,bacteriologique
+2015Q1,2015-01-01,CS Abomey-Calavi,decede,1,bacteriologique
+2015Q1,2015-01-01,CS Abomey-Calavi,perdu,2,bacteriologique
+2015Q1,2015-01-01,CS Abomey-Calavi,termine,1,bacteriologique
+2015Q1,2015-01-01,CS Abomey-Calavi,gueri,42,bacteriologique
+2016Q4,2016-10-01,CS Abomey-Calavi,echec,0,bacteriologique
+2016Q4,2016-10-01,CS Abomey-Calavi,non_evalue,1,bacteriologique
+2016Q4,2016-10-01,CS Abomey-Calavi,decede,0,bacteriologique
+2016Q4,2016-10-01,CS Abomey-Calavi,perdu,10,bacteriologique
+2016Q4,2016-10-01,CS Abomey-Calavi,termine,11,bacteriologique
+2016Q4,2016-10-01,CS Abomey-Calavi,gueri,35,bacteriologique
+2016Q2,2016-04-01,CS Abomey-Calavi,echec,0,bacteriologique
+2016Q2,2016-04-01,CS Abomey-Calavi,non_evalue,1,bacteriologique
+2016Q2,2016-04-01,CS Abomey-Calavi,decede,1,bacteriologique
+2016Q2,2016-04-01,CS Abomey-Calavi,perdu,0,bacteriologique
+2016Q2,2016-04-01,CS Abomey-Calavi,termine,0,bacteriologique
+2016Q2,2016-04-01,CS Abomey-Calavi,gueri,48,bacteriologique
+2016Q3,2016-07-01,CS Abomey-Calavi,echec,3,bacteriologique
+2016Q3,2016-07-01,CS Abomey-Calavi,non_evalue,0,bacteriologique
+2016Q3,2016-07-01,CS Abomey-Calavi,decede,3,bacteriologique
+2016Q3,2016-07-01,CS Abomey-Calavi,perdu,1,bacteriologique
+2016Q3,2016-07-01,CS Abomey-Calavi,termine,4,bacteriologique
+2016Q3,2016-07-01,CS Abomey-Calavi,gueri,54,bacteriologique
+2017Q1,2017-01-01,CS Abomey-Calavi,echec,0,bacteriologique
+2017Q1,2017-01-01,CS Abomey-Calavi,non_evalue,0,bacteriologique
+2017Q1,2017-01-01,CS Abomey-Calavi,decede,4,bacteriologique
+2017Q1,2017-01-01,CS Abomey-Calavi,perdu,6,bacteriologique
+2017Q1,2017-01-01,CS Abomey-Calavi,termine,14,bacteriologique
+2017Q1,2017-01-01,CS Abomey-Calavi,gueri,36,bacteriologique
+2017Q4,2017-10-01,CS Abomey-Calavi,echec,2,bacteriologique
+2017Q4,2017-10-01,CS Abomey-Calavi,non_evalue,2,bacteriologique
+2017Q4,2017-10-01,CS Abomey-Calavi,decede,6,bacteriologique
+2017Q4,2017-10-01,CS Abomey-Calavi,perdu,4,bacteriologique
+2017Q4,2017-10-01,CS Abomey-Calavi,termine,7,bacteriologique
+2017Q4,2017-10-01,CS Abomey-Calavi,gueri,35,bacteriologique
+2017Q2,2017-04-01,CS Abomey-Calavi,echec,1,bacteriologique
+2017Q2,2017-04-01,CS Abomey-Calavi,non_evalue,1,bacteriologique
+2017Q2,2017-04-01,CS Abomey-Calavi,decede,3,bacteriologique
+2017Q2,2017-04-01,CS Abomey-Calavi,perdu,5,bacteriologique
+2017Q2,2017-04-01,CS Abomey-Calavi,termine,10,bacteriologique
+2017Q2,2017-04-01,CS Abomey-Calavi,gueri,45,bacteriologique
+2017Q3,2017-07-01,CS Abomey-Calavi,echec,2,bacteriologique
+2017Q3,2017-07-01,CS Abomey-Calavi,non_evalue,0,bacteriologique
+2017Q3,2017-07-01,CS Abomey-Calavi,decede,1,bacteriologique
+2017Q3,2017-07-01,CS Abomey-Calavi,perdu,7,bacteriologique
+2017Q3,2017-07-01,CS Abomey-Calavi,termine,8,bacteriologique
+2017Q3,2017-07-01,CS Abomey-Calavi,gueri,29,bacteriologique
+2015Q4,2015-10-01,CS Abomey-Calavi,non_evalue,0,clinique
+2015Q4,2015-10-01,CS Abomey-Calavi,decede,1,clinique
+2015Q4,2015-10-01,CS Abomey-Calavi,perdu,0,clinique
+2015Q4,2015-10-01,CS Abomey-Calavi,termine,9,clinique
+2015Q3,2015-07-01,CS Abomey-Calavi,non_evalue,0,clinique
+2015Q3,2015-07-01,CS Abomey-Calavi,decede,1,clinique
+2015Q3,2015-07-01,CS Abomey-Calavi,perdu,0,clinique
+2015Q3,2015-07-01,CS Abomey-Calavi,termine,4,clinique
+2016Q1,2016-01-01,CS Abomey-Calavi,non_evalue,0,clinique
+2016Q1,2016-01-01,CS Abomey-Calavi,decede,0,clinique
+2016Q1,2016-01-01,CS Abomey-Calavi,perdu,0,clinique
+2016Q1,2016-01-01,CS Abomey-Calavi,termine,11,clinique
+2015Q2,2015-04-01,CS Abomey-Calavi,non_evalue,0,clinique
+2015Q2,2015-04-01,CS Abomey-Calavi,decede,0,clinique
+2015Q2,2015-04-01,CS Abomey-Calavi,perdu,0,clinique
+2015Q2,2015-04-01,CS Abomey-Calavi,termine,4,clinique
+2015Q1,2015-01-01,CS Abomey-Calavi,non_evalue,0,clinique
+2015Q1,2015-01-01,CS Abomey-Calavi,decede,0,clinique
+2015Q1,2015-01-01,CS Abomey-Calavi,perdu,1,clinique
+2015Q1,2015-01-01,CS Abomey-Calavi,termine,7,clinique
+2016Q4,2016-10-01,CS Abomey-Calavi,non_evalue,0,clinique
+2016Q4,2016-10-01,CS Abomey-Calavi,decede,0,clinique
+2016Q4,2016-10-01,CS Abomey-Calavi,perdu,10,clinique
+2016Q4,2016-10-01,CS Abomey-Calavi,termine,1,clinique
+2016Q2,2016-04-01,CS Abomey-Calavi,non_evalue,0,clinique
+2016Q2,2016-04-01,CS Abomey-Calavi,decede,1,clinique
+2016Q2,2016-04-01,CS Abomey-Calavi,perdu,0,clinique
+2016Q2,2016-04-01,CS Abomey-Calavi,termine,14,clinique
+2016Q3,2016-07-01,CS Abomey-Calavi,non_evalue,0,clinique
+2016Q3,2016-07-01,CS Abomey-Calavi,decede,0,clinique
+2016Q3,2016-07-01,CS Abomey-Calavi,perdu,0,clinique
+2016Q3,2016-07-01,CS Abomey-Calavi,termine,14,clinique
+2017Q1,2017-01-01,CS Abomey-Calavi,non_evalue,0,clinique
+2017Q1,2017-01-01,CS Abomey-Calavi,decede,0,clinique
+2017Q1,2017-01-01,CS Abomey-Calavi,perdu,9,clinique
+2017Q1,2017-01-01,CS Abomey-Calavi,termine,1,clinique
+2017Q4,2017-10-01,CS Abomey-Calavi,non_evalue,0,clinique
+2017Q4,2017-10-01,CS Abomey-Calavi,decede,1,clinique
+2017Q4,2017-10-01,CS Abomey-Calavi,perdu,0,clinique
+2017Q4,2017-10-01,CS Abomey-Calavi,termine,6,clinique
+2017Q2,2017-04-01,CS Abomey-Calavi,non_evalue,0,clinique
+2017Q2,2017-04-01,CS Abomey-Calavi,decede,4,clinique
+2017Q2,2017-04-01,CS Abomey-Calavi,perdu,1,clinique
+2017Q2,2017-04-01,CS Abomey-Calavi,termine,11,clinique
+2017Q3,2017-07-01,CS Abomey-Calavi,non_evalue,0,clinique
+2017Q3,2017-07-01,CS Abomey-Calavi,decede,3,clinique
+2017Q3,2017-07-01,CS Abomey-Calavi,perdu,1,clinique
+2017Q3,2017-07-01,CS Abomey-Calavi,termine,5,clinique
+2015Q4,2015-10-01,Hopital Bethesda,echec,1,bacteriologique
+2015Q4,2015-10-01,Hopital Bethesda,non_evalue,0,bacteriologique
+2015Q4,2015-10-01,Hopital Bethesda,decede,0,bacteriologique
+2015Q4,2015-10-01,Hopital Bethesda,perdu,0,bacteriologique
+2015Q4,2015-10-01,Hopital Bethesda,termine,0,bacteriologique
+2015Q4,2015-10-01,Hopital Bethesda,gueri,11,bacteriologique
+2015Q3,2015-07-01,Hopital Bethesda,echec,0,bacteriologique
+2015Q3,2015-07-01,Hopital Bethesda,non_evalue,2,bacteriologique
+2015Q3,2015-07-01,Hopital Bethesda,decede,0,bacteriologique
+2015Q3,2015-07-01,Hopital Bethesda,perdu,0,bacteriologique
+2015Q3,2015-07-01,Hopital Bethesda,termine,0,bacteriologique
+2015Q3,2015-07-01,Hopital Bethesda,gueri,5,bacteriologique
+2016Q1,2016-01-01,Hopital Bethesda,echec,1,bacteriologique
+2016Q1,2016-01-01,Hopital Bethesda,non_evalue,0,bacteriologique
+2016Q1,2016-01-01,Hopital Bethesda,decede,1,bacteriologique
+2016Q1,2016-01-01,Hopital Bethesda,perdu,2,bacteriologique
+2016Q1,2016-01-01,Hopital Bethesda,termine,0,bacteriologique
+2016Q1,2016-01-01,Hopital Bethesda,gueri,14,bacteriologique
+2015Q2,2015-04-01,Hopital Bethesda,echec,1,bacteriologique
+2015Q2,2015-04-01,Hopital Bethesda,non_evalue,0,bacteriologique
+2015Q2,2015-04-01,Hopital Bethesda,decede,0,bacteriologique
+2015Q2,2015-04-01,Hopital Bethesda,perdu,0,bacteriologique
+2015Q2,2015-04-01,Hopital Bethesda,termine,0,bacteriologique
+2015Q2,2015-04-01,Hopital Bethesda,gueri,16,bacteriologique
+2015Q1,2015-01-01,Hopital Bethesda,echec,0,bacteriologique
+2015Q1,2015-01-01,Hopital Bethesda,non_evalue,0,bacteriologique
+2015Q1,2015-01-01,Hopital Bethesda,decede,2,bacteriologique
+2015Q1,2015-01-01,Hopital Bethesda,perdu,0,bacteriologique
+2015Q1,2015-01-01,Hopital Bethesda,termine,0,bacteriologique
+2015Q1,2015-01-01,Hopital Bethesda,gueri,9,bacteriologique
+2016Q4,2016-10-01,Hopital Bethesda,echec,1,bacteriologique
+2016Q4,2016-10-01,Hopital Bethesda,non_evalue,0,bacteriologique
+2016Q4,2016-10-01,Hopital Bethesda,decede,3,bacteriologique
+2016Q4,2016-10-01,Hopital Bethesda,perdu,1,bacteriologique
+2016Q4,2016-10-01,Hopital Bethesda,termine,0,bacteriologique
+2016Q4,2016-10-01,Hopital Bethesda,gueri,12,bacteriologique
+2016Q3,2016-07-01,Hopital Bethesda,echec,1,bacteriologique
+2016Q3,2016-07-01,Hopital Bethesda,non_evalue,0,bacteriologique
+2016Q3,2016-07-01,Hopital Bethesda,decede,1,bacteriologique
+2016Q3,2016-07-01,Hopital Bethesda,perdu,1,bacteriologique
+2016Q3,2016-07-01,Hopital Bethesda,termine,0,bacteriologique
+2016Q3,2016-07-01,Hopital Bethesda,gueri,8,bacteriologique
+2017Q1,2017-01-01,Hopital Bethesda,echec,0,bacteriologique
+2017Q1,2017-01-01,Hopital Bethesda,non_evalue,1,bacteriologique
+2017Q1,2017-01-01,Hopital Bethesda,decede,0,bacteriologique
+2017Q1,2017-01-01,Hopital Bethesda,perdu,1,bacteriologique
+2017Q1,2017-01-01,Hopital Bethesda,termine,1,bacteriologique
+2017Q1,2017-01-01,Hopital Bethesda,gueri,9,bacteriologique
+2017Q4,2017-10-01,Hopital Bethesda,echec,0,bacteriologique
+2017Q4,2017-10-01,Hopital Bethesda,non_evalue,0,bacteriologique
+2017Q4,2017-10-01,Hopital Bethesda,decede,1,bacteriologique
+2017Q4,2017-10-01,Hopital Bethesda,perdu,0,bacteriologique
+2017Q4,2017-10-01,Hopital Bethesda,termine,1,bacteriologique
+2017Q4,2017-10-01,Hopital Bethesda,gueri,9,bacteriologique
+2017Q2,2017-04-01,Hopital Bethesda,echec,0,bacteriologique
+2017Q2,2017-04-01,Hopital Bethesda,non_evalue,0,bacteriologique
+2017Q2,2017-04-01,Hopital Bethesda,decede,1,bacteriologique
+2017Q2,2017-04-01,Hopital Bethesda,perdu,0,bacteriologique
+2017Q2,2017-04-01,Hopital Bethesda,termine,1,bacteriologique
+2017Q2,2017-04-01,Hopital Bethesda,gueri,12,bacteriologique
+2017Q3,2017-07-01,Hopital Bethesda,echec,0,bacteriologique
+2017Q3,2017-07-01,Hopital Bethesda,non_evalue,0,bacteriologique
+2017Q3,2017-07-01,Hopital Bethesda,decede,0,bacteriologique
+2017Q3,2017-07-01,Hopital Bethesda,perdu,2,bacteriologique
+2017Q3,2017-07-01,Hopital Bethesda,termine,0,bacteriologique
+2017Q3,2017-07-01,Hopital Bethesda,gueri,7,bacteriologique
+2015Q4,2015-10-01,Hopital Bethesda,non_evalue,0,clinique
+2015Q4,2015-10-01,Hopital Bethesda,decede,0,clinique
+2015Q4,2015-10-01,Hopital Bethesda,perdu,0,clinique
+2015Q4,2015-10-01,Hopital Bethesda,termine,8,clinique
+2015Q3,2015-07-01,Hopital Bethesda,non_evalue,0,clinique
+2015Q3,2015-07-01,Hopital Bethesda,decede,0,clinique
+2015Q3,2015-07-01,Hopital Bethesda,perdu,0,clinique
+2015Q3,2015-07-01,Hopital Bethesda,termine,14,clinique
+2016Q1,2016-01-01,Hopital Bethesda,non_evalue,0,clinique
+2016Q1,2016-01-01,Hopital Bethesda,decede,0,clinique
+2016Q1,2016-01-01,Hopital Bethesda,perdu,0,clinique
+2016Q1,2016-01-01,Hopital Bethesda,termine,29,clinique
+2015Q2,2015-04-01,Hopital Bethesda,non_evalue,0,clinique
+2015Q2,2015-04-01,Hopital Bethesda,decede,1,clinique
+2015Q2,2015-04-01,Hopital Bethesda,perdu,0,clinique
+2015Q2,2015-04-01,Hopital Bethesda,termine,13,clinique
+2015Q1,2015-01-01,Hopital Bethesda,non_evalue,0,clinique
+2015Q1,2015-01-01,Hopital Bethesda,decede,0,clinique
+2015Q1,2015-01-01,Hopital Bethesda,perdu,0,clinique
+2015Q1,2015-01-01,Hopital Bethesda,termine,14,clinique
+2016Q4,2016-10-01,Hopital Bethesda,non_evalue,0,clinique
+2016Q4,2016-10-01,Hopital Bethesda,decede,0,clinique
+2016Q4,2016-10-01,Hopital Bethesda,perdu,0,clinique
+2016Q4,2016-10-01,Hopital Bethesda,termine,12,clinique
+2016Q3,2016-07-01,Hopital Bethesda,non_evalue,0,clinique
+2016Q3,2016-07-01,Hopital Bethesda,decede,0,clinique
+2016Q3,2016-07-01,Hopital Bethesda,perdu,0,clinique
+2016Q3,2016-07-01,Hopital Bethesda,termine,4,clinique
+2017Q1,2017-01-01,Hopital Bethesda,non_evalue,0,clinique
+2017Q1,2017-01-01,Hopital Bethesda,decede,0,clinique
+2017Q1,2017-01-01,Hopital Bethesda,perdu,0,clinique
+2017Q1,2017-01-01,Hopital Bethesda,termine,7,clinique
+2017Q4,2017-10-01,Hopital Bethesda,non_evalue,0,clinique
+2017Q4,2017-10-01,Hopital Bethesda,decede,0,clinique
+2017Q4,2017-10-01,Hopital Bethesda,perdu,0,clinique
+2017Q4,2017-10-01,Hopital Bethesda,termine,4,clinique
+2017Q2,2017-04-01,Hopital Bethesda,non_evalue,1,clinique
+2017Q2,2017-04-01,Hopital Bethesda,decede,0,clinique
+2017Q2,2017-04-01,Hopital Bethesda,perdu,0,clinique
+2017Q2,2017-04-01,Hopital Bethesda,termine,6,clinique
+2017Q3,2017-07-01,Hopital Bethesda,non_evalue,0,clinique
+2017Q3,2017-07-01,Hopital Bethesda,decede,0,clinique
+2017Q3,2017-07-01,Hopital Bethesda,perdu,0,clinique
+2017Q3,2017-07-01,Hopital Bethesda,termine,4,clinique
+2015Q4,2015-10-01,Hopital St Luc,echec,0,bacteriologique
+2015Q4,2015-10-01,Hopital St Luc,non_evalue,0,bacteriologique
+2015Q4,2015-10-01,Hopital St Luc,decede,1,bacteriologique
+2015Q4,2015-10-01,Hopital St Luc,perdu,0,bacteriologique
+2015Q4,2015-10-01,Hopital St Luc,termine,2,bacteriologique
+2015Q4,2015-10-01,Hopital St Luc,gueri,7,bacteriologique
+2015Q3,2015-07-01,Hopital St Luc,echec,0,bacteriologique
+2015Q3,2015-07-01,Hopital St Luc,non_evalue,0,bacteriologique
+2015Q3,2015-07-01,Hopital St Luc,decede,0,bacteriologique
+2015Q3,2015-07-01,Hopital St Luc,perdu,1,bacteriologique
+2015Q3,2015-07-01,Hopital St Luc,termine,2,bacteriologique
+2015Q3,2015-07-01,Hopital St Luc,gueri,4,bacteriologique
+2016Q1,2016-01-01,Hopital St Luc,echec,0,bacteriologique
+2016Q1,2016-01-01,Hopital St Luc,non_evalue,0,bacteriologique
+2016Q1,2016-01-01,Hopital St Luc,decede,0,bacteriologique
+2016Q1,2016-01-01,Hopital St Luc,perdu,2,bacteriologique
+2016Q1,2016-01-01,Hopital St Luc,termine,0,bacteriologique
+2016Q1,2016-01-01,Hopital St Luc,gueri,15,bacteriologique
+2015Q2,2015-04-01,Hopital St Luc,echec,0,bacteriologique
+2015Q2,2015-04-01,Hopital St Luc,non_evalue,0,bacteriologique
+2015Q2,2015-04-01,Hopital St Luc,decede,0,bacteriologique
+2015Q2,2015-04-01,Hopital St Luc,perdu,0,bacteriologique
+2015Q2,2015-04-01,Hopital St Luc,termine,1,bacteriologique
+2015Q2,2015-04-01,Hopital St Luc,gueri,10,bacteriologique
+2015Q1,2015-01-01,Hopital St Luc,echec,0,bacteriologique
+2015Q1,2015-01-01,Hopital St Luc,non_evalue,1,bacteriologique
+2015Q1,2015-01-01,Hopital St Luc,decede,0,bacteriologique
+2015Q1,2015-01-01,Hopital St Luc,perdu,2,bacteriologique
+2015Q1,2015-01-01,Hopital St Luc,termine,0,bacteriologique
+2015Q1,2015-01-01,Hopital St Luc,gueri,9,bacteriologique
+2016Q4,2016-10-01,Hopital St Luc,echec,0,bacteriologique
+2016Q4,2016-10-01,Hopital St Luc,non_evalue,0,bacteriologique
+2016Q4,2016-10-01,Hopital St Luc,decede,0,bacteriologique
+2016Q4,2016-10-01,Hopital St Luc,perdu,4,bacteriologique
+2016Q4,2016-10-01,Hopital St Luc,termine,1,bacteriologique
+2016Q4,2016-10-01,Hopital St Luc,gueri,12,bacteriologique
+2016Q2,2016-04-01,Hopital St Luc,echec,0,bacteriologique
+2016Q2,2016-04-01,Hopital St Luc,non_evalue,2,bacteriologique
+2016Q2,2016-04-01,Hopital St Luc,decede,0,bacteriologique
+2016Q2,2016-04-01,Hopital St Luc,perdu,2,bacteriologique
+2016Q2,2016-04-01,Hopital St Luc,termine,1,bacteriologique
+2016Q2,2016-04-01,Hopital St Luc,gueri,18,bacteriologique
+2016Q3,2016-07-01,Hopital St Luc,echec,0,bacteriologique
+2016Q3,2016-07-01,Hopital St Luc,non_evalue,0,bacteriologique
+2016Q3,2016-07-01,Hopital St Luc,decede,1,bacteriologique
+2016Q3,2016-07-01,Hopital St Luc,perdu,0,bacteriologique
+2016Q3,2016-07-01,Hopital St Luc,termine,1,bacteriologique
+2016Q3,2016-07-01,Hopital St Luc,gueri,10,bacteriologique
+2017Q1,2017-01-01,Hopital St Luc,echec,0,bacteriologique
+2017Q1,2017-01-01,Hopital St Luc,non_evalue,0,bacteriologique
+2017Q1,2017-01-01,Hopital St Luc,decede,1,bacteriologique
+2017Q1,2017-01-01,Hopital St Luc,perdu,2,bacteriologique
+2017Q1,2017-01-01,Hopital St Luc,termine,0,bacteriologique
+2017Q1,2017-01-01,Hopital St Luc,gueri,11,bacteriologique
+2017Q4,2017-10-01,Hopital St Luc,echec,0,bacteriologique
+2017Q4,2017-10-01,Hopital St Luc,non_evalue,0,bacteriologique
+2017Q4,2017-10-01,Hopital St Luc,decede,0,bacteriologique
+2017Q4,2017-10-01,Hopital St Luc,perdu,0,bacteriologique
+2017Q4,2017-10-01,Hopital St Luc,termine,2,bacteriologique
+2017Q4,2017-10-01,Hopital St Luc,gueri,4,bacteriologique
+2017Q2,2017-04-01,Hopital St Luc,echec,0,bacteriologique
+2017Q2,2017-04-01,Hopital St Luc,non_evalue,0,bacteriologique
+2017Q2,2017-04-01,Hopital St Luc,decede,0,bacteriologique
+2017Q2,2017-04-01,Hopital St Luc,perdu,1,bacteriologique
+2017Q2,2017-04-01,Hopital St Luc,termine,0,bacteriologique
+2017Q2,2017-04-01,Hopital St Luc,gueri,9,bacteriologique
+2017Q3,2017-07-01,Hopital St Luc,echec,0,bacteriologique
+2017Q3,2017-07-01,Hopital St Luc,non_evalue,0,bacteriologique
+2017Q3,2017-07-01,Hopital St Luc,decede,1,bacteriologique
+2017Q3,2017-07-01,Hopital St Luc,perdu,1,bacteriologique
+2017Q3,2017-07-01,Hopital St Luc,termine,0,bacteriologique
+2017Q3,2017-07-01,Hopital St Luc,gueri,8,bacteriologique
+2015Q4,2015-10-01,Hopital St Luc,non_evalue,0,clinique
+2015Q4,2015-10-01,Hopital St Luc,decede,0,clinique
+2015Q4,2015-10-01,Hopital St Luc,perdu,0,clinique
+2015Q4,2015-10-01,Hopital St Luc,termine,2,clinique
+2015Q3,2015-07-01,Hopital St Luc,non_evalue,0,clinique
+2015Q3,2015-07-01,Hopital St Luc,decede,0,clinique
+2015Q3,2015-07-01,Hopital St Luc,perdu,0,clinique
+2015Q3,2015-07-01,Hopital St Luc,termine,1,clinique
+2016Q1,2016-01-01,Hopital St Luc,non_evalue,0,clinique
+2016Q1,2016-01-01,Hopital St Luc,decede,0,clinique
+2016Q1,2016-01-01,Hopital St Luc,perdu,0,clinique
+2016Q1,2016-01-01,Hopital St Luc,termine,1,clinique
+2015Q2,2015-04-01,Hopital St Luc,non_evalue,0,clinique
+2015Q2,2015-04-01,Hopital St Luc,decede,0,clinique
+2015Q2,2015-04-01,Hopital St Luc,perdu,0,clinique
+2015Q2,2015-04-01,Hopital St Luc,termine,0,clinique
+2015Q1,2015-01-01,Hopital St Luc,non_evalue,0,clinique
+2015Q1,2015-01-01,Hopital St Luc,decede,0,clinique
+2015Q1,2015-01-01,Hopital St Luc,perdu,0,clinique
+2015Q1,2015-01-01,Hopital St Luc,termine,0,clinique
+2016Q4,2016-10-01,Hopital St Luc,non_evalue,0,clinique
+2016Q4,2016-10-01,Hopital St Luc,decede,0,clinique
+2016Q4,2016-10-01,Hopital St Luc,perdu,0,clinique
+2016Q4,2016-10-01,Hopital St Luc,termine,1,clinique
+2016Q2,2016-04-01,Hopital St Luc,non_evalue,0,clinique
+2016Q2,2016-04-01,Hopital St Luc,decede,1,clinique
+2016Q2,2016-04-01,Hopital St Luc,perdu,0,clinique
+2016Q2,2016-04-01,Hopital St Luc,termine,3,clinique
+2016Q3,2016-07-01,Hopital St Luc,non_evalue,0,clinique
+2016Q3,2016-07-01,Hopital St Luc,decede,1,clinique
+2016Q3,2016-07-01,Hopital St Luc,perdu,0,clinique
+2016Q3,2016-07-01,Hopital St Luc,termine,0,clinique
+2017Q1,2017-01-01,Hopital St Luc,non_evalue,0,clinique
+2017Q1,2017-01-01,Hopital St Luc,decede,1,clinique
+2017Q1,2017-01-01,Hopital St Luc,perdu,0,clinique
+2017Q1,2017-01-01,Hopital St Luc,termine,1,clinique
+2017Q4,2017-10-01,Hopital St Luc,non_evalue,0,clinique
+2017Q4,2017-10-01,Hopital St Luc,decede,0,clinique
+2017Q4,2017-10-01,Hopital St Luc,perdu,0,clinique
+2017Q4,2017-10-01,Hopital St Luc,termine,2,clinique
+2017Q2,2017-04-01,Hopital St Luc,non_evalue,0,clinique
+2017Q2,2017-04-01,Hopital St Luc,decede,0,clinique
+2017Q2,2017-04-01,Hopital St Luc,perdu,0,clinique
+2017Q2,2017-04-01,Hopital St Luc,termine,3,clinique
+2017Q3,2017-07-01,Hopital St Luc,non_evalue,0,clinique
+2017Q3,2017-07-01,Hopital St Luc,decede,1,clinique
+2017Q3,2017-07-01,Hopital St Luc,perdu,0,clinique
+2017Q3,2017-07-01,Hopital St Luc,termine,1,clinique
