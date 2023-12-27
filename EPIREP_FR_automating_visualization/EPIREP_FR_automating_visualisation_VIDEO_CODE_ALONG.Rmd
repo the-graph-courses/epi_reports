@@ -1,0 +1,1033 @@
+---
+title: '\ '
+output:
+  html_document:
+    number_sections: true
+    toc: true
+    toc_float: true
+    css: !expr here::here("global/style/style.css")
+    highlight: kate
+    pandoc_args: --shift-heading-level-by=-1
+  word_document:
+    toc: true
+editor_options:
+  markdown:
+    wrap: 100
+  canonical: true
+  chunk_output_type: inline
+---
+
+```{r, echo = F, message = F, warning = F}
+knitr::opts_chunk$set(class.source = "tgc-code-block")
+# Load packages 
+if(!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse, knitr, here, reactable)
+
+# Source functions 
+source(here::here("global/functions/lesson_functions.R"))
+
+# knitr settings
+knitr::opts_chunk$set(warning = F, message = F, class.source = "tgc-code-block", error = T)
+
+
+```
+
+# Automatisation de la visualisation de données
+
+## Introduction
+
+‣ Situations nécessitant des tâches de tracé répétitives
+
+‣ Exemple : Tracer le même indicateur d'épidémie pour plusieurs régions
+
+‣ Se concentrer sur l'automatisation des visualisations de données
+
+‣ Outils : `{ggplot2}` et `{purrr}` dans R
+
+‣ Approche programmatique avec `{ggplot2}` - Création de fonctions de tracé personnalisées - Rationalisation des tâches de graphique
+
+‣ Utilisation de `{purrr}` pour l'itération
+
+-   Gestion de différentes variables
+
+-   Génération et enregistrement de multiples graphiques en une seule étape
+
+‣ Avantages de l'automatisation des tracés pour les workflows d'analyse de données
+
+![](images/repetitive_plots_FR.png)
+
+## Objectifs d'apprentissage {.unlisted .unnumbered}
+
+1.  **Reconnaître les problèmes du filtrage et de la création de graphiques répétitifs** : Identifier quand la création de graphiques répétitive est nécessaire et créer un workflow impliquant la création de sous-ensemble de données, la création de graphiques, et l'enregistrement.
+
+2.  **Développer des fonctions pour créer des graphiques personnalisées**: Développer des fonctions personnalisées pour les tâches de création de graphiques répétitives, y compris le sous-ensemble de lignes et de variables. Apprendre à ajouter plusieurs entrées pour une personnalisation dynamique des graphiques.
+
+3.  **Itérer les tâches de création de graphiques**: Appliquer les fonctions de création de graphiques sur un vecteur de variables, avec l'aide de `purrr::map()`.
+
+4.  **Utiliser des boucles imbriquées pour automatiser la création de graphiques** : Utiliser `map()` à l'intérieur d'une boucle for pour itérer sur une combinaison de sous-ensembles et de variables de réponse. À la fin de cette leçon, vous maîtriserez l'automatisation des graphiques `{ggplot2}`, gainant du temps et améliorant la reproductibilité de vos récits basés sur les données.
+
+
+
+À la fin de cette leçon, vous aurez les compétences pour automatiser les graphiques `{ggplot2}`, ce qui va vous gagner du temps et améliorer la reproductibilité de vos récits basés sur les données.
+
+
+
+## Packages
+
+Dans cette leçon, nous utiliserons les packages suivants :
+
+-   `{tidyverse}`, méta-package
+
+    -   `{ggplot2}` pour créer des graphiques
+
+    -   `{purrr}` pour itérer les fonctions à travers un vecteur
+
+-   `{here}` pour les chemins de fichiers relatifs au projet
+
+-   `{glue}` pour la concaténation de chaînes et l'automatisation de l'annotation des graphiques
+
+```{r warning = F, message = F}
+# Chargement des packages
+pacman::p_load(tidyverse, here, glue)
+```
+
+
+
+------------------------------------------------------------------------
+
+## Introduction aux données : le VIH au Malawi
+
+‣ Vue d'ensemble du jeu de données
+
+-   Source : Ministère de la Santé du Malawi, Département du VIH et de l'hépatite virale
+
+-   Données pour décembre 2022
+
+-   Indicateurs sous-nationaux de l'épidémie du VIH
+
+
+
+‣ Méthode d'estimation
+
+-   Modèle d'estimation de petites zones : Naomi
+
+-   Estime les principales mesures
+
+-   Stratifié par unités administratives sous-nationales, sexe et groupes d'âge
+
+
+
+‣ Accès au jeu de données
+
+-   Lien vers le jeu de données original : [Estimations sous-nationales du VIH au Malawi selon le modèle Naomi 2023](https://dms.hiv.health.gov.mw/dataset/malawi-hiv-subnational-estimates-naomi-model-2023)
+
+Nous avons préparé un sous-ensemble de ces données à analyser dans cette leçon :
+
+```{r render = .reactable_10_rows, message = FALSE}
+# Importation des données depuis CSV
+vih_mwi_agesexe <- read_csv(here("data/clean/vih_mwi_agesexe.csv"))
+
+# Affichage du dataframe de données
+vih_mwi_agesexe
+```
+
+
+
+-   **Zone géographique** :
+    -   `niveau_zone` - unité administrative (pays, région ou district)
+    -   `nom_zone` - nom de la zone géographique
+
+
+
+-   **Informations démographiques**
+    -   `groupe_age` et `sexe`
+    -   **Indicateurs du VIH** : population totale, personnes vivant avec le VIH (PVVIH), prévalence du VIH, incidence, couverture du TAR, PVVIH connaissant leur statut.
+    -   `indicateur` - code court
+    -   `etiquette_indicateur` - nom complet
+
+
+
+-   **Mesures statistiques** : estimations du modèle avec incertitude probabiliste
+    -   `moyenne`, `limite_min`, `limite_max`
+
+::: key-point
+Le modèle Naomi synthétise des données de multiples sources pour fournir des estimations en petite zone des principaux indicateurs du VIH pour l'Afrique subsaharienne. Ces estimations sont essentielles à la planification des programmes du VIH, à l'allocation des ressources et à la définition des objectifs. Vous pouvez en savoir plus sur le modèle Naomi [ici](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8454682/).
+:::
+
+### Visualisation de la répartition par âge et sexe
+
+‣ Disparités liées à l'âge et au sexe dans la prévalence du VIH influencées par divers facteurs
+
+
+
+‣ Se concentrer sur la visualisation de la répartition par âge et sexe des indicateurs aux différents niveaux
+
+
+
+‣ Tâche initiale : Créer un diagramme en barres au niveau national de la prévalence du VIH en utilisant `ggplot()`
+
+```{r}
+# Graphique en barres de la répartition par âge et sexe
+vih_mwi_agesexe %>%
+  filter(niveau_zone == "Pays",
+         indicateur == "prevalence") %>%
+  ggplot(aes(x = groupe_age, 
+             y = moyenne, 
+             fill = sexe)) + 
+  geom_col(position = "dodge") +
+  theme_minimal() +
+  labs(title = "Estimations nationales de la prévalence du VIH, Malawi (déc. 2022)")
+```
+
+
+
+Oops! Il semble y avoir un problème avec l'ordre des groupes d'âge. Il est important de corriger cela car nous allons créer des graphiques regroupés par âge et sexe pour le reste de cette leçon.
+
+
+
+### Réorganisation de l'axe des x
+
+La variable **`groupe_age`** est un vecteur de type **caractère**, qui n'est pas intrinsèquement ordonné de la même manière qu'un **factor**.
+
+```{r}
+# Afficher les valeurs uniques de la variable groupe_age
+vih_mwi_agesexe %>% pull(__________) %>% unique()
+```
+
+‣ `{ggplot2}` ordonne les variables de type caractère "alphabétiquement", ce qui signifie que notre groupe d'âge "5-9" est placé dans le mauvais ordre
+
+‣ Nous devons convertir `groupe_age` en factor et spécifier l'ordre des niveaux avec **`forcats::fct_relevel()`**:
+
+```{r}
+# Créer un vecteur des valeurs de groupes d'âge ordonnées
+groupe_age_ordre <- vih_mwi_agesexe %>% pull(__________) %>% unique()
+
+# Réordonner les niveaux de groupe_age et sauver dans un nouveau dataframe
+vih_malawi <- vih_mwi_agesexe %>%
+  mutate(__________)
+```
+
+Nous sommes maintenant prêts à tracer les distributions d'âge avec notre nouveau dataframe **`vih_malawi`**. :::
+
+Essayons à nouveau le même code `ggplot()` avec `vih_malawi` :
+
+```{r}
+# Graphique avec groupes d'âge réordonnés  
+vih_malawi %>%
+  filter(niveau_zone == __________,
+         indicateur == __________) %>%
+  ggplot(aes(x = groupe_age,  
+             y = moyenne,
+             fill = sexe)) +
+  geom_col(position= "dodge") +
+  theme_minimal() + 
+  labs(title = "Estimations nationales de la prévalence du VIH, Malawi (déc. 2022)")
+```
+
+::: side-note
+**Enseignements sur la prévalence du VIH**
+
+‣ Disparité de genre dans la prévalence du VIH
+
+-   Commence à partir de 15 ans, lié au début de l'activité sexuelle
+
+-   Les femmes ont une prévalence plus élevée que les hommes dans la vingtaine à la quarantaine
+
+-   Raisons possibles : vulnérabilité biologique, dynamiques sociales
+
+-   Changement après 50 ans, les hommes ayant des taux plus élevés
+
+-   Influencé par des facteurs tels que les comportements sexuels, les taux de mortalité et l'accès aux traitements
+:::
+
+
+
+‣ Enquête plus approfondie : Examiner les tendances dans des zones plus localisées
+
+‣ Zones géographiques : Le jeu de données comprend des estimations pour 3 principales régions et 28 districts du Malawi
+
+‣ En premier : Analyser les trois régions comme premier niveau administratif - Nord, Centre, et Sud
+
+![](images/Malawi_district_map_2020.png)
+
+
+
+## Le défi de la création de graphiques répétitifs
+
+‣ Défi de visualisation de données
+
+-   Filtrage répétitif de sous-ensembles de données
+
+‣ Tâche : Créer un graphique pour la région « Nord »
+
+-   Adapter le code du tracé national
+
+-   Remplacer « Pays » par « Region »
+
+-   Ajouter le nom de la région au filtre
+
+```{r}
+# Exemple de filtrage et de tracé répétitifs - Région 1
+
+vih_malawi %>%
+  # Filtrer vers la région du Nord
+  filter(
+    niveau_zone == __________,
+    nom_zone == __________,
+    indicateur == __________
+  ) %>%
+  ggplot(aes(x = groupe_age,  
+             y = moyenne,
+             fill = sexe)) +
+  geom_col(position = "dodge") +
+  theme_minimal() +
+  # Changer le titre
+  labs(title = "Prévalence du VIH par âge et sexe dans la région du Nord au Malawi (déc. 2022)")
+```
+
+Maintenant répétons ceci pour les deux autres régions :
+
+```{r}
+# Exemple de filtrage et de création de graphique répétitifs - Région 2
+
+vih_malawi %>%
+  # Filtrer pour la région du Sud
+  filter(niveau_zone == "Region",
+         nom_zone == __________,  
+         indicateur == "prevalence") %>%
+
+  ggplot(aes(x = groupe_age,
+             y = moyenne,
+             fill = sexe)) +
+  geom_col(position = "dodge") +
+  theme_minimal() +
+  # Changer le titre  
+  labs(title = "Prévalence du VIH par âge et sexe dans la région du __________ au Malawi (déc. 2022)")
+
+# Exemple de filtrage et de création de graphique répétitifs - Région 3
+
+vih_malawi %>%
+  # Filtrer pour la région du Centre
+  filter(niveau_zone == "Region", 
+         nom_zone == __________,
+         indicateur == "prevalence") %>%
+
+  ggplot(aes(x = groupe_age,
+             y = moyenne,
+             fill = sexe)) + 
+  geom_col(position = "dodge") +
+  theme_minimal() +
+  # Changer le titre
+  labs(title = "Prévalence du VIH par âge et sexe dans la région du __________ au Malawi (déc. 2022)")  
+```
+
+‣ Limites du filtrage manuel
+
+-   Fonctionne pour un petit nombre de sous-groupes
+
+-   Devient inefficace et sujet aux erreurs quand les sous-groupes augmentent
+
+‣ Approche pour résoudre le problème
+
+-   Démontrer en utilisant `{ggplot2}` et les techniques de programmation fonctionnelle
+
+-   Éviter la copier-coller du code pour chaque sous-groupe
+
+
+
+**Graphique à facettes**
+
+‣ Facetage comme alternative
+
+-   Découpage par région ou district
+
+```{r}
+# Exemple de graphique facetés par région
+vih_malawi %>% 
+  filter(niveau_zone == "Region",
+         indicateur == "prevalence") %>% 
+  ggplot(aes(x = groupe_age, 
+             y = moyenne, 
+             fill = sexe)) +
+  geom_col(position = "dodge") +
+  theme_minimal() +
+  labs(title = "Prevelance du VIH par age et sexe pour les régions de Malawi (dec. 2022)") +
+  facet_wrap(~nom_zone)
+  
+```
+
+‣ Limite à cette alternative
+
+-   Trop de niveaux dans la variable de regroupement
+
+-   Risque de surcharge avec de nombreux sous-ensembles
+
+‣ Défi avec des tracés encombrés
+
+-   28 facettes peuvent rendre le tracé illisible
+
+
+
+::: practice
+**Question 1: Filtrage et création de graphiques**
+
+Créez un graphique en barres de la répartition par âge et sexe de la **couverture par le traitment ARV** dans le district de **Lilongwe**. Vous pouvez partir du code utilisé pour créer les graphiques régionaux. Cette fois, vous devrez filtrer les données au niveau **"District"** et ajuster le titre du graphique en conséquence.
+
+Ensuite, adaptez votre code pour créer le même graphique pour le district de **Mzimba**.
+:::
+
+
+
+## Création de fonctions pour des graphiques personnalisées
+
+### Fonction à 1 argument
+
+‣ Première étape vers l'automatisation : créer une fonction de filtrage
+
+‣ Exemple : visualiser la prévalence moyenne pour une région
+
+-   Définir une fonction
+
+-   Argument d'entrée : condition de sous-ensemble
+
+-   La fonction crée un graphique régional en utilisant les données filtrées
+
+```{r}
+# Simple fonction pour filtrer selon la région et créer le graphique en barres groupées par âge et sexe 
+
+region_graphique<- function(nom_region){
+  # copier le code au-dessus et remplacer le nom de région par un indicateur
+  vih_malawi %>%
+  filter(niveau_zone == "Region",
+         nom_zone == __________,
+         indicateur == "prevalence") %>%
+  ggplot(aes(x = groupe_age,
+             y = moyenne,
+             fill = sexe)) +
+  geom_col(position = "dodge") +  
+  theme_minimal() +
+  labs(title = __________)
+}
+```
+
+‣ Code à l'intérieur de la fonction:
+
+-   Similaire à la création de graphique précédente
+
+-   Indicateur pour le nom de la région : {{nom_region}}
+
+-   Filtrage avec la fonction filter() basé sur {{nom_region}}
+
+-   Utilisation de {{nom_region}} dans le titre du graphique dans la fonction labs()
+
+::: watch-out
+**Accolades:** Remarquez l'utilisation d'accolades `{{}}` à l'intérieur de la fonction `region_graphique()`. Cette pratique est recommandée lors de l'utilisation de fonctions `{tidyverse}` à l'intérieur d'une autre fonction personnalisée, pour éviter les erreurs. Consultez [ici](https://r4ds.hadley.nz/functions.html#plot-functions) pour plus d'exemples.
+:::
+
+
+
+Maintenant, exécutons la fonction pour chacune des régions présentées dans le jeu de données, et voyons le résultat !
+
+```{r}
+# Créer des graphiques individuels pour les trois régions
+nord <- region_graphique("Nord") 
+sud <- region_graphique("Sud")
+centre <- region_graphique("Centre")
+
+# Afficher les graphiques
+nord
+sud 
+centre
+```
+
+‣ Efficacité de la fonction personnalisée
+
+-   Évite le code répétitif
+
+-   Permet des ajustements facile sans modifier les graphiques individuels
+
+
+
+‣ Tendances similaire dans les profils d'âge-sexe
+
+-   Observée aux niveaux national et régional
+
+
+
+‣ Variation dans la prévalence
+
+-   Prévalence plus élevée dans la région du Sud comparée aux autres
+
+
+
+**Personnalisation des titres avec `glue()`**
+
+‣ Fonctions de graphiques personnalisées
+
+-   Presque identiques aux graphiques précédents
+
+-   Différence : le titre
+
+-   Ajustement du titre : de « Centre » à «Estimations de la prévalence du VIH par âge et sexe dans la région du Centre à Malawi»
+
+Nous pouvons corriger cela avec la fonction **`glue()`** à l'intérieur de notre fonction personnalisée :
+
+```{r}
+# Adapter la fonction pour inclure un titre personnalisé
+graphique_region2 <- function(nom_region){
+  vih_malawi %>%
+  filter(niveau_zone == "Region",
+         nom_zone == {{nom_region}},  
+         indicateur == "prevalence") %>%
+  ggplot(aes(x = groupe_age,
+             y = moyenne,
+             fill = sexe)) +
+  geom_col(position = "dodge") +
+  theme_minimal() +
+  labs(title = glue("Estimations de la prévalence du VIH par âge et sexe dans la région du __________ à Malawi (déc. 2022)"))
+}
+
+# Tester la fonction
+graphique_region2("Centre")
+```
+
+
+
+::: practice
+**Question 2: Fonction de création de graphique personnalisée pour les districts**
+
+Créer une fonction personnalisée appelée **`graphique_district()`** prenant comme entrée `nom_district`, et créer un graphique de la répartition par âge et sexe des **personnes vivant avec le VIH** (l'indicateur "pvvih"). Utiliser `glue()` pour créer un titre personnalisé.
+
+```{r}
+graphique_district <- function(nom_district){
+  vih_malawi %>%
+    filter(niveau_zone == "District",
+           nom_zone == ____________,
+           indicateur == ____________) %>%
+    ggplot(aes(x = groupe_age,
+               y = moyenne,
+               fill = sexe)) +
+    geom_col(position = "dodge") +
+    theme_minimal() +
+    labs(title = glue("PVVIH par âge et sexe dans le district de ____________, Malawi (déc. 2022)"))  
+}
+```
+
+Tester la fonction pour créer un graphique pour les districts de **Chitipa** et **Neno**.
+:::
+
+
+
+### Fonction à entrées multiples
+
+‣ Améliorer la fonction `region_graphique()`
+
+-   Personnalisation pour plus de polyvalence
+
+‣ Nouveaux paramètres d'entrée
+
+-   Indicateur VIH pour l'axe y
+
+-   Filtrer par "Région" ou "District"
+
+```{r}
+# Créer une fonction personnalisée avec entrées multiples
+graphique_malawi <- function(nom_zone, niveau_zone, indicateur_vih){
+  vih_malawi %>%
+    # filtrer selon 3 conditions    
+    filter(
+      niveau_zone == __________,
+      nom_zone == __________,  
+      indicateur == {{indicateur_vih}}) %>%
+    ggplot(aes(x = groupe_age,
+               y = moyenne, 
+               fill = sexe)) +
+    geom_col(position = "dodge") +
+    theme_minimal() +
+      # titre personnalisé
+    labs(title = glue("Moyenne de __________ par groupe d'âge et sexe — __________ __________, Malawi (déc. 2022)"))
+}
+```
+
+‣ Nous pouvons appliquer la nouvelle fonction personnalisée **`graphique_malawi()`** à n'importe quel indicateur, à n'importe quel niveau géographique de notre jeu de données en spécifiant les 3 entrées requises
+
+```{r}
+# Couverture du traitement antiretrovirale pour un district
+graphique_malawi("Chitipa", "District", "couverture_arv")
+
+# Population pour une région  
+graphique_malawi("Sud", "Region", "population")
+```
+
+
+
+::: side-note
+**Filtrage du niveau de zone**
+
+‣ Inclusion du paramètre `niveau_zone`
+
+-   Évite les conflits lorsqu'un district et une région partagent le même nom
+
+-   Permet de personnaliser le titre du tracé en mentionnant le niveau administratif
+:::
+
+
+
+‣ Fonctions personnalisées pour une création de graphique sans effort
+
+-   Élimine le besoin de duplication manuelle de code
+
+-   Réalise l'automatisation pour gagner du temps et des efforts
+
+Cependant, malgré les améliorations, une certaine répétition demeure :
+
+-   Exemple : créer un graphique du nombre de PVVIH pour chacun des 28 districts
+
+-   Cela implique toujours de copier-coller le code et de remplacer les noms pour chaque district
+
+```{r eval=F}
+# Appliquer la fonction personnalisée à chaque district
+chitipa_pvvih <- graphique_malawi("Chitipa", "District", "pvvih")
+karonga_pvvih <- graphique_malawi("Karonga", "District", "pvvih")
+nkhatabay_pvvih <- graphique_malawi("Nkhatabay", "District", "pvvih")
+rumphi_pvvih <- graphique_malawi("Rumphi", "District", "pvvih")
+mzimba_pvvih <- graphique_malawi("Mzimba", "District", "pvvih")
+likoma_pvvih <- graphique_malawi("Likoma", "District", "pvvih")
+kasungu_pvvih <- graphique_malawi("Kasungu", "District", "pvvih")
+nkhotakota_pvvih <- graphique_malawi("Nkhotakota", "District", "pvvih")
+ntchisi_pvvih <- graphique_malawi("Ntchisi", "District", "pvvih")
+dowa_pvvih <- graphique_malawi("Dowa", "District", "pvvih")
+salima_pvvih <- graphique_malawi("Salima", "District", "pvvih")
+lilongwe_pvvih <- graphique_malawi("Lilongwe", "District", "pvvih")
+mchinji_pvvih <- graphique_malawi("Mchinji", "District", "pvvih")
+dedza_pvvih <- graphique_malawi("Dedza", "District", "pvvih")
+ntcheu_pvvih <- graphique_malawi("Ntcheu", "District", "pvvih")
+mangochi_pvvih <- graphique_malawi("Mangochi", "District", "pvvih")
+machinga_pvvih <- graphique_malawi("Machinga", "District", "pvvih")
+zomba_pvvih <- graphique_malawi("Zomba", "District", "pvvih")
+mulanje_pvvih <- graphique_malawi("Mulanje", "District", "pvvih")
+phalombe_pvvih <- graphique_malawi("Phalombe", "District", "pvvih")
+balaka_pvvih <- graphique_malawi("Balaka", "District", "pvvih")
+chiradzulu_pvvih <- graphique_malawi("Chiradzulu", "District", "pvvih")
+blantyre_pvvih <- graphique_malawi("Blantyre", "District", "pvvih")
+mwanza_pvvih <- graphique_malawi("Mwanza", "District", "pvvih")
+thyolo_pvvih <- graphique_malawi("Thyolo", "District", "pvvih")
+chikwawa_pvvih <- graphique_malawi("Chikwawa", "District", "pvvih")
+nsanje_pvvih <- graphique_malawi("Nsanje", "District", "pvvih")
+neno_pvvih <- graphique_malawi("Neno", "District", "pvvih")
+```
+
+
+
+## Bouclage à travers un vecteur de variables
+
+### Présentation de `purrr::map()`
+
+Nous pouvons créer un vecteur de noms et faire fonctionner la fonction sur tous les noms de ce vecteur à l'aide de la fonction `map()` du package `{purrr}`.
+
+‣ `map()` prendra deux arguments : un **vecteur** et une **fonction**.
+
+![](images/map-step-1.png)
+
+‣ `map()` appliquera alors la fonction à chaque élément du vecteur d'entrée.
+
+![](images/map-step-2.png)
+
+‣ Appliquer la fonction à chaque élément du vecteur d'entrée résulte en un élément de sortie par élément d'entrée.
+
+![](images/map.png)
+
+‣ `map()` combine alors tous ces éléments de sortie dans une liste.
+
+![](images/map-output.png)
+
+
+
+‣ Par exemple, voici une fonction personnalisée qui prend en entrée un nom et ajoute le préfixe "Dr." au début de la chaîne de caractères
+
+```{r}
+# Exemple de fonction à un seul argument  
+ajouter_dr <- function(nom_complet) {   
+  return(paste("Dr.", nom_complet))
+}
+# Appliquer la fonction à un nom unique
+ajouter_dr("Mohamed Hsin Bennour")
+```
+
+‣ Imaginons maintenant que nous ayons un vecteur de noms pour lesquels nous souhaitons ajouter le préfixe "Dr.".
+
+```{r}
+# Liste de personnes
+etudiants_doctorat <- c("Mohamed Hsin Bennour", "Imad El Badisy", "Kenechukwu David Nwosu")
+```
+
+‣ Nous passons le vecteur de noms à `purrr::map()`, en insérant notre fonction personnalisée `ajouter_dr()` comme argument. Cela nous permettra d'appliquer la fonction personnalisée à tous les éléments du vecteur, en itérant le processus.
+
+```{r}
+# Boucler la fonction sur le vecteur de variables
+purrr::map(etudiants_doctorat, ajouter_dr)
+```
+
+‣ Vous remarquerez que la sortie de `purrr::map()` est une liste. Pour récupérer les éléments de la liste, nous pouvons d'abord l'assigner à un objet et ensuite utiliser l'opérateur `[[` :
+
+```{r}
+# Transmettre le vecteur à map() et sauvegarder la sortie dans une liste
+etudiants_diplomes <- etudiants_doctorat %>% purrr::map(ajouter_dr)
+
+# Afficher la liste
+etudiants_diplomes
+
+# Rappeler un élément spécifique de la liste
+etudiants_diplomes[[2]]
+```
+
+‣ `map()` effectue le même travail qu'une boucle `for`, mais de manière fonctionnelle.
+
+
+
+### Automatisation des graphiques ggplot2
+
+‣ Nous pouvons utiliser le même processus pour créer une liste de graphiques, en appliquant notre fonction personnalisée `graphique_malawi()` à un vecteur de noms de régions.
+
+```{r}
+# Créer un vecteur des 3 régions du Malawi
+noms_regions <- c("Nord", "Centre", "Sud")
+
+# Appliquer graphique_malawi() à noms_regions  
+noms_regions %>% map(graphique_malawi, "Region", "prevalence")
+```
+
+
+
+‣ Nous avons maintenant créé 3 graphiques avec seulement 2 lignes de code.
+
+
+
+::: practice
+**Question 3: Itération à travers un vecteur de districts**
+
+Créez un vecteur de 5 noms de districts à partir de `vih_malawi`.
+
+```{r}
+districts5 <- "Écrivez votre code ici"
+```
+
+Appliquez la fonction `graphique_malawi()` au vecteur de noms de districts pour créer cinq graphiques des **PVVIH** d'un coup.
+
+```{r}
+districts5 %>% purrr::map("District", "pvvih")
+```
+:::
+
+
+
+#### Fonction d'aide pour le niveau de zone
+
+‣ Analyser les tendances à diverses échelles géographiques
+
+-   Essentiel pour l'analyse épidémiologique
+
+‣ Objectif : créer des graphiques pour différentes échelles géographiques
+
+‣ Approche : générer un vecteur contenant tous les noms de districts à partir du jeu de données `vih_malawi`
+
+```{r}
+# Création d'un vecteur des noms de district uniques
+noms_district <- vih_malawi %>%
+  filter(niveau_zone == "District") %>%
+  pull(nom_zone) %>%
+  unique()
+# Afficher
+noms_district  
+```
+
+‣ Introduction d'une fonction d'aide : `niv_zone()`
+
+```{r}
+# Écrire une fonction d'aide pour obtenir les noms de zone uniques pour un niveau donné
+niv_zone <- function(niveau){
+  vih_malawi %>%
+    filter(niveau_zone == {{niveau}}) %>%
+    pull(nom_zone) %>%
+    unique() %>%
+    return()
+}
+
+# Tester la fonction d'aide
+niv_zone("Region")
+niv_zone("District")
+```
+
+‣ Simplification avec la fonction `niv_zone()`
+
+-   Facilite l'obtention des noms uniques pour tout niveau administratif
+
+-   Intégration avec la fonction `map()` pour une itération efficace à travers les régions ou districts
+
+-   Élimine le besoin de créer manuellement des vecteurs personnalisés
+
+```{r}
+# Créer des graphiques de l'incidence pour toutes les régions
+niv_zone("Region") %>% map(graphique_malawi, "Region", "incidence")
+```
+
+```{r eval= F}
+# Tracer la sensibilisation au VIH pour tous les districts
+niv_zone("District") %>% map(graphique_malawi, "District", "prop_pvvih_conscients")
+```
+
+### Boucler à travers deux vecteurs
+
+‣ Gestion de multiples variables de réponse
+
+-   La copie-coller manuelle du code pour différentes variables est fastidieuse
+
+-   Pour de nombreux indicateurs, une approche plus efficace est nécessaire
+
+‣ Approche
+
+-   Créer un vecteur d'indicateurs
+
+-   Utiliser une boucle `for` pour itérer à travers les indicateurs
+
+-   Transmettre chaque indicateur à `map()` pour la génération des tracés
+
+```{r}
+# Choisir les indicateurs du VIH: PVVIH et Prévalence
+indicateurs <- c("pvvih", "prevalence")
+
+# Boucle imbriquée pour représenter 3 régions x 2 indicateurs  
+for (i in __________) {
+  niv_zone(__________) %>%
+    map(graphique_malawi, __________) %>%
+    print()  
+}
+```
+
+
+
+Nous pouvons changer "Region" en "District", et le code ci-dessus nous donnerait 56 graphiques, 2 indicateurs pour chacun des 28 districts.
+
+
+
+## Finalisation et enregistrement
+
+‣ Automatisation des graphiques
+
+-   Préparer la finalisation et l'enregistrement des images
+
+-   Examiner les graphiques pour d'éventuels ajustements
+
+-   Modifier la fonction `graphique_malawi()` si besoin
+
+-   Réexécution avec la fonction `map()` pour une gestion efficace de multiples graphiques
+
+Revisitons notre code `ggplot()` d'origine, que nous avons filtré et réutilisé pour tous les graphiques :
+
+```{r}
+# Graphique en barres des prévalences nationales par âge et sexe
+vih_malawi %>%
+  filter(niveau_zone == "Pays", 
+         indicateur == "prevalence") %>%
+  ggplot(aes(x = groupe_age, 
+             y = moyenne, 
+             fill = sexe)) +
+  geom_col(position = "dodge") +
+  theme_minimal() +
+  labs(title = "Estimations nationales de la prévalence du VIH, Malawi (déc. 2022)")
+```
+
+
+
+‣ Amélioration de l'apparence des graphiques pour publication
+
+-   Options de personnalisation pour les graphiques `ggplot()`
+
+
+
+‣ Modifications du code pour obtenir des graphiques finals plus affinés
+
+```{r}
+# Graphique à barres de prévalence nationale par âge et sexe avec des modifications supplémentaires
+vih_malawi %>% 
+  filter(indicateur == "prevalence", nom_zone == "Malawi") %>% 
+  ggplot(aes(x = groupe_age, y = moyenne, fill = sexe,
+             ymin = limite_min, ymax = limite_max)) + 
+  geom_col(position = position_dodge(width = 0.9)) +
+  geom_errorbar(position = position_dodge(width = 0.9), # ajouter des barres d'erreur
+                width = 0.25, linewidth = 0.8) +   # Ajuster la taille pour des lignes plus épaisses
+  scale_fill_manual(values = c("femme" = "#E69F00", "homme" = "#56B4E9"),
+                    labels = c("Femme", "Homme")) +  # Utiliser des couleurs adaptées aux daltoniens
+  theme_light() + # Thème clair pour un aspect plus net
+  theme(legend.position = c(0.05, 0.95), # Placer la légende en haut à gauche
+        legend.justification = c(0, 1),  # Ancrer la légende en haut à gauche
+        legend.background = element_rect(color = "darkgray", linewidth = 0.5), # Changer la couleur et épaisseur de la bordure de la légende 
+        legend.title = element_blank()) + # Enlever le titre de la légende
+  labs(x = "Âge (années)",
+       y = "Prévalence",
+       title = "Répartition âge-sexe de la prévalence du VIH au Malawi",
+       subtitle = "Estimations du modèle Naomi, décembre 2022")
+```
+
+
+
+Une fois satisfaits du rendu du graphique, nous pouvons utiliser ce nouveau code `ggplot()` dans une fonction personnalisée :
+
+```{r}
+graphique_mwi_final <- function(nom_zone, niveau_zone, indicateur_vih){
+  # graphique à barres de prévalence par âge et sexe avec des modifications supplémentaires
+  vih_malawi %>% 
+    filter(indicateur == __________,
+           niveau_zone == __________,
+           nom_zone == __________) %>% 
+    ggplot(aes(x = groupe_age, y = moyenne, fill = sexe,
+               ymin = limite_min, ymax = limite_max)) + 
+    geom_col(position = position_dodge(width = 0.9)) +
+    geom_errorbar(position = position_dodge(width = 0.9), ## ajout des barres d'erreur
+                  width = 0.25, linewidth = 0.8) +   # Ajuster la taille pour des lignes plus épaisses
+    scale_fill_manual(values = c("femme" = "#E69F00", "homme" = "#56B4E9"),
+                      labels = c("Femme", "Homme")) +  # Utiliser des couleurs adaptées aux daltoniens
+    theme_light() + # Thème clair pour un aspect plus net
+    theme(legend.position = c(0.05, 0.95), # Placer la légende en haut à gauche
+          legend.justification = c(0, 1),  # Ancrer la légende en haut à gauche
+        legend.background = element_rect(color = "darkgray", linewidth = 0.5), # Changer la couleur et épaisseur de la bordure de la légende 
+        legend.title = element_blank()) + # Enlever le titre de la légende
+    labs(x = "Âge (années)",
+         y = "Prévalence",
+         title = glue("Répartition âge-sexe de __________"),
+         subtitle = "Estimations du modèle Naomi, décembre 2022")
+}
+```
+
+Nous pouvons utiliser cette nouvelle fonction pour obtenir des graphiques pour un ensemble de régions ou de districts, tout comme nous l'avons fait avec la fonction `graphique_malawi()` précédente.
+
+```{r}
+# Itérer sur les régions  
+niv_zone("Region") %>% map(graphique_mwi_final, "Region", "prevalence")
+```
+
+
+
+‣ Enregistrer les graphiques générés localement
+
+-   Éviter la nécessité de régénérer répétitivement les graphiques
+
+
+
+‣ Changement final à la fonction
+
+-   Ajouter la fonction `ggsave()`
+
+-   Enregistrer les graphiques sous forme de fichiers image avec des noms uniques et descriptifs
+
+```{r}
+# Créer une fonction personnalisée pour tracer ET enregistrer dans un chemin de fichier spécifique
+graph_sauvegarder_final <- function(nom_zone, niveau_zone, indicateur_vih){
+  vih_malawi %>% 
+    filter(indicateur == {{indicateur_vih}},
+           niveau_zone == {{niveau_zone}},
+           nom_zone == {{nom_zone}}) %>% 
+    ggplot(aes(x = groupe_age, y = moyenne, fill = sexe,
+               ymin = limite_min, ymax = limite_max)) + 
+    geom_col(position = position_dodge(width = 0.9)) +
+    geom_errorbar(position = position_dodge(width = 0.9), ## ajout des barres d'erreur
+                  width = 0.25, linewidth = 0.8) +   # Ajuster la taille pour des lignes plus épaisses
+    scale_fill_manual(values = c("femme" = "#E69F00", "homme" = "#56B4E9"),
+                      labels = c("Femme", "Homme")) +  # Utiliser des couleurs adaptées aux daltoniens
+    theme_light() + # Thème clair pour un aspect plus net
+    theme(legend.position = c(0.05, 0.95), # Placer la légende en haut à gauche
+          legend.justification = c(0, 1),  # Ancrer la légende en haut à gauche
+          legend.background = element_rect(color = "darkgray", linewidth = 0.5),
+          legend.title = element_blank()) +
+    labs(x = "Âge (années)",
+         y = indicateur_vih,
+         title = glue("Répartition âge-sexe de {indicateur_vih} — {nom_zone} {niveau_zone}"),
+         subtitle = "Estimations du modèle Naomi, décembre 2022")
+  # NOUVEAU CODE: Enregistrer le tracé avec des noms de fichiers personnalisés  
+  ggsave(filename = here(glue("outputs/__________.jpg")))
+}
+```
+
+Maintenant que nous avons finalisé notre fonction personnalisée appelée `graph_sauvegarder_final()`, essayons-la pour le district de Chitipa !
+
+```{r eval=F}
+graph_sauvegarder_final("Chitipa", "District", "pvvih")
+```
+
+
+
+Vous devriez maintenant voir un nouveau fichier nommé "pvvih_District_Chitipa.jpg" dans votre dossier outputs.
+
+
+
+‣ Utiliser la fonction `niv_zone()` pour itérer sur les régions
+
+-   Avec la fonction `graph_sauvegarder_final()`
+
+-   Sauvegarder les images dans le dossier "outputs"
+
+```{r eval=F}
+# Itérer sur les régions et SAUVEGADER
+niv_zone("Region") %>% map(graph_sauvegarder_final, "Region", "prevalence") 
+```
+
+‣ Utiliser une boucle `for`
+
+-   Bouclons sur **deux** vecteurs et sauvons les graphiques au niveau régional pour deux autres indicateurs du VIH.
+
+```{r eval=F}
+# Choisir de nouveaux indicateurs
+indicateurs2 <- c("pvvih", "couverture_arv")
+
+# Boucler à travers la fonction de sauvegarde de graphiques
+for (i in 1:length(indicateurs2)) {
+  niv_zone("Region") %>%
+    map(graph_sauvegarder_final, "Region", indicateurs2[i])
+}
+```
+
+
+
+Si vous accédez au dossier `outputs`, vous devriez maintenant trouver **6** nouveaux graphiques créés et sauvegardés. C'est la magie de l'automatisation dans R !
+
+
+
+::: practice
+**Question 4: Sauvegarder une série de graphiques**
+
+En utilisant votre vecteur `districts5` de la dernière question, écrivez une boucle for pour créer et sauvegarder les graphiques pour:
+
+-   La prévalence
+-   La couverture du traitment ARV
+-   Les PVVIH
+
+```{r include=F}
+# PQ4
+indicateurs3 <- c(____________)
+
+# Boucle pour créer et sauvegarder les graphiques
+for (i in 1:length(____________)) {
+  ____________ %>% 
+   map(graph_sauvegarder_final, "District", ____________)
+}
+```
+:::
+
+
+
+## EN RÉSUMÉ ! {.unnumbered}
+
+‣ Principaux enseignements de la leçon
+
+-   Développement de fonctions personnalisées de filtrage et de tracé avec `{dplyr}` et `{ggplot2}`
+
+-   Utilisation de `purrr::map()` et des boucles `for` pour une itération à deux dimensions
+
+-   Génération et enregistrement efficaces de tracés personnalisés
+
+-   Démontre la puissance des principes de programmation fonctionnelle
+
+-   Avantages : code plus propre, modulaire et facile à maintenir
+
+
+

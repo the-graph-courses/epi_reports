@@ -49,7 +49,7 @@ Il arrive souvent de devoir effectuer des tâches de création de graphiques de 
 
 3. **Itérer les tâches de création de graphiques**: Appliquer les fonctions de création de graphiques sur un vecteur de variables, avec l'aide de `purrr::map()`.
 
-4. **Utiliser des boucles imbriquées pour l'automatisation** : Utiliser `map()` à l'intérieur d'une boucle for pour itérer sur une combinaison de sous-ensembles et de variables de réponse. À la fin de cette leçon, vous maîtriserez l'automatisation des graphiques `{ggplot2}`, gainant du temps et améliorant la reproductibilité de vos récits basés sur les données.
+4. **Utiliser des boucles imbriquées pour l'automatisation** : Utiliser `map()` à l'intérieur d'une boucle for pour itérer sur une combinaison de sous-ensembles et de variables de réponse. À la fin de cette leçon, vous maîtriserez l'automatisation des graphiques `{ggplot2}`, gagnant du temps et améliorant la reproductibilité de vos récits basés sur les données.
 
 À la fin de cette leçon, vous aurez les compétences pour automatiser les graphiques `{ggplot2}`, ce qui va vous gagner du temps et améliorer la reproductibilité de vos récits basés sur les données.
 
