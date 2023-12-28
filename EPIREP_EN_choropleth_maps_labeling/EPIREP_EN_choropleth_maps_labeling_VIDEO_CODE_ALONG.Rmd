@@ -135,7 +135,7 @@ malaria3 <- malaria2 %>%
      st_as_sf()
 ```
 
-‣ Addres aesthetic concerns with labeling a small area like the "Federal Capital Territory" on a map:
+‣ Address aesthetic concerns with labeling a small area like the "Federal Capital Territory" on a map:
 
 ```{r}
 # Modify the state names, changing "Federal Capital Territory" to "Capital"
@@ -311,7 +311,7 @@ ggplot(data = malaria3) +
   theme_void()  # Apply a minimal theme for clarity
 ```
 
-‣ Efficientl communication of two important pieces of information (cases per 10000 and increase rate)
+‣ Efficient communication of two important pieces of information (cases per 10000 and increase rate)
 
 ::: practice
 ### Q: Create a single choropleth map that showcases the malaria increase rates across different states in Nigeria with each state labeled by its name
@@ -386,7 +386,7 @@ Such an approach is invaluable when you wish to spotlight specific details or ar
 
 ## Labeling Point Locations: Exploring Malaria Positive Rate and Incidence
 
-‣ Sisualizing specific data points on a geographical map can provide crucial insights\
+‣ Visualizing specific data points on a geographical map can provide crucial insights\
 \
 ‣ Example: Malaria prevalence for Nigeria:
 

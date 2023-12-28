@@ -27,9 +27,6 @@ source(here("global/functions/misc_functions.R"))
 
 # knitr settings
 knitr::opts_chunk$set(warning = F, message = F, class.source = "tgc-code-block", error = T)
-
-# Source autograder script quietly 
-source(here("lessons/ls99_template_autograder.R"))
 ```
 
 ## Introduction

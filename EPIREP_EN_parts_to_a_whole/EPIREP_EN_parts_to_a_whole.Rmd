@@ -1,5 +1,5 @@
 ---
-title: '\ '
+title: 'Visualizing Comparisons and Compositions'
 output:
   html_document:
     number_sections: true
@@ -7,7 +7,6 @@ output:
     toc_float: true
     css: !expr here::here("global/style/style.css")
     highlight: kate
-    pandoc_args: --shift-heading-level-by=-1
   word_document:
     toc: true
 editor_options:
@@ -30,9 +29,7 @@ source(here::here("global/functions/lesson_functions.R"))
 knitr::opts_chunk$set(warning = F, message = F, class.source = "tgc-code-block", error = T)
 ```
 
-# Visualizing Comparisons and Compositions
-
-## Introduction
+# Introduction
 
 Welcome to our tutorial on visualizing comparisons and compositions using {ggplot2} in R. Analyzing and comparing categories, as well as visually representing the composition of elements, are fundamental aspects of data visualization in R.
 
@@ -44,7 +41,7 @@ This tutorial aims to equip you with the skills to effectively visualize aggrega
 
 ![Chart types covered in this lesson.](images/chart_types.jpg)
 
-## Learning objectives
+# Learning objectives
 
 1)  Understand the difference between visualizing comparisons and visualizing compositions, and recall the appropriate chart types for these two types of analysis.
 2)  Create and customize bar charts using {ggplot2} for comparing categorical data, with `geom_col()`, `geom_errorbar()`, and `position` adjustments.
@@ -54,7 +51,7 @@ This tutorial aims to equip you with the skills to effectively visualize aggrega
 
 ![](images/finalplot.png)
 
-## Load packages
+# Load packages
 
 In this lesson we will use the following packages:
 
@@ -66,7 +63,7 @@ In this lesson we will use the following packages:
 pacman::p_load("tidyverse", "here")
 ```
 
-## Data: TB treatment outcomes in Benin
+# Data: TB treatment outcomes in Benin
 
 In the realm of public health, data often comes in forms that require us to compare metrics between subgroups, or understand the relative contributions to a total count.
 
@@ -109,13 +106,13 @@ Here are the detailed variable definitions for each column:
 
 5.  **`cases`**: the number of new or relapse cases started on treatment. This allows for quantitative analysis of the TB cases, such as the total number of new cases over a specific period or the number of cases that completed treatment in a particular health facility.
 
-## Visualizing comparisons
+# Visualizing comparisons
 
 Visualizations allow you to ask questions of your data, and the type of question you want to ask will determine the chart type. A ton of questions you might ask about your data will hinge on a comparison between values. Which region was responsible for the most cases or deaths? What year had the best treatment outcomes? These questions are answered quickly by gathering and comparing different values in your data.
 
 ![](images/comparison_charts.jpg)
 
-### Bar charts
+## Bar charts
 
 One of the most common chart types are bar charts, and for good reason! They are often the most efficient and effective way of conveying counts per group or category so that comparisons can be made between the bars.
 
@@ -166,7 +163,7 @@ tb_outcomes %>%
 We will use `coord_*()` functions later in the lesson to create circular plots.
 :::
 
-### Stacked bar charts
+## Stacked bar charts
 
 While the previous bar charts depicted case distribution across a *single categorical variable*, we can elevate our understanding by introducing a *second categorical variable* and creating **stacked bar charts**.
 
@@ -185,7 +182,7 @@ tb_outcomes %>%
 
 As seen above, stacked plots maintain our *primary categories* on the axis while visually **segregating contributions** from different subgroups by splitting the bars into smaller segments.
 
-### Grouped bar charts
+## Grouped bar charts
 
 -   Grouped bar plots provide a side-by-side representation of subgroups within each main category.
 -   We can set the `position` argument to `"dodge"` in `geom_col()` to display bars side by side:
@@ -240,7 +237,7 @@ tb_outcomes %>%
 ```
 :::
 
-### Adding error bars
+## Adding error bars
 
 Visualizing data with error bars allows for a clearer understanding of the variability or uncertainty inherent in the dataset. Error bars can indicate the reliability of a mean score or an individual data point, providing context to the plotted values.
 
@@ -276,7 +273,7 @@ hosp_dx_error %>%
   )
 ```
 
-### Area charts
+## Area charts
 
 In this section, we'll be exploring area plots with `geom_area()`. These plots are especially advantageous for visualizing a range of data values or the progression of data across time, making them ideal for use cases like tracking the number of new treatment cases per quarter.
 
@@ -336,13 +333,13 @@ ggplot(
 ```
 :::
 
-## Visualizing comparisons with normalized bar charts, pie charts, and donut charts
+# Visualizing comparisons with normalized bar charts, pie charts, and donut charts
 
 With compositions, we want to show how individual parts make up the whole. We could try to answer these questions using charts types discussed above, but there are many chart types devoted to compositions that do a much better job. These part-to-whole chart types immediately focus our visual attention on the relative importance of every part to the total value in the data.
 
 ![](images/composition_charts.jpg)
 
-### Percent-stacked bar chart
+## Percent-stacked bar chart
 
 To visualize a composition, or part-to-whole relationship, we need two ingredients: the parts, and the whole.
 
@@ -380,7 +377,7 @@ tb_outcomes %>%
 
 -   All bars are now the same length, meaning all the wholes are now the same size. This now allows us to easily evaluate the contributions of the different parts to the whole.
 
-### Circular plots: Pie and Donut charts
+## Circular plots: Pie and Donut charts
 
 In this section, we will delve into circular data visualizations, particularly pie charts and donut plots, to demonstrate categorical data distribution. These types of plots can be quite polarizing in the data visualization community due to their tendency to distort data interpretation. However, when employed judiciously, they can offer an intuitive snapshot of proportions within a dataset.
 
@@ -526,13 +523,13 @@ ggplot(aes(x=----, y=------, fill=-------)) +
 ```
 :::
 
-## Wrap Up! {.unnumbered}
+# Wrap Up! {.unnumbered}
 
-## Solutions {.unlisted .unnumbered}
+# Solutions {.unlisted .unnumbered}
 
-## Contributors {.unlisted .unnumbered}
+# Contributors {.unlisted .unnumbered}
 
-## References {.unlisted .unnumbered}
+# References {.unlisted .unnumbered}
 
 Some material in this lesson was adapted from the following sources:
 

@@ -12,98 +12,119 @@ editor_options:
 ---
 
 ```{r, echo = F, message = F, warning = F}
-# Load packages 
+
+# require pacman 
 if(!require(pacman)) install.packages("pacman")
-pacman::p_load(tidyverse, knitr, here, reactable, gt, flextable)
 
-## functions
-source(here::here("global/functions/misc_functions.R"))
+# Source functions 
+source(here::here("global/functions/lesson_functions.R"))
 
-## default render
-registerS3method("reactable_5_rows", "data.frame", reactable_5_rows)
-knitr::opts_chunk$set(class.source = "tgc-code-block")
+# knitr settings
+knitr::opts_chunk$set(warning = F, message = F, class.source = "tgc-code-block", error = T)
 
 ```
 
 # Introduction
 
-Today you will learn about the importance of using demographic pyramids to help visualize the distribution of a disease by age and sex and how to create one using `ggplot2`.
+A demographic pyramid, also known as a population pyramid or an age-sex pyramid, helps to visualize the distribution of a population by two important demographic variables: **age** and **sex**.
+
+Today you will learn about the importance of using demographic pyramids to help visualize the distribution of a disease by age and sex and how to create one using `{ggplot2}`.
 
 Let's get into it!
 
 # Learning Objectives
 
--   You know the importance of using demographic pyramids to show the distribution of age groups and sex for communicable diseases.
+By the end of this lesson, you will be able to:
 
--   You can use `geom_col` from `ggplot2` to create a demographic pyramid showing the number or percent total of cases, deaths, and more.
+-   Explain **the importance of demographic pyramids** for communicating **age and sex-specific patterns** of disease distribution.
 
--   You can customize the plot by changing the color scheme, labels, and axis.
+-   Understand the **components of a demographic pyramid** and conceptualize it as a modified version of a **stacked bar plot**.
+
+-   **Summarize and prepare data** into the appropriate format for plotting with **{dplyr}** functions.
+
+-   Use **`{ggplot2}`** code to **plot a demographic pyramid using `geom_col()`**, showing total counts or percentages on the x axis.
+
+-   **Customize the plot** by changing the color scheme, labels, and axis.
 
 # Introducing Demographic Pyramids
 
-A demographic pyramid, also known as a population pyramid or an age-sex pyramid, helps to visualize the distribution of a population by two important demographic variables: **age** and **sex**. The overall population takes the shape of a pyramid, therefore taking its name.
+Population pyramids are graphs that show the distribution of ages across a population.
+The graph s divided down the center between male and female members of the population, where the y-axis shows the age groups and the x-axis the sex.
 
-Population pyramids are graphs that show the distribution of ages across a population divided down the center between male and female members of the population, where the y-axis shows the age groups and the x-axis the sex.
+![Population pyramid for a country with a young population has a pyramid-like shape.](images/zw_2016_pop_pyramid.png)
 
-Through the use of `ggplot2` we are able to create pyramids while customizing it to our specific needs such as the plot below:
+The overall plot often takes the shape of a pyramid, hence its name.
+
+Three key features of a demographic pyramid are:
+
+1.  **Age Groups**: The pyramid is divided into horizontal bars, each representing an age group, often in five-year increments (0-4, 5-9, 10-14, etc.).
+
+2.  **Gender Representation**: The left side of the pyramid typically represents males, and the right side represents females, allowing for a quick comparison between the gender distribution within each age group.
+
+3.  **Population Size**: The length of the bars indicates the size of the population in each age group.
+    A longer bar suggests a larger population in that age group.
+
+Through the use of `{ggplot2}` we are able to create pyramids while customizing it to our specific needs.
+At the end of this lesson, our final plot will look like this:
 
 ![](images/final_pyramid.png)
 
-Multiple packages are available to facilitate data analysis and data visualization. In the case of demographic pyramids, the `apyramid` package can be a useful tool. Nonetheless, by using this package we are limited in the customization of our plot, making `ggplot2` a much versatile approach.
+## The Use of Population Pyramids in Epidemiology
 
-::: side-note
-The package `apyramid` is a product of the **R4Epis** project that allows for the rapid creation of population pyramids any many other useful functions used in epidemiological reports.
+Demographic pyramids are useful for describing and understanding the epidemiology of various diseases, by visualizing the distribution of disease by age and sex.
 
-Detailed information about the package can be read [**here**](https://cran.r-project.org/web/packages/apyramid/vignettes/intro.html) or by entering `?age_pyramid` in your R console.
-:::
+**Age and Gender-Specific Vulnerability**
 
-## Using Population Pyramids in Epidemiology
+Different diseases may affect age groups differently.
+We know that the incidence of certain communicable diseases can vary with age.
+In the case of tuberculosis (TB) in Africa, adolescents and young adults are primarily affected in the region.
+However, in countries where TB incidence has decreased significantly, such as the United States, it is mainly seen in older people, or the immunocompromised.
+Another disease that demonstrates age variation is malaria, where children under the age of 5 years old account for a high majority of deaths in the region of Africa.
+HIV has been shown to affect females more than males, especially in younger age groups.
+This could be due to biological vulnerability or social factors.
 
-Population pyramids provide useful information to describe and understand the epidemiology of various communicable diseases, while facilitating the visualization of the distribution of disease by age and sex.
-
-We know that the incidence of certain communicable diseases can vary with age. For the case of tuberculosis (TB), adolescents and young adults are primarily affected in the region of Africa. However, in countries where TB has gone from high to low incidence, such as the United States, TB is mainly a disease of older people, or the immunocompromised. Another disease that demonstrates age variation is malaria, where children under the age of 5 years old account for a high majority of deaths in the region of Africa.
-
-Therefore, when describing the epidemiology of communicable diseases such as HIV, Malaria, and TB, it is important to observe the distribution of cases or deaths by age group and sex. This information helps inform national surveillance programs which age group is experiencing the highest burden and who to target for intervention.
+Therefore, when describing the epidemiology of communicable diseases such as HIV, Malaria, and TB, it is important to observe the distribution of cases or deaths by age group and sex.
+This information helps inform national surveillance programs by identifying which age and sex groups experience the highest burden, and who to target for intervention.
 
 ::: side-note
 **Using Demographic Distribution for Data Quality Assessment**
 
 Demographic pyramids can also play a crucial role in assessing the data quality of routine surveillance systems by helping assess the internal and external consistency.
 
-When trying to assess surveillance data quality standards of certain diseases, external consistency can be evaluated by comparing the national surveillance data with the global epidemiology of that disease. Data calculations based on demographic variables such as age group are sometimes used.
+When trying to assess surveillance data quality standards of certain diseases, external consistency can be evaluated by comparing the national surveillance data with the global epidemiology of that disease.
+Data calculations based on demographic variables such as age group are sometimes used.
 
 For the instance of TB surveillance data, external consistency can be evaluated by calculating the percentage of children diagnosed with TB within the program and comparing it with the global average cases.
 :::
 
 ## Conceptualizing Demographic Pyramids
 
-Let's take a closer look at a population pyramid and try to understand how it can be graphed using `geom_col` from `ggplot2`.
-
-In order to conceptualize this, we will be using the dataset introduced later in the lesson. Let's take a closer look at the demographic pyramid we showed above:
+Let's take a closer look at our target demographic pyramid, and break down how it can be graphed using `geom_col()` from `{ggplot2}`.
 
 ![](images/final_pyramid.png)
 
-As you can see from the image above, the x-axis is divided in two halves (males and females) where the units of the x-axis are symmetrical across the axis at point 0 and the age groups are labelled along the y-axis.
+As you can see, the x-axis is divided in two halves (males and females), which are plotted in opposite directions starting at 0.
+The units on the x-axis are symmetrical on either side, and the age groups are labelled along the y-axis.
 
-While closely looking at this graph, you probably noticed that the population pyramid consists of two plots merged together through the y-axis.
-
-In other words, we can divide the pyramid into two sections (males or females) and graph them independently such as below:
+In other words, we can think of it two **bar graphs** -- one for males and one for females.
 
 ![](images/combined_pyramid.png)
 
-Does this type of graph look familiar? What if we flip our x and y axes and turn the graph 90 degrees?
+A demographic pyramid can also be conceptualized as a specialized form of a stacked bar chart.
+In a traditional stacked bar chart, the segments are piled on top of one another, starting from a baseline of zero and extending outward.
 
-Let's take the female half and flip our axes and see what we get:
+In contrast, a demographic pyramid aligns the bars back-to-back along a central axis.
+This axis represents the point of division between two categories (male and female populations) with the bars extending in opposite directions to illustrate the proportion of each age group within these categories.
 
-![](images/female_x_pyramid.png)
-
-As you can probably tell by now, in order to create a population pyramid we created two **bar graphs** that show the distribution of sex by age groups. Once we have created a plot for the females and the males, we then proceed to merged them together through their y-axis.
+![](images/stacked_vs_pyramid.png)
 
 ::: key-point
-In order for the male half to be graphed on the left of the y-axis, we will need to negate the **count** (total count of people per age group).
-:::
+A demographic pyramid is akin to a modified stacked bar chart with two key distinctions:
 
-In other words, population pyramids are **bar graphs** whose axes are **flipped** (x and y axis flipped) and where females are graphed on the **positive side** of the y-axis and males are graphed on the **negative side** of the y-axis.
+1) **Central Axis**: Instead of stacking the bar segments on top of each other, bars are aligned back-to-back along a **central axis**, which acts as the point of division between male and female populations.
+
+2) **Bar Orientation**: Unlike traditional stacked bars that build from zero outward in one directly, demographic pyramid bars extend in **opposite directions** to represent the size of each age group within the categories.
+:::
 
 # Packages
 
@@ -111,264 +132,268 @@ This lesson will require the following packages to be installed and loaded:
 
 ```{r warning = F, message = F}
 # Load packages 
-if(!require(pacman)) install.packages("pacman")
-pacman::p_load(here,       # to locate file
-               tidyverse,  # to clean, handle, and plot the data (includes ggplot2 package)
-               janitor,    # tables and cleaning data
+pacman::p_load(here,       # to locate files
+               tidyverse,  # to wrangle and plot data (includes ggplot2)
                apyramid)   # package dedicated to creating age pyramids
-
 ```
+
+::: reminder
+Every lesson from The GRAPH Courses comes with a code-along RMarkdown script, which you should download and use to follow along with the lesson video or lesson notes.
+:::
 
 # Data Preparation
 
 ## Intro to the Dataset
 
-For this lesson, we will use a fictional HIV dataset imitating a linelist of HIV cases in Zimbabwe during 2016.
-
-::: side-note
-You can access the source used to simulate the HIV data [**here**](https://phia.icap.columbia.edu/zimbabwe-final-report/#:~:text=ZIMPHIA%2C%20a%20nationally%20representative%20household,of%20Zimbabwe's%20national%20HIV%20response.)
-:::
-
-Each line (row) corresponds to one patient, while each column represents different variables of interest. The linelist only contains demographic and HIV-related variables (HIV status) .
-
-For this specific lesson, we will focus on the **age-related** and **sex** variables to create our demographic pyramid.
+For this lesson, we will use a simulated HIV dataset imitating a linelist of HIV cases in Zimbabwe during 2016. For this specific lesson, we will focus on the **age-related** and **sex** variables to create our demographic pyramid.
 
 ## Importing Data
 
 Let's start by importing our data into our RStudio environment and taking a closer look at it to better understand the variables we will be using for the creation of our demographic pyramid.
 
-::: side-note
-In order to focus our attention to the creation of demographic pyramids, we went ahead and created the data subset containing the variables of interest (`age_group` and `sex`).
-:::
-
-```{r load_data, warning = F, message = F, render = reactable_10_rows}
-hiv_data <- read_csv(here::here("data/clean/hiv_zimbabwe_2016.csv"))
+```{r load_data, warning = F, message = F, render = .reactable_10_rows}
+hiv_data <- read_csv(here::here("data/hiv_zw_linelist_2016.csv"))
 
 hiv_data
 ```
 
-Our imported dataset contains **28000** rows and **3** columns containing the `age_group` and `sex` variables we will be using for the creation of our demographic pyramid. In addition, the `hiv_status` variable provides us with information on the status of patients (*positive* or *negative*).
+Our imported dataset contains **28000** rows and **3** columns containing the `age_group` and `sex` variables we will be using for the creation of our demographic pyramid.
+Each line (row) corresponds to one patient, while each column represents different variables of interest.
+The linelist only contains demographic and HIV-related variables (HIV status) .
+In addition, the `hiv_status` variable provides us with information on the status of individuals (*positive* or *negative*).
 
-Since we are interested on creating a demographic pyramid on HIV prevalence, we first need to filter for HIV positive patients and make sure the `age_group` and `hiv_status` variables are factorized.
+Since we are interested on creating a demographic pyramid on HIV prevalence, we first need to filter for HIV positive individuals.
 
-Let's load an already cleaned subset of our data!
+Let's filter data!
 
-```{r hiv_prevalence, render = reactable_10_rows}
+```{r hiv_cases, render = .reactable_10_rows}
+# Create subset with only HIV positive individuals
+hiv_cases <- hiv_data %>% 
+  filter(hiv_status == "positive")
 
-hiv_prevalence <- readRDS(here::here("data/clean/hiv_zimbabwe_prevalence.rds"))
-
-hiv_prevalence
+hiv_cases
 ```
 
-::: side-note
-Notice that we now have data subset of **3923** rows and **3** columns where all of the patients are **HIV positive**!
-:::
+Notice that we now have data subset of **3923** rows and **3** columns where all of the individuals are **HIV positive**!
+
+## Data Inspection
 
 Now, before moving to the creation of our demographic pyramid, let's inspect the data by creating a table summarizing the `age_group` and `sex` columns!
 
-For this step, we will use `tabyl()` from **`janitor`**.
+For this step, we will use `count()` from **`{dplyr}`**.
 
-```{r summary_table, render = reactable_10_rows}
-hiv_prevalence %>% 
-  tabyl(age_group, sex)
+```{r summary_table, render = .reactable_10_rows}
+hiv_cases %>% 
+  count(age_group, sex)
 ```
 
-Based on the table, the data is clean while the `age_group` column is correctly organized in ascending order (youngest to oldest).
+We can see that the data is clean and the `age_group` column is correctly organized in ascending order (youngest to oldest).
 
-::: pro-tip
-Before creating your demographic pyramid, make sure to check that your data is clean and correctly organized in **ascending order**! This is important when using categorical variables as the order of your `age_group` will affect the order it will be plotted in your pyramid.
+::: watch-out
+Always verify your data's order before plotting a demographic pyramid!
+
+Before creating your demographic pyramid, make sure to check that your data is clean and correctly organized in **ascending order**!
+This is important when using categorical variables as the order of your `age_group` will affect the order it will be plotted in your pyramid.
 
 In the case of demographic pyramids, we want the youngest age group to be located at the bottom of the y-axis and the oldest age group to be at the top of the y-axis.
 :::
 
 ## Creating Aggregated Data Subset
 
-Before we get started, we will need to create an aggregated data subset that aggregates the total occurrences per age group and sex as below:
+Before we get started, we need to create an aggregated data frame that calculates the total number cases per age group, divided by sex. We want the aggregated data frame to look like this:
 
 ![](images/pyramid_aggregated_table.png)
 
-Notice that the *male* values are negative in order to obtain the male bar plot on the *left side* of the graph!
+(we have 14 age groups and two sexes, therefore 28 rows. We'll first calculate the sum of each group - that's the `total` column, then we'll negate the male values and create a the new column called `axis_counts`, then add the last column, `axis_percent`, which presents the totals as percentages. They're called axis counts bc this is purely for plotting purposes. We don't actually have -6 cases, that's not possible.)
+
+The reason *male* values are negated is to plot the male bars on the *left side* of the axis!
 
 ::: key-point
-It is important to understand how to use `geom_col`.
-
-When using the `geom_col` function, the count for each group **needs to be specified in the `aes` as the x or y variable**. In other words, you will need to use a dataset with the aggregated number of occurrences for each categorical level.
-
-In the case of demographic pyramids, we will need to use a dataset with aggregated counts or percentages per age group and sex.
+When using the `geom_col()` function, the count for each group **needs to be pre-calculated** and specified in `aes()` as the x or y variable.
+In other words, you will need to convert linelist data into summary table with the aggregated number of occurrences for each categorical level. If your data is pre-aggregated, you can skip this aggregation step.
 :::
 
-Let's start by calculating the total count and percentages per age group and sex and create a subset with this information where the female values are *positive* and the male values are *negative*!
+Let's start by using `{dplyr}` to create the summarized data frame, with the 28 rows and 5 column we saw above! We'll use the `group_by()` and `summarise()` functions to do this.
 
 ::: reminder
-Don't forget to negate the male **y value** in order to obtain the male bar plot on the *left side* of the graph!
+Don't forget to negate the male counts in order to obtain the male bar plot on the *left side* of the graph! We can do this with the `mutate()` function.
 :::
 
-```{r count_occurences, render = reactable_5_rows}
+![](images/pyramid_aggregated_table.png)
+
+```{r count_occurences, render = .reactable_5_rows, message=F}
 
 # Create new subset
 pyramid_data <- 
-  hiv_prevalence %>% 
-
-# Count total number by age group and gender
-  count(age_group, 
-        sex,
-        name = "total") %>% 
-  ungroup() %>% 
+  hiv_cases %>% 
   
-# Create new column for count of age_group by gender
+  # Count total cases by age group and gender
+  count(age_group, sex, name = "total") %>%  
+  
+  # Create new columns for x-axis values on the plot
   mutate(
-    counts = case_when(
-      sex == "female" ~ total,
-      sex == "male" ~ -total, #convert male to negative
-      TRUE ~ NA_real_),
-    
-# Create new column for percentage of age_group by gender
-    percent = round(100*(total / sum(total, na.rm = T)), digits = 1),
-         percent = case_when(
-           sex == "female" ~ percent, 
-           sex == "male" ~ -percent, #convert male to negative
-           TRUE ~ NA_real_)) #Make NA values numeric as well
+    # New column with axis values - convert male counts to negative
+    axis_counts = ifelse(sex == "male", -total, total),
+    # New column for percentage axis values
+    axis_percent = round(100 * (axis_counts / nrow(hiv_cases)), 
+                         digits = 1))
 
-pyramid_data
+head(pyramid_data)
 ```
+Notice that the male values in the `axis_counts` and `axis_percent` columns are *negative*!
 
-::: side-note
-Notice that the male values in the `counts` and `percent` columns are not *negative*!
+
+Now that the data is summarized and in the appropriate format, we can use our new `pyramid_data` data frame to plot the pyramid with `{ggplot2}`!
+
+::: practice
+Let's test your understanding with the following multiple-choice question:
+
+1.  **When preparing data for plotting with `geom_col()`, what modification must be made to the count values?**
+    a.  All total counts must be negated.
+    b.  Counts must be multiplied by 2.
+    c.  Counts must be converted into percentages.
+    d.  Male counts must be  negated (multiplied by -1).
+
+*Answer key can be found at the end of this document.*
 :::
 
-::: r-practice
-Let's test your understanding with the following multiple-choice questions (Answer Key is located at the end):
-
-1.  **When creating the male bar plot, what modification is made to the occurrence values?**
-
-```         
-a.  They are added to the x-axis values.
-b.  They are multiplied by 2.
-c.  They are divided by 2.
-d.  They are negated (multiplied by -1).
-```
-:::
 
 # Plot Creation
 
-## Using `geom_col`
+As we mentioned earlier, a demographic pyramid can be thought of as a modified version of a stacked bar plot.
 
-Since we are going to create the demographic pyramid by plotting of a **bar graph**, we will need to use a **categorical variable**. Therefore, we will be using the categorical variable `age_group` to graph our bar plot and and 'fill' by `sex`.
+To create a basic stacked bar plot with `geom_col()`, we plot a categorical variable (e.g., `age_group`) against a continuous variable (e.g., `total`), and set `fill` color to a second categorical variable (e.g., `sex`).
 
-::: reminder
-In order to use the `geom_col` function, your dataset needs to include the aggregated count or percentage for each group (**age group** and **sex**)!
+```{r}
+# Basic stacked bar plot
+
+# Begin ggplot  
+ggplot() +
+ 
+# Create bar graph using geom_col()
+  geom_col(data = pyramid_data,   # specify data to graph
+           aes(x = age_group,     # indicate categorical x variable
+               y = total,         # indicate continuous y variable
+               fill = sex))  +    # fill by second categorical variable
+# Modify theme
+  theme_light() +
+
+# Flip X and Y axes
+  coord_flip()
+```
+
+Here we used the `total` variable from `pyramid_data`, where all counts are positive.
+
+![](images/pyramid_aggregated_table.png)
+
+::: recap
+In order to use the `geom_col()` function for a stacked bar chart, your dataset needs to include the total sums aggregated by each categorical variable (**`age_group`** and **`sex`**)!
+
+The basics of plotting bar graphs with {ggplot2} is covered in our introductory data visualization course, Data on Display.
+Further applications of bar charts for epidemic reporting are taught in our lesson on Visualizing Comparisons and Compositions.
+All content can be found on our [website](thegraphcourses.org).
 :::
 
-Let's create our demographic pyramid using the `geom_col` functions from `ggplot2`.
+## Using `geom_col()` for demographic pyramids
+
+Now we will build on the basic stacked bar code above to create a demographic pyramid.
+
+This time we use `axis_counts` for the y axis, which has negative male counts.
+
+![](images/pyramid_aggregated_table.png)
 
 ```{r geom_col}
 
 demo_pyramid <- 
-
-# Begin ggplot  
   ggplot() +
  
-# Create bar graph using geom_bar
   geom_col(data = pyramid_data, #specify data to graph
-           mapping = aes(
-             x = age_group,    #indicate x variable
-             y = counts,       #indicate y variable
-             fill = sex),      #fill by sex
-           colour = "white") +
-  
-# Flip X and Y axes
+           aes(
+             x = age_group,    # indicate x variable
+             y = axis_counts,  # indicate NEGATED y variable
+             fill = sex))  +   # fill by sex
+  theme_light() +
   coord_flip()
+
 
 demo_pyramid
 ```
 
-::: pro-tip
-Did you notice that we plotted the data and mapping information of our graph in `geom_col()` function instead of `ggplot()` function?
-
-By plotting it directly in the `geom_col()` function, we are able to add different layers to our graph (such additional bar plots, lines, points, and more) without affecting the outcome of our already created and individual bar plot.
+::: key-point
+A demographic pyramid is a version of a stacked bar chart, with the bars' horizontal alignment adjusted along the x axis.
 :::
 
-We can also create the same population pyramid using the percent total as our y-axis value.
+We can also create the same population pyramid using the percent totals on our y-axis.
+
+![](images/pyramid_aggregated_table.png)
 
 ```{r geom_col_percent, warning=F}
 
 demo_pyramid_percent <- 
-
-# Begin ggplot  
   ggplot() +
- 
-# Create bar graph using geom_bar
   geom_col(data = pyramid_data, 
-           mapping = aes(
-             x = age_group,
-             y = percent,
-             fill = sex),
-           colour = "white") +
-  
-# Flip x and y axes
-  coord_flip()
+           aes(x = age_group,
+               y = axis_percent, # use the pre-calculated percentages
+               fill = sex)) +
+  coord_flip() +
+  theme_light()
 
 demo_pyramid_percent
-
 ```
+
 
 ::: side-note
-If your dataset contains the count/percentage for each group, such as dataset `pyramid_data`, you can also use `geom_bar`. However, you will need to pass `stat = "identity"` inside `geom_bar` as following:
+Multiple packages are available to facilitate data analysis and data visualization.
+In the case of demographic pyramids, the `{apyramid}` package can be a useful tool.
+This package from the **R4Epis** project contains a function `age_pyramid()`, which allows for the rapid creation of population pyramids:
 
-```{r geom_bar_stat_identity, warning=F}
-# Begin ggplot
-ggplot(data = pyramid_data,
-       mapping = aes(
-         x = age_group,
-         y = counts,    # Specify y-axis
-         fill = sex),
-       colour = "white") +
-
-# Include stat = "identity" in gemo_bar 
-  geom_bar(stat = "identity") +
-  
-# Flip x and y axes
-  coord_flip()
+```{r}
+hiv_cases %>% # can use the original linelist
+  # Grouping variable must be a factor
+  mutate(age_group = factor(age_group)) %>% 
+apyramid::age_pyramid(# 2 required arguments:
+                      age_group = "age_group",
+                      split_by = "sex")
 ```
+
+However, this package has limited functionality and few options for customization.
+`{ggplot2}` a much more versatile approach, and uses syntax we are already familiar with.
+
+Additional information about the function can be read [**here**](https://cran.r-project.org/web/packages/apyramid/vignettes/intro.html) or by entering `?age_pyramid` in your R console.
 :::
 
-::: r-practice
+::: practice
 Let's test your understanding with the following multiple-choice questions (Answer Key is located at the end):
 
-2.  **When using `geom_col`, what type of x variable should your dataset include?**
+2.  **When using `geom_col()`, what type of x variable should your dataset include?**
     a.  Continuous variables
     b.  Categorical variables
     c.  Binary variables
     d.  Ordinal variables
-3.  **Which `ggplot2` function can you use to flip the x and y axes?**
+3.  **Which `{ggplot2}` function can you use to flip the x and y axes?**
     a.  `coord_flip()`
     b.  `x_y_flip()`
-    c.  `geom_histogram_flip()`
-    d.  All of the above
-4.  **Inside which `ggplot2` function should you pass `stat = "identity"` when using already aggregated data and trying to create a bar plot?**
-    a.  `geom_col`
-    b.  `geom_histogram`
-    c.  `geom_bar`
-    d.  All of the above
+    c.  `geom_flip()`
+    d.  Any of the above
 :::
 
-::: r-practice
-Now let's test your understanding with the following coding practice question (Answer Key is located at the end):
+::: practice
+Now let's test your understanding with the following coding practice question:
 
 **We will be using a cleaned and prepared dataset containing the total population of Zimbabwe in 2016 grouped by age group and sex.**
 
-Start by loading the dataset as following:
+Start by loading the prepared dataset as:
 
 ```{r loading_coding_practice}
 
-zw_2016 <- readRDS(here::here("data/clean/population_zw_2016.rds"))
+zw_2016 <- readRDS(here::here("data/population_zw_2016.rds"))
 
 zw_2016
 ```
 
 *Note that the male total count is already **negated**!*
 
-5.  **Create a demographic pyramid for the total population of Zimbabwe in 2016 using the `geom_col` function from the `ggplot2` package. Make sure to add a white border around each bar!**
+5.  **Create a demographic pyramid for the total population of Zimbabwe in 2016 using the `geom_col()` function from the `{ggplot2}` package. Make sure to add a white border around each bar!**
 
 ```{r coding_question4, eval=FALSE}
 Q4_pyramid_zw_2016 <- 
@@ -390,19 +415,70 @@ Q4_pyramid_zw_2016 <-
 
 # Plot Customization
 
-So far, you have learned how to create a demographic pyramid using `ggplot2` as shown below:
+So far, you have learned how to create a demographic pyramid using `{ggplot2}` as shown below:
 
 ```{r geom_col_final, warning=FALSE}
 
 demo_pyramid
-
 ```
 
-However, in order to create an informative graph, a certain level of plot customization is needed. For instance, it is important to include informative labels and to re-scale the x and y axis for better visualization.
+However, in order to create an informative graph, a certain level of plot customization is needed.
+For instance, it is important to include informative labels and to re-scale the x and y axis for better visualization.
 
-Let's learn some useful `ggplot2` customization!
+Let's learn some useful `{ggplot2}` customization!
 
-## Labels
+## Axis Adjustments
+
+The current axis settings result in an asymmetrical representation, with the right side (female) extending further than the left (male) due to a higher case count in the largest female age group.
+For an accurate comparison, it's essential that both sides mirror each other in range.
+
+We will adjust the axis limits to equal positive and negative values, ensuring that the data is symmetrically visualized for a clear and balanced comparison.
+
+We will start by re-scaling the *total count* axis, or in the case of our plot, the **y-axis**.
+For this, we will start by identifying the maximum and saving it as an object.
+
+```{r max_min}
+
+max_count <- max(pyramid_data$total)
+
+max_count
+```
+
+Now that we have identified that the maximum value for *total count* is **318**, we can use it to re-scale our y-axis accordingly.
+
+In this particular case, we want to rescale our y axis to be symmetrical.
+Therefore we will take the biggest absolute value and use it as our limit for both the *positive* and *negative* sides.
+
+In this case, we will use our maximum value.
+
+```{r custom_axis, warning=F}
+
+custom_axes <- 
+
+# Use previous graph
+  demo_pyramid +
+  
+# Adjust y-axis (total count)  
+  scale_y_continuous(
+
+    # Specify limit of y-axis using max value and making positive and negative
+    limits = c(-max_count, max_count),
+    
+    # Specify the spacing between axis labels
+    breaks = scales::breaks_width(100),
+    
+    # Make axis labels absolute so male labels appear positive
+    labels = abs)
+
+
+custom_axes
+```
+
+Adjusting axis limits to equal extents on both sides ensures a symmetrical and accurate visual comparison, facilitating proper interpretation of the data.
+![](images/compare_custom_axes.jpg)
+Note that we also changed the axis labels to their absolute value, so that the male case counts no longer appear as negative numbers.
+
+## Add custom labels
 
 Let's use the population pyramid we previously created using the `geom_col()` function and build upon it.
 
@@ -410,68 +486,26 @@ We can start by adding an informative title, axes, and caption to our graph:
 
 ```{r adjusting_labels, warning=FALSE}
 
-adjusted_labels <- 
+custom_labels <- 
   
-# Use previous demographic pyramid
-  demo_pyramid +
+# Start with previous demographic pyramid
+  custom_axes +
   
 # Adjust the labels
   labs(
-    title = " Age and Sex of Cases",
+    title = "HIV Positive Cases by Age and Sex",
+    subtitle = "Zimbabwe (2016)",
     x = "Age Group",
-    y = "Count of Total",
-    caption = stringr::str_glue("Data are from linelist \nn = {nrow(hiv_prevalence)} (age or sex missing for {sum(is.na(hiv_prevalence$sex) | is.na(hiv_prevalence$age_years))} cases)"))
+    y = "Count", 
+    fill = "Sex",
+    caption = stringr::str_glue("Data are from simulated linelist data \nn = {nrow(hiv_cases)}"))
 
-adjusted_labels
 
-```
-
-## Axis
-
-Let's re-scale our axes to make sure the data is properly visualized and understood.
-
-We will start by re-scaling the *total count* axis, or in the case of our plot, the **y-axis**. For this, we will start by identifying the maximum and minimum values and saving them as objects.
-
-```{r max_min}
-
-max_count <- max(pyramid_data$counts, na.rm = T)
-min_count <- min(pyramid_data$counts, na.rm = T)
-
-max_count
-min_count
+custom_labels
 
 ```
 
-Now that we have identified that the minimum value for the *total count* is **-280** and the maximum value is **318**, we can use it to re-scale our y-axis accordingly.
-
-In this particular case, we want to rescale our y axis to be symmetrical. Therefore we will take the biggest absolute value and use it as our limit for both the *positive* and *negative* sides.
-
-In this case, we will use our maximum value.
-
-```{r adjusted_axis, warning=F}
-
-adjusted_axes <- 
-
-# Use previous graph
-  adjusted_labels +
-  
-# Adjust y-axis (total count)  
-  scale_y_continuous(
-
-    # Specify limit of y-axis using max value and making positive and negative
-    limits = c(max_count * c(-1,1)),
-    
-    # Specify how to break the y-axis (based on max limit)
-    breaks = seq(-400, 400, 400/5),
-    
-    # Make axis labels absolute so male labels appear positive
-    labels = abs)
-
-
-adjusted_axes
-```
-
-## Color Scheme and Themes
+## Enhance Color Scheme and Themes
 
 We can also make necessary adjustments to the color scheme and theme of the graph.
 
@@ -479,10 +513,10 @@ Below is an example of some changes, we can perform:
 
 ```{r color_theme, warning=F}
 
-adjusted_color_theme <- 
+custom_color_theme <- 
   
 # Use previous graph
-  adjusted_axes +
+  custom_labels +
   
 # Designate colors and legend labels manually
   scale_fill_manual(
@@ -491,22 +525,29 @@ adjusted_color_theme <-
     values = c("female" = "lightblue",
                "male" = "darkblue"),
     
-    # Rename legend labels
-    labels = c("Female", 
-               "Male")) +
+    # Capitalize legend labels
+    labels = c("Female", "Male")) +
   
 # Adjust theme settings
   theme(
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.background = element_blank(),
-    axis.line = element_line(colour = "black"), #make axis line black
-    plot.title = element_text(hjust = 0.5),     #set high of title
-    plot.caption = element_text(hjust = 0, size = 11, face = "italic")) #format caption
+    axis.line = element_line(colour = "black"), # make axis line black
+    plot.title = element_text(hjust = 0.5),     # center title
+    plot.subtitle = element_text(hjust = 0.5),  # center subtitle
+    plot.caption = element_text(hjust = 0,      # format caption text
+                                size = 11, 
+                                face = "italic")) 
 
-adjusted_color_theme
+custom_color_theme
 
 ```
+
+![](images/compare_custom_theme.jpg)
+
+-   centered title and subtitle
+-   left align caption and increase font size
+-   capitalize legend text
+-   colors
+-   bold axis lines
 
 # WRAP UP! {.unnumbered}
 
@@ -514,9 +555,11 @@ As you can see, demographic pyramids are an essential visualization tool to unde
 
 The concepts learned in this lesson can also be applied to create other types of graphs that require both negative and positive outputs such as percentage change in case notification rates and more.
 
-Now that you have learned the concept behind the creation of demographic pyramids, the possibilities are endless! From plotting the **cases** per age group and sex over the **baseline/true** population to graphing the change (positive and negative) of interventions in a population, you should be able to apply these concepts to create informative epidemiological graphs.
+Now that you have learned the concept behind the creation of demographic pyramids, the possibilities are endless!
+From plotting the **cases** per age group and sex over the **baseline/true** population to graphing the change (positive and negative) of interventions in a population, you should be able to apply these concepts to create informative epidemiological graphs.
 
-Congratulations on finishing this lesson. We hope you can now apply the knowledge learned in today's lesson during the analysis and creation of epidemiological review reports.
+Congratulations on finishing this lesson.
+We hope you can now apply the knowledge learned in today's lesson during the analysis and creation of epidemiological review reports.
 
 # Answer Key {.unnumbered}
 
@@ -541,7 +584,7 @@ Q4_pyramid_zw_2016 <-
 
 The following team members contributed to this lesson:
 
-`r tgc_contributors_list(ids = c("sabina", "joy"))`
+`r .tgc_contributors_list(ids = c("sabina", "joy"))`
 
 # References {.unnumbered}
 

@@ -1,13 +1,11 @@
 ---
 title: 'Creating Choropleth maps with {ggplot2}'
 output:
-  pdf_document:
+  html_document:
     number_sections: true
     toc: true
-    toc_float: true
     css: !expr here::here("global/style/style.css")
     highlight: kate
-    pandoc_args: --shift-heading-level-by=-1
   word_document:
     toc: true
 editor_options:
