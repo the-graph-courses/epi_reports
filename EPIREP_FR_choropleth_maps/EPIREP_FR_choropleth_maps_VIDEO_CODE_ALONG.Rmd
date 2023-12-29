@@ -1,0 +1,401 @@
+---
+title: 'Création de cartes choroplèthes avec {ggplot2}'
+output:
+  html_document:
+    number_sections: true
+    toc: true
+    toc_float: true
+    css: !expr here::here("global/style/style.css")
+    highlight: kate
+    pandoc_args: --shift-heading-level-by=-1
+  word_document:
+    toc: true
+editor_options:
+  markdown:
+    wrap: 100
+  canonical: true
+  chunk_output_type: inline
+---
+
+## Création de cartes choroplèthes avec {ggplot2}
+
+![](images/malaria_risk_levels_map_1.png){width="300"}
+
+------------------------------------------------------------------------
+
+## Objectifs d'apprentissage
+
+‣ Reconnaître les composants d'une carte choroplèthe.
+
+‣ Préparer des données spécifiquement pour la création d'une carte choroplèthe.
+
+‣ Utiliser {ggplot2} dans R pour concevoir une carte choroplèthe.
+
+‣ Mis en œuvre des techniques de mise à l'échelle des couleurs continues et discrètes.
+
+‣ Intégré divers composants pour créer de petits multiples en utilisant `facet_wrap()` et `facet_grid()`.
+
+------------------------------------------------------------------------
+
+## Charger les packages nécessaires
+
+```{r}
+pacman::p_load(tidyverse, sf)
+options(scipen=1000)  # Désactiver la notation scientifique pour des affichages numériques plus clairs
+```
+
+------------------------------------------------------------------------
+
+## Préparation des données
+
+1.  Données géographiques (polygone) montrant les frontières du Nigeria.
+
+```{r}
+# Importation du shapefile du Nigeria
+nga_adm1 <- st_read(here::here("data/raw/NGA_adm_shapefile/NGA_adm1.shp"))
+```
+
+‣ Affichage des régions administratives du Nigeria à l'aide d'un shapefile.
+
+```{r}
+# Commençons par visualiser notre shapefile
+ggplot() +  # Nous initialisons une visualisation avec ggplot
+  geom_sf(data = nga_adm1) +  # Nous ajoutons notre shapefile à la visualisation avec geom_sf()
+  labs(title = "Aperçu du shapefile du Nigeria")  # Nous donnons un titre à notre graphique
+```
+
+2.  Importation des données attributaires.
+
+```{r}
+malaria_cases <- read_csv(here::here("data/malaria.csv"))
+```
+
+3.  Jointure et nettoyage des données
+
+```{r}
+# Est-ce qu'ils correspondent ?
+setdiff(unique(nga_adm1$NAME_1), unique(malaria_cases$state_name))
+```
+
+```{r}
+# Supprimer "Water body" de nos données
+nga_adm1 <- filter(nga_adm1, NAME_1 != "Water body")
+```
+
+```{r}
+# Jointure des ensembles de données
+malaria2 <- malaria_cases %>% 
+  left_join(nga_adm1, by = c("state_name" = "NAME_1")) %>%
+  st_as_sf()
+```
+
+```{r}
+# Garder uniquement les colonnes essentielles
+malaria2 <- malaria2 %>% 
+  select(state_name, cases_2000, cases_2006, cases_2010, cases_2015, cases_2021, geometry)
+
+```
+
+## Réalisation d'une Carte Choroplèthe avec {ggplot2}
+
+‣ Utilisation de l'argument `fill` dans `geom_sf()`.
+
+```{r}
+# Commencez par une configuration de plot basique
+ggplot(data = malaria2) + 
+  geom_sf(aes(fill = cases_2021)) +   # Remplissage basé sur les cas de 2021
+  labs(title = "Cas du paludisme au Nigeria (2021)") + 
+  theme_void()
+```
+
+### Personnalisation de la Carte
+
+‣ Personnalisez la carte pour la rendre plus informative et attrayante en ajoutant divers éléments et styles.
+
+‣ Titres, étiquettes d'axes, flèche du nord, barre d'échelle et thèmes...
+
+```{r}
+# Ajoutez des améliorations à la carte
+ggplot(data=malaria2) + 
+  geom_sf(aes(fill=cases_2021)) +
+  labs(title = "Cas de Paludisme Distribués au Nigeria (2021)",
+       fill = "Nombre de Cas",
+       x = "Longitude",
+       y = "Latitude") +
+  theme_void() +
+  ggspatial::annotation_north_arrow(location = "br")+
+  ggspatial::annotation_scale(lcoation = "tr")
+```
+
+------------------------------------------------------------------------
+
+## Temps de pratique 1 : Construire une Carte Choroplèthe pour 2015
+
+‣ Créez une carte montrant les cas de paludisme en 2015 en utilisant la colonne `cases_2015`.
+
+‣ Intégrez des titres, des étiquettes d'axes et d'autres améliorations que vous avez apprises pour faire ressortir votre carte.
+
+```{r}
+ggplot(data = malaria2) + 
+  geom_sf(aes(fill = cases_2015)) +
+  labs(title = "Cas du paludisme (2015)",
+       fill = "Nombre de cas",
+       x = "Longitude",
+       y = "Longitude")
+```
+
+------------------------------------------------------------------------
+
+## Mise à l'échelle des Couleurs
+
+### Mise à l'échelle des Couleurs Continue
+
+‣ Mettez en œuvre la mise à l'échelle des couleurs continue sur notre carte pour représenter les différentes magnitudes des cas de paludisme en 2021.
+
+‣ Utilisation de la fonction `scale_fill_continuous()`.
+
+```{r}
+# Commencez avec notre plot basique
+ggplot(data = malaria2) +
+  geom_sf(aes(fill = cases_2021))+
+  scale_fill_continuous(low = "yellow", high = "red", name = "Cas")
+  ggtitle("Distribution des Cas de Paludisme par Région en 2021") +
+  theme_bw()
+```
+
+------------------------------------------------------------------------
+
+### Mise à l'échelle des Couleurs Discrete
+
+‣ Passez à la mise à l'échelle des couleurs discrètes en catégorisant d'abord nos données en fonction des niveaux de risque, puis en appliquant les couleurs appropriées..
+
+```{r}
+# Créer de catégories de risque pour nos données
+malaria2 %>%
+  mutate(risk = case_when(
+    cases_2021 < quantile(cases_2021, 0.5) ~ 'low',
+    cases_2021 > quantile(cases_2021, 0.75) ~ 'high', 
+    TRUE ~ 'medium'
+  )) -> malaria3
+
+table(malaria3$risk)
+```
+
+‣ Palette Discrète Personnalisée avec `scale_fill_brewer()`
+
+```{r}
+# Créer une palette de couleurs manuelle
+custom_palette <- c("yellow", "orange", "red")
+
+# Appliquer la palette personnalisée
+ggplot(data = malaria3) +
+  geom_sf(aes(fill = fct_reorder(risk, cases_2021))) +
+  scale_fill_manual(values = custom_palette, name = "Niveaux de risque") +
+  ggtitle("Niveaux de Risque de Paludisme par Région Basés sur les Cas de 2021") +
+  theme_bw()
+```
+
+‣ Les régions sont maintenant distinctement colorées en fonction des niveaux de risque : Faible, Moyen et Élevé.
+
+------------------------------------------------------------------------
+
+## Temps de pratique 2 : Créez votre propre palette de couleurs
+
+‣ Affichez les cas de paludisme au Nigeria pour 2000 en utilisant cette palette de couleurs personnalisée.
+
+```{r}
+new_palette <- c("gray", "orange", "red") # Définir un nouvel ensemble de couleurs
+
+ggplot(data=malaria3) + 
+   geom_sf(aes(fill =  fct_reorder(risk, cases_2000))) + # Réordonner les étiquettes de risque selon les cas de l'année 2000
+   scale_fill_manual(values = new_palette, "Risk Levels") + 
+   labs(title = "Répartition des cas de paludisme au Nigeria",
+        fill = "Nombre de cas",
+        x = "Longitude",
+        y = "Latitude") +
+   theme_void()
+```
+
+------------------------------------------------------------------------
+
+## Facet Wrap vs. Grille
+
+‣ `facet_wrap()`: utile lorsque vous avez une seule variable avec de nombreux niveaux et que vous souhaitez organiser les graphiques de manière plus compacte.
+
+‣ `facet_grid()`: utile lorsque vous avez deux variables discrètes et que toutes les combinaisons de ces variables existent dans les données.
+
+------------------------------------------------------------------------
+
+### Création de petits multiples avec `facet_wrap()`
+
+‣ Utilisez `pivot_longer()` pour consolider les colonnes annuelles.
+
+```{r}
+malaria3_longer <- malaria3 %>%
+  pivot_longer(cols = `cases_2000`:`cases_2021`, names_to = "year", values_to = "cases")
+
+malaria3_longer
+```
+
+‣ Retirez le préfixe `cases_` pour une visualisation plus claire :
+
+```{r}
+malaria3_longer$year <- str_replace(malaria3_longer$year, "cases_", "")
+malaria3_longer$year
+```
+
+‣ Créez un objet `ggplot` et appliquez le facet wrapping :
+
+```{r}
+ggplot(data = malaria3_longer) +
+  geom_sf(aes(fill = cases)) +
+  scale_fill_continuous(low = "green", high = "red") + 
+  facet_wrap(~ year) +
+  theme_void()
+```
+
+‣ Ajoutez une autre variable, le risque :
+
+```{r}
+ggplot()+
+  geom_sf(data = nga_adm1)+
+  geom_sf(aes(fill = cases), data = filter(malaria3_longer, year %in% c("2000", "2021")))+
+  facet_wrap(year ~ risk)+
+  coord_sf(expand = TRUE)+
+  scale_fill_continuous(low = "green", high = "red")+
+  theme_void()
+```
+
+------------------------------------------------------------------------
+
+### Création de petits multiples avec `facet_grid()`
+
+‣ Utilisez `facet_grid()` pour créer une grille de graphiques.
+
+```{r}
+ggplot()+
+  geom_sf(data = nga_adm1)+
+  geom_sf(aes(fill = cases), data = filter(malaria3_longer, year %in% c("2000", "2021")))+
+  facet_grid(year ~ risk)+
+  coord_sf(expand = TRUE)+
+  scale_fill_continuous(low = "green", high = "red")+
+  theme_void()
+```
+
+------------------------------------------------------------------------
+
+## Temps de pratique 3 : Analysez la distribution des cas de paludisme pour 2000 et 2021
+
+‣ Transformez le jeu de données du format large au format long en utilisant `pivot_longer()`.
+
+```{r}
+# Pivotement des données
+malaria3_longer <- malaria2 %>%
+  pivot_longer(cols = `cases_2000`:`cases_2021`, names_to = "year", values_to = "cases")
+```
+
+‣ Catégorisez les données en niveaux de risque en utilisant la médiane (haut/bas).
+
+```{r}
+# Catégorisation du risque basée sur la médiane
+malaria3_longer %>%
+  mutate(risk = case_when(
+    cases >= median(cases) ~ 'haut',
+    cases < median(cases) ~ 'bas'
+  )) -> malaria3_longer2
+```
+
+‣ Nettoyez la colonne des années pour simplifier ses valeurs.
+
+```{r}
+# Nettoyage des valeurs des années
+malaria3_longer2$year <- str_replace(malaria3_longer2$year, "cases_", "")
+```
+
+‣ Visualisez ces informations sur une carte.
+
+```{r}
+# Tracé des données
+ggplot() +
+  geom_sf(data = nga_adm1) + 
+  geom_sf(aes(fill = cases), data = filter(malaria3_longer2, year %in% c("2000", "2021"))) +
+  facet_grid(year ~ risk) +
+  coord_sf(expand = TRUE) +
+  scale_fill_continuous(low = "green", high = "red") +
+  labs(title = "Cas de paludisme et niveaux de risque au Nigéria",
+       subtitle = "2000 & 2021") +
+  xlab("Longitude") +
+  ylab("Latitude") +
+  theme_void()
+```
+
+
+------------------------------------------------------------------------
+
+## Solutions {.unnumbered}
+
+**1. Construisez votre magnifique carte choroplèthe**
+
+Construisez une carte choroplèthe pour afficher la répartition des cas de paludisme en 2019, en utilisant la colonne `cases_2019` du jeu de données `malaria2`. Vous pouvez améliorer le design et la clarté de votre carte en incorporant des titres, des étiquettes d'axes et toute autre étiquette pertinente.
+
+```{r}
+ggplot(data=malaria2) + 
+  geom_sf(aes(fill=cases_2015)) +
+  labs(title = "Cas de Paludisme au Nigeria (2015)",
+       fill = "Compte des Cas",
+       x = "Longitude",
+       y = "Latitude") +
+  ggspatial::annotation_north_arrow(location = "br")+
+  ggspatial::annotation_scale(location = "tr")+
+  theme_void()
+```
+
+**2. Créez votre propre palette de couleurs**
+
+Créez votre propre palette de couleurs distincte de celle initialement fournie ci-dessous, et affichez les cas de paludisme à travers le Nigeria pour 2000 en utilisant cette palette de couleurs personnalisée. N'oubliez pas d'incorporer des améliorations esthétiques supplémentaires.
+
+```{r}
+new_palette <- c("grey", "orange", "red") # Définir un ensemble différent de couleurs
+ggplot(data=malaria3) + 
+   geom_sf(aes(fill =  fct_reorder(risk, cases_2000))) + # Réordonner les étiquettes de risque selon les cas de l'année 2000
+   scale_fill_manual(values = new_palette, "Niveaux de Risque") + 
+   labs(title = "Répartition des Cas de Paludisme au Nigeria",
+        fill = "Compte des Cas",
+        x = "Longitude",
+        y = "Latitude") +
+   coord_sf(expand = TRUE)+
+   theme_void()
+```
+
+**3. Analysez la distribution des cas de paludisme**
+
+Votre objectif est maintenant d'analyser la distribution des cas de paludisme au Nigeria pour les années 2000 et 2021. Mais vous devrez d'abord catégoriser les données en niveaux de risque en utilisant la médiane (haut/bas), puis visualiser ces informations sur une carte.
+
+```{r}
+# Pivotement des données
+malaria3_longer <- malaria2 %>%
+  pivot_longer(cols = `cases_2000`:`cases_2021`, names_to = "année", values_to = "cas")
+
+# Catégorisation du risque basée sur la médiane
+malaria3_longer %>%
+  mutate(risk = case_when(
+    cas <= median(cas) ~ 'faible',
+    cas > median(cas) ~ 'élevé'
+  )) -> malaria3_longer2
+
+# Nettoyage des valeurs d'année
+malaria3_longer2$année <- str_replace(malaria3_longer2$année, "cases_", "")
+
+# Tracé des données
+ggplot() +
+  geom_sf(data = nga_adm1) + 
+  geom_sf(aes(fill = cas), data = filter(malaria3_longer2, année %in% c("2000", "2021"))) +
+  facet_grid(année ~ risk) +
+  coord_sf(expand = TRUE) +
+  scale_fill_continuous(low = "green", high = "red") +
+  labs(title = "Cas de paludisme et niveaux de risque au Nigeria",
+       subtitle = "2000 & 2021") +
+  xlab("Longitude") +
+  ylab("Latitude") +
+  theme_void()
+```
