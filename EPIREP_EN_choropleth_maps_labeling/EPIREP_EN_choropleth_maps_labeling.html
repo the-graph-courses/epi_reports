@@ -1661,7 +1661,7 @@ entries.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r tgc-code-block"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Reading the geographical shapefile data</span></span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>nga_adm1 <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_read</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;data/raw/NGA_adm_shapefile/NGA_adm1.shp&quot;</span>)) </span></code></pre></div>
 <pre><code>## Reading layer `NGA_adm1&#39; from data source 
-##   `C:\Users\joych\epi_reports_staging\EPIREP_EN_choropleth_maps_labeling\data\raw\NGA_adm_shapefile\NGA_adm1.shp&#39; 
+##   `C:\GitHub\graph_courses\epi_reports_staging\EPIREP_EN_choropleth_maps_labeling\data\raw\NGA_adm_shapefile\NGA_adm1.shp&#39; 
 ##   using driver `ESRI Shapefile&#39;
 ## Simple feature collection with 38 features and 9 fields
 ## Geometry type: MULTIPOLYGON
@@ -2097,12 +2097,20 @@ regions based on the number of malaria tests and their outcomes.
 Specific tools from the <code>ggspatial</code> package are used to add
 cartographic elements, making the map more informative.</p>
 </div>
-<div id="q-reflecting-the-positive-rate-by-size-and-color" class="section level2 challenge" number="10.1">
-<h2><span class="header-section-number">10.1</span> Q: Reflecting the
-positive rate by size and color</h2>
-<p>Create a new visualization that represents the positive rate (number
-of positive cases divided by the number examined) for each location.
-Modify the size of the points to reflect the positive rate.</p>
+<div id="q-visualize-positive-rate-by-size-and-color" class="section level2 practice" number="10.1">
+<h2><span class="header-section-number">10.1</span> Q: Visualize
+Positive Rate by Size and Color</h2>
+<p><em>Your final challenge is to create a visualization representing
+the positive rate of malaria for each location. Adjust the size of the
+points to reflect the positive rate. This task will test your
+understanding of combining different data indicators on a map. Good
+luck!</em></p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r tgc-code-block"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="co"># Visualizing positive rate</span></span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a>  _________ <span class="sc">+</span> </span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a>  _________ <span class="sc">+</span> </span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a>  _________ <span class="sc">+</span> </span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a>  _________</span></code></pre></div>
 </div>
 <hr />
 <p>WRAP UP!</p>
@@ -2137,37 +2145,37 @@ practice 1</h2>
 <p>To visualize the distribution of malaria cases in Nigeria for the
 year 2015, follow the instructions provided in the exercise. Here’s the
 complete solution:</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r tgc-code-block"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="co"># Constructing the choropleth map for 2015 using ggplot2</span></span>
-<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> malaria3) <span class="sc">+</span></span>
-<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> cases_2015 <span class="sc">/</span> <span class="dv">1000</span>)) <span class="sc">+</span>  <span class="co"># Updated data column to reflect 2015</span></span>
-<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Nigeria Malaria Distributed Cases in 2015&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;Cases per 1000&quot;</span>) <span class="sc">+</span>  <span class="co"># Updated title for 2015</span></span>
-<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a>  <span class="fu">scale_fill_continuous</span>(<span class="at">low =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">high =</span> <span class="st">&quot;yellow&quot;</span>) <span class="sc">+</span>  <span class="co"># Modified color scale to blue-to-yellow gradient</span></span>
-<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a>  <span class="fu">theme_void</span>() </span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r tgc-code-block"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="co"># Constructing the choropleth map for 2015 using ggplot2</span></span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> malaria3) <span class="sc">+</span></span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> cases_2015 <span class="sc">/</span> <span class="dv">1000</span>)) <span class="sc">+</span>  <span class="co"># Updated data column to reflect 2015</span></span>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Nigeria Malaria Distributed Cases in 2015&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;Cases per 1000&quot;</span>) <span class="sc">+</span>  <span class="co"># Updated title for 2015</span></span>
+<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>  <span class="fu">scale_fill_continuous</span>(<span class="at">low =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">high =</span> <span class="st">&quot;yellow&quot;</span>) <span class="sc">+</span>  <span class="co"># Modified color scale to blue-to-yellow gradient</span></span>
+<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a>  <span class="fu">theme_void</span>() </span></code></pre></div>
 </div>
 <div id="solution-for-practice-2" class="section level2" number="10.3">
 <h2><span class="header-section-number">10.3</span> Solution for
 practice 2</h2>
 <p>To combine the visualization of increase rates with state names,
 follow the steps below:</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r tgc-code-block"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="co"># Combining visualization of increase rates with state names</span></span>
-<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> malaria3) <span class="sc">+</span></span>
-<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a>  <span class="co"># Create a choropleth map with fill color based on the increase rate</span></span>
-<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> increase_rate), <span class="at">color=</span><span class="st">&quot;white&quot;</span>, <span class="at">size =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
-<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>  <span class="co"># Label each region with its state name</span></span>
-<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a>  <span class="fu">geom_sf_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">str_wrap</span>(state_name, <span class="dv">1</span>)), <span class="at">size =</span> <span class="dv">2</span>)<span class="sc">+</span></span>
-<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a></span>
-<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a>  <span class="co"># Specify the color scale for increase rates</span></span>
-<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a>  <span class="fu">scale_fill_continuous</span>(<span class="at">name=</span><span class="st">&quot;Increase rate (%)&quot;</span>, </span>
-<span id="cb21-10"><a href="#cb21-10" tabindex="-1"></a>                        <span class="at">limits=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">70</span>), </span>
-<span id="cb21-11"><a href="#cb21-11" tabindex="-1"></a>                        <span class="at">low =</span> <span class="st">&quot;green&quot;</span>, </span>
-<span id="cb21-12"><a href="#cb21-12" tabindex="-1"></a>                        <span class="at">high =</span> <span class="st">&quot;red&quot;</span>, </span>
-<span id="cb21-13"><a href="#cb21-13" tabindex="-1"></a>                        <span class="at">breaks=</span><span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">20</span>, <span class="dv">40</span>, <span class="dv">60</span>)) <span class="sc">+</span></span>
-<span id="cb21-14"><a href="#cb21-14" tabindex="-1"></a>  </span>
-<span id="cb21-15"><a href="#cb21-15" tabindex="-1"></a>  <span class="co"># Add a title and legend to the plot</span></span>
-<span id="cb21-16"><a href="#cb21-16" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Nigeria Malaria Increase Rate from 2015 to 2021&quot;</span>, </span>
-<span id="cb21-17"><a href="#cb21-17" tabindex="-1"></a>       <span class="at">fill =</span> <span class="st">&quot;Increase Rate (%)&quot;</span>) <span class="sc">+</span></span>
-<span id="cb21-18"><a href="#cb21-18" tabindex="-1"></a>  </span>
-<span id="cb21-19"><a href="#cb21-19" tabindex="-1"></a>  <span class="fu">theme_void</span>()  <span class="co"># Apply a minimalistic theme for clarity</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r tgc-code-block"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="co"># Combining visualization of increase rates with state names</span></span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> malaria3) <span class="sc">+</span></span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a>  <span class="co"># Create a choropleth map with fill color based on the increase rate</span></span>
+<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> increase_rate), <span class="at">color=</span><span class="st">&quot;white&quot;</span>, <span class="at">size =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a>  <span class="co"># Label each region with its state name</span></span>
+<span id="cb22-6"><a href="#cb22-6" tabindex="-1"></a>  <span class="fu">geom_sf_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">str_wrap</span>(state_name, <span class="dv">1</span>)), <span class="at">size =</span> <span class="dv">2</span>)<span class="sc">+</span></span>
+<span id="cb22-7"><a href="#cb22-7" tabindex="-1"></a></span>
+<span id="cb22-8"><a href="#cb22-8" tabindex="-1"></a>  <span class="co"># Specify the color scale for increase rates</span></span>
+<span id="cb22-9"><a href="#cb22-9" tabindex="-1"></a>  <span class="fu">scale_fill_continuous</span>(<span class="at">name=</span><span class="st">&quot;Increase rate (%)&quot;</span>, </span>
+<span id="cb22-10"><a href="#cb22-10" tabindex="-1"></a>                        <span class="at">limits=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">70</span>), </span>
+<span id="cb22-11"><a href="#cb22-11" tabindex="-1"></a>                        <span class="at">low =</span> <span class="st">&quot;green&quot;</span>, </span>
+<span id="cb22-12"><a href="#cb22-12" tabindex="-1"></a>                        <span class="at">high =</span> <span class="st">&quot;red&quot;</span>, </span>
+<span id="cb22-13"><a href="#cb22-13" tabindex="-1"></a>                        <span class="at">breaks=</span><span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">20</span>, <span class="dv">40</span>, <span class="dv">60</span>)) <span class="sc">+</span></span>
+<span id="cb22-14"><a href="#cb22-14" tabindex="-1"></a>  </span>
+<span id="cb22-15"><a href="#cb22-15" tabindex="-1"></a>  <span class="co"># Add a title and legend to the plot</span></span>
+<span id="cb22-16"><a href="#cb22-16" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Nigeria Malaria Increase Rate from 2015 to 2021&quot;</span>, </span>
+<span id="cb22-17"><a href="#cb22-17" tabindex="-1"></a>       <span class="at">fill =</span> <span class="st">&quot;Increase Rate (%)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb22-18"><a href="#cb22-18" tabindex="-1"></a>  </span>
+<span id="cb22-19"><a href="#cb22-19" tabindex="-1"></a>  <span class="fu">theme_void</span>()  <span class="co"># Apply a minimalistic theme for clarity</span></span></code></pre></div>
 <p>In this solution, the choropleth map is created based on the increase
 rate of malaria cases from 2015 to 2021. Each state in Nigeria is
 labeled by its name, and the color gradient (from green to red)
@@ -2179,21 +2187,21 @@ title and a legend to ensure clarity and comprehension.</p>
 <h2><span class="header-section-number">10.4</span> Solution for
 practice 3</h2>
 <p>Create a visualization that represents the positive rate:</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r tgc-code-block"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="co"># Adding a positive rate column</span></span>
-<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>nigeria_pr<span class="sc">$</span>positive_rate <span class="ot">&lt;-</span> (nigeria_pr<span class="sc">$</span>positive <span class="sc">/</span> nigeria_pr<span class="sc">$</span>examined) <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a></span>
-<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> nga_adm1) <span class="sc">+</span> </span>
-<span id="cb22-6"><a href="#cb22-6" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">size =</span> positive_rate, <span class="at">color =</span> positive_rate), <span class="at">data =</span> nigeria_pr)<span class="sc">+</span></span>
-<span id="cb22-7"><a href="#cb22-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Location and Positive Rate of Malaria Cases in Nigeria&quot;</span>,</span>
-<span id="cb22-8"><a href="#cb22-8" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;Data from Malaria Atlas Project&quot;</span>,</span>
-<span id="cb22-9"><a href="#cb22-9" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">&quot;Positive Rate (%)&quot;</span>,</span>
-<span id="cb22-10"><a href="#cb22-10" tabindex="-1"></a>       <span class="at">size =</span> <span class="st">&quot;Positive Rate (%)&quot;</span>)<span class="sc">+</span></span>
-<span id="cb22-11"><a href="#cb22-11" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Longitude&quot;</span>)<span class="sc">+</span></span>
-<span id="cb22-12"><a href="#cb22-12" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Latitude&quot;</span>)<span class="sc">+</span></span>
-<span id="cb22-13"><a href="#cb22-13" tabindex="-1"></a>  ggspatial<span class="sc">::</span><span class="fu">annotation_north_arrow</span>(<span class="at">location =</span> <span class="st">&quot;br&quot;</span>)<span class="sc">+</span></span>
-<span id="cb22-14"><a href="#cb22-14" tabindex="-1"></a>  ggspatial<span class="sc">::</span><span class="fu">annotation_scale</span>(<span class="at">location =</span> <span class="st">&quot;bl&quot;</span>)<span class="sc">+</span></span>
-<span id="cb22-15"><a href="#cb22-15" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r tgc-code-block"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="co"># Adding a positive rate column</span></span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>nigeria_pr<span class="sc">$</span>positive_rate <span class="ot">&lt;-</span> (nigeria_pr<span class="sc">$</span>positive <span class="sc">/</span> nigeria_pr<span class="sc">$</span>examined) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> nga_adm1) <span class="sc">+</span> </span>
+<span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">size =</span> positive_rate, <span class="at">color =</span> positive_rate), <span class="at">data =</span> nigeria_pr)<span class="sc">+</span></span>
+<span id="cb23-7"><a href="#cb23-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Location and Positive Rate of Malaria Cases in Nigeria&quot;</span>,</span>
+<span id="cb23-8"><a href="#cb23-8" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;Data from Malaria Atlas Project&quot;</span>,</span>
+<span id="cb23-9"><a href="#cb23-9" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">&quot;Positive Rate (%)&quot;</span>,</span>
+<span id="cb23-10"><a href="#cb23-10" tabindex="-1"></a>       <span class="at">size =</span> <span class="st">&quot;Positive Rate (%)&quot;</span>)<span class="sc">+</span></span>
+<span id="cb23-11"><a href="#cb23-11" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Longitude&quot;</span>)<span class="sc">+</span></span>
+<span id="cb23-12"><a href="#cb23-12" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Latitude&quot;</span>)<span class="sc">+</span></span>
+<span id="cb23-13"><a href="#cb23-13" tabindex="-1"></a>  ggspatial<span class="sc">::</span><span class="fu">annotation_north_arrow</span>(<span class="at">location =</span> <span class="st">&quot;br&quot;</span>)<span class="sc">+</span></span>
+<span id="cb23-14"><a href="#cb23-14" tabindex="-1"></a>  ggspatial<span class="sc">::</span><span class="fu">annotation_scale</span>(<span class="at">location =</span> <span class="st">&quot;bl&quot;</span>)<span class="sc">+</span></span>
+<span id="cb23-15"><a href="#cb23-15" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre></div>
 </div>
 </div>
 <div id="contributors" class="section level1 unlisted unnumbered">

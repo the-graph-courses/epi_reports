@@ -465,10 +465,21 @@ ggplot() +
 This code chunk visualizes the malaria data on a map. It highlights regions based on the number of malaria tests and their outcomes. Specific tools from the `ggspatial` package are used to add cartographic elements, making the map more informative.
 :::
 
-::: challenge
-### Q: Reflecting the positive rate by size and color
 
-Create a new visualization that represents the positive rate (number of positive cases divided by the number examined) for each location. Modify the size of the points to reflect the positive rate.
+::: practice
+
+### Q: Visualize Positive Rate by Size and Color
+
+_Your final challenge is to create a visualization representing the positive rate of malaria for each location. Adjust the size of the points to reflect the positive rate. This task will test your understanding of combining different data indicators on a map. Good luck!_
+
+```{r, eval=FALSE}
+# Visualizing positive rate
+ggplot() +
+  _________ + 
+  _________ + 
+  _________ + 
+  _________
+```
 :::
 
 ------------------------------------------------------------------------
