@@ -53,11 +53,9 @@ Grâce à l'utilisation de `ggplot2`, nous sommes en mesure de créer des pyrami
 Plusieurs packages sont disponibles pour faciliter l'analyse des données et la visualisation des données. Dans le cas des pyramides démographiques, le package `apyramid` peut être un outil utile. Néanmoins, en utilisant ce package, nous sommes limités dans la personnalisation de notre graphique, ce qui rend `ggplot2` une approche beaucoup plus polyvalente.
 
 ::: side-note  
-
 Le package `apyramid` est un produit du projet **R4Epis** qui permet la création rapide de pyramides de population et de nombreuses autres fonctions utiles utilisées dans les rapports épidémiologiques.
 
 Des informations détaillées sur le package peuvent être lues [**ici**](https://cran.r-project.org/web/packages/apyramid/vignettes/intro.html) ou en entrant `?age_pyramid` dans votre console R.
-
 :::
 
 
@@ -71,7 +69,6 @@ Par conséquent, lors de la description de l'épidémiologie de maladies transmi
 
 
 ::: side-note
-
 **Utilisation de la distribution démographique pour l'évaluation de la qualité des données**
 
 Les pyramides démographiques peuvent également jouer un rôle crucial dans l'évaluation de la qualité des données des systèmes de surveillance de routine en aidant à évaluer la cohérence interne et externe.
@@ -79,7 +76,6 @@ Les pyramides démographiques peuvent également jouer un rôle crucial dans l'�
 Lorsqu'on essaie d'évaluer les normes de qualité des données de surveillance de certaines maladies, la cohérence externe peut être évaluée en comparant les données de surveillance nationales à l'épidémiologie mondiale de cette maladie. Les calculs de données basés sur des variables démographiques comme le groupe d'âge sont parfois utilisés.
 
 Dans le cas des données de surveillance de la tuberculose, la cohérence externe peut être évaluée en calculant le pourcentage d'enfants diagnostiqués tuberculeux dans le programme et en le comparant à la moyenne mondiale des cas.
-
 :::
 
 ## Conceptualisation des pyramides démographiques
@@ -107,9 +103,7 @@ Prenons la moitié féminine et retournons nos axes pour voir ce que nous obteno
 Comme vous pouvez probablement le constater maintenant, pour créer une pyramide de population, nous avons créé deux **graphiques à barres** montrant la répartition des sexes par groupes d'âge. Une fois que nous avons créé un graphique pour les femmes et les hommes, nous les avons ensuite fusionnés ensemble à travers leur axe des y.
 
 ::: key-point
-
 Pour que la moitié masculine soit représentée à gauche de l'axe des y, nous devrons nier le **compte** (nombre total de personnes par groupe d'âge).
-
 :::
 
 En d'autres termes, les pyramides de population sont des **graphiques à barres** dont les axes sont **inversés** (axes x et y inversés) et où les femmes sont représentées du **côté positif** de l'axe des y et les hommes sont représentés du **côté négatif** de l'axe des y.
@@ -151,7 +145,7 @@ Afin de concentrer notre attention sur la création de pyramides démographiques
 :::
 
 ```{r load_data, warning = F, message = F, render = reactable_10_rows}
-hiv_data <- read_csv(here::here("data/clean/hiv_zimbabwe_2016.csv"))
+hiv_data <- read_csv(here::here("data/hiv_zimbabwe_2016.csv"))
 
 hiv_data
 ```
@@ -164,7 +158,7 @@ Chargeons un sous-ensemble de nos données déjà nettoyées !
 
 ```{r hiv_prevalence, render = reactable_10_rows}
 
-hiv_prevalence <- readRDS(here::here("data/clean/hiv_zimbabwe_prevalence.rds"))
+hiv_prevalence <- readRDS(here::here("data/hiv_zimbabwe_prevalence.rds"))
 
 hiv_prevalence
 ```
@@ -373,7 +367,7 @@ Commencez par charger l'ensemble de données comme suit :
 
 ```{r loading_coding_practice}
 
-zw_2016 <- readRDS(here::here("data/clean/population_zw_2016.rds"))
+zw_2016 <- readRDS(here::here("data/population_zw_2016.rds"))
 
 zw_2016
 ```
