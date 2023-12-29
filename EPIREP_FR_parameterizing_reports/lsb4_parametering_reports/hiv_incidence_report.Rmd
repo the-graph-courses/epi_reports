@@ -1,0 +1,68 @@
+---
+title: "Rapport sur l'Incidence du VIH - `r stringr::str_to_title(params$country)`"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: html_document
+params:
+  country: "Angola"
+---
+
+```{r, echo = FALSE}
+# Configuration des options globales
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo = FALSE)
+
+# charger les packages
+pacman::p_load(ggplot2, dplyr, knitr, kableExtra)
+
+## Charger le jeu de données
+hiv_data <- read.csv("hiv_incidence.csv")
+```
+
+
+## Contexte Épidémiologique
+
+Le VIH, le virus responsable du SIDA, reste l'un des défis de santé publique les plus significatifs à l'échelle mondiale. La maladie, qui se propage principalement par des rapports sexuels non protégés, des transfusions sanguines contaminées, et de la mère à l'enfant pendant la grossesse, l'accouchement, ou l'allaitement, a eu un impact profond sur la santé, les économies et le développement des pays affectés.
+
+
+## Tendance de l'Incidence du VIH en `r params$country`
+
+En `r params$country`, l'épidémie de VIH a ses caractéristiques et défis uniques. Cette section du rapport se penche sur les tendances épidémiologiques observées en `r params$country` au fil des années, telles que reflétées par l'incidence rapportée de nouveaux cas de VIH.
+
+```{r}
+hiv_incidence_data <- subset(hiv_data, country == params$country)
+ggplot(hiv_incidence_data, aes(x = year, y = new_cases)) +
+  geom_line() +
+  theme_minimal() +
+  labs(title = paste("Incidence du VIH en", params$country, "(1990-2000)"),
+       x = "Année",
+       y = "Nouveaux Cas")
+```
+
+Le graphique en ligne ci-dessus illustre la tendance des nouveaux cas de VIH en `r params$pays` de 1990 à 2000.
+  
+## Tableau Récapitulatif des Cas de VIH
+
+```{r}
+# Filtrer pour les données du pays sélectionné
+country_data <- hiv_data %>% filter(country == params$country)
+
+# Résumer les données par année
+country_summary <- country_data %>% 
+    group_by(year) %>%
+    summarise(Total_Cases = sum(new_cases))
+
+# Identifier l'année la plus récente
+most_recent_year <- max(country_summary$year)
+
+# Afficher le tableau en utilisant kable et mettre en évidence l'année la plus récente
+country_summary %>%
+    kable("html", caption = paste("Résumé des Cas de VIH en", params$country, "par Année")) %>%
+    kable_styling(bootstrap_options = c("striped", "hover")) %>%
+    row_spec(which(country_summary$year == most_recent_year), background = "lightblue")
+```
+
+Le tableau ci-dessous fournit un résumé année par année des nouveaux cas de VIH en `r params$country`. Ces données sont cruciales pour comprendre la trajectoire de l'épidémie de VIH/SIDA dans le pays et pour informer les interventions de santé publique.
+
+
+## Conclusion
+
+Les données présentées ici ne sont pas juste des chiffres; elles représentent les vies impactées par le VIH/SIDA en `r params$country`. Les efforts continus en matière de prévention, de traitement et d'éducation, ainsi qu'une analyse robuste des données, restent clés pour contrôler et, à terme, mettre fin à l'épidémie de VIH dans le pays.

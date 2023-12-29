@@ -1,0 +1,747 @@
+---
+title: 'Visualisation de Séries Temporelles Épidémiologiques'
+output: 
+  html_document:
+    number_sections: true
+    toc: true
+    toc_float: true
+    css: !expr here::here("global/style/style.css")
+    highlight: kate
+    pandoc_args: --shift-heading-level-by=-1
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r, echo = F, message = F, warning = F}
+knitr::opts_chunk$set(class.source = "tgc-code-block")
+# Load packages 
+if(!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse, knitr, here, reactable)
+
+# Source functions 
+source(here::here("global/functions/lesson_functions.R"))
+
+# knitr settings
+knitr::opts_chunk$set(warning = F, message = F, class.source = "tgc-code-block", error = T)
+
+```
+
+## Introduction
+
+![](images/tb_notifications.png){width="408"}
+
+
+## Objectifs d'apprentissage
+
+‣ Acquérir les fondamentaux de la représentation et de l'interprétation des données de séries temporelles dans les graphiques en ligne.
+
+‣ Utiliser les techniques d'agrégation et de pivotement des données pour la préparation à l'analyse.
+
+‣ Améliorer l'attrait visuel et de la lisibilité des graphiques en ligne, en utilisant les capacités de personnalisation de ggplot2.
+
+‣ Visualiser l'incertitude des données à travers des intervalles de confiance.
+
+‣ Illustrer la variabilité des données et l'application de techniques de lissage.
+
+‣ Utiliser efficacement des axes secondaires dans les graphiques.
+
+## Packages
+
+‣ Installer et charger les packages nécessaires.
+
+```{r}
+pacman::p_load(dplyr, readr, stringr, ggplot2, tidyr, lubridate, outbreaks, scales, ggrepel, ggthemes, zoo)
+options(scipen=999)
+```
+
+------------------------------------------------------------------------
+
+## Introduction aux graphiques en ligne pour les données de séries temporelles
+
+‣ Visualisation des notifications de tuberculose (TB) en **Australie** au fil du temps.
+
+‣ Comparaison des notifications en milieu urbain et rural.
+
+## Préparation des données : Agrégation et Pivotement
+
+‣ Défi : Convertir les **données trimestrielles** en **format annuel**.
+
+‣ Commencez par extraire l'année de la colonne `period`.
+
+Cet ensemble de données comprend des colonnes telles que `période` (temps en format trimestriel, par exemple, '1993Q1'), `rural` (cas dans les zones rurales) et `urbain` (cas dans les zones urbaines). Nous sommes immédiatement confrontés à un défi : les données sont au format trimestriel, mais nous voulons les représenter au format annuel. Pour ce faire, nous devrons agréger les données par année.\*
+
+\*Commençons par extraire l'année de la colonne `période`. Nous pouvons le faire en utilisant la fonction `str_sub()` du paquet `stringr`, qui nous permet d'extraire une sous-chaîne d'une chaîne
+
+```{r}
+tb_data_aus <- read_csv("data/aus_tb_notifs.csv")
+glimpse(tb_data_aus)
+```
+
+------------------------------------------------------------------------
+
+```{r render = .reactable_10_rows}
+tb_data_aus %>% 
+  mutate(year = str_sub(period, 1, 4)) %>% 
+  # convertir à nouveau en numérique
+  mutate(year = as.numeric(year))
+```
+
+------------------------------------------------------------------------
+
+‣ Agréger les données par année en utilisant `group_by()` et `summarise()`.
+
+```{r}
+annual_data_aus <- tb_data_aus %>%
+  mutate(year = str_sub(period, 1, 4)) %>% 
+  mutate(year = as.numeric(year)) %>% 
+  group_by(year) %>%
+  summarise(rural = sum(rural), 
+            urban = sum(urban))
+
+glimpse(annual_data_aus)
+```
+
+------------------------------------------------------------------------
+
+‣ Créer un premier graphique en ligne pour visualiser les données.
+
+```{r}
+ggplot(annual_data_aus, aes(x = year)) +
+  geom_line(aes(y = urban, colour = "Urban")) + 
+  geom_line(aes(y = rural, colour = "Rural"))
+```
+
+------------------------------------------------------------------------
+
+```{r}
+ggplot(annual_data_aus, aes(x = year)) +
+  geom_line(aes(y = urban, colour = "Urban")) + 
+  geom_line(aes(y = rural, colour = "Rural")) + 
+  geom_point(aes(y = urban, colour = "Urban")) + 
+  geom_point(aes(y = rural, colour = "Rural")) + 
+  geom_text(aes(y = urban, label = urban), size = 2, nudge_y = 20) + 
+  geom_text(aes(y = rural, label
+
+ = rural), size = 2, nudge_y = 20)
+```
+
+------------------------------------------------------------------------
+
+‣ Tracer les données en utilisant `pivot_longer()` de `tidyr`.
+
+```{r render = .reactable_10_rows}
+# Utilisation de `pivot_longer` de tidyr pour remodeler les données
+annual_data_aus %>%
+  pivot_longer(cols = c("urban", "rural")) %>% 
+  rename(region = name, 
+         cases = value)
+```
+
+------------------------------------------------------------------------
+
+‣ Renommer les colonnes pour qu'elles soient plus informatives.
+
+```{r render = .reactable_10_rows}
+aus_long <- annual_data_aus %>%
+  pivot_longer(cols = c("urban", "rural")) %>% 
+  rename(region = name, cases = value)
+```
+
+------------------------------------------------------------------------
+
+## Un graphique en ligne groupé basique
+
+```{r}
+ggplot(aus_long, aes(x = year, y = cases, colour = region, group = region)) +
+  geom_line() +
+  geom_point() +
+  geom_text(aes(label = cases), size = 2, nudge_y = 20)
+```
+
+------------------------------------------------------------------------
+
+‣ Créer le graphique en ligne groupé.
+
+```{r}
+ggplot(aus_long, aes(x = year, y = cases, colour = region, group = region)) +
+  geom_line()+
+  geom_point()+
+  geom_text(aes(label = cases), size = 2, nudge_y = 20)
+```
+
+------------------------------------------------------------------------
+
+## Pratique !
+
+Transformez et tracez l'ensemble de données sur la TB au Bénin.
+
+```{r, eval = FALSE}
+# Complétez le code avec votre réponse :
+tb_data_benin %>% 
+  _____________________
+```
+
+------------------------------------------------------------------------
+
+## Améliorations esthétiques des graphiques en ligne
+
+‣ Se concentrer sur **l'amélioration de la clarté** et de **l'attrait visuel**.
+
+‣ Techniques telles que **la réduction de la fréquence des étiquettes**, **l'alternance des étiquettes** et **la personnalisation des palettes de couleurs**.
+
+------------------------------------------------------------------------
+
+## Réduction de la Fréquence des Étiquettes
+
+```{r}
+ggplot(aus_long, aes(x = year, y = cases, colour = region, group = region)) +
+  geom_line() +
+  geom_point() +
+  geom_text(aes(label = cases), size = 2, nudge_y = 20)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+even_years <- aus_long %>%
+  filter(year %% 2 == 0) # Garder uniquement les années qui sont des multiples de 2
+
+ggplot(aus_long, aes(x = year, y = cases, colour = region, group = region)) +
+  geom_line() + 
+  geom_point() + 
+  geom_text(data = even_years, aes(label = cases), 
+            size = 2.8, nudge_y = 20)
+```
+
+------------------------------------------------------------------------
+
+## Étiquettes Alternées
+
+‣ Afficher les étiquettes alternées
+
+```{r}
+odd_years <- aus_long %>%
+  filter(year %% 2 != 0) # Garder uniquement les années qui ne sont PAS des multiples de 2
+
+ggplot(aus_long, aes(x = year, y = cases, colour = region, group = region)) +
+  geom_line() + 
+  geom_point() + 
+  geom_text(data = even_years, aes(label = cases), 
+            nudge_y = 20, size = 2.8) +
+  geom_text(data = odd_years, aes(label = cases), 
+            nudge_y = -20, size = 2.8)
+```
+
+------------------------------------------------------------------------
+
+## `ggrepel::geom_text_repel()`
+
+‣ Mise en œuvre de `ggrepel::geom_text_repel()` pour une meilleure clarté.
+
+```{r}
+ggplot(aus_long, aes(x = year, y = cases, colour = region, group = region)) +
+  geom_line() + 
+  geom_point() + 
+  geom_text_repel(data = even_years, aes(label = cases), 
+                  nudge_y = 60, size = 2.8, segment.size = 0.1) +
+  geom_text_repel(data = odd_years, aes(label = cases), 
+                  nudge_y = -60, size = 2.8, segment.size = 0.1)
+```
+
+------------------------------------------------------------------------
+
+## Personnalisation de la Palette de Couleurs
+
+‣ Personnalisation des couleurs des lignes à l'aide de la fonction `scale_color_manual()`.
+
+```{r}
+ggplot(aus_long, aes(x = year, y = cases, colour = region, group = region))+
+  geom_line() + 
+  geom_point() + 
+  geom_text_repel(data = even_years, aes(label = cases), 
+                  nudge_y = 60, size = 2.8, segment.size = 0.1) +
+  geom_text_repel(data = odd_years, aes(label = cases), 
+                  nudge_y = -60, size = 2.8, segment.size = 0.1) +
+  scale_color_manual(values = c("urban" = "#0fa3b1", 
+                                "rural" = "#2F2C4E"))
+```
+
+------------------------------------------------------------------------
+
+## Ajout d'Annotations au Graphique
+
+‣ Annotation du graphique avec un titre approprié, des étiquettes d'axes, un titre de légende, une légende et un thème.
+
+```{r}
+ggplot(aus_long, aes(x = year, y = cases, colour = region, group = region)) +
+  geom_line(linewidth = 1) + 
+  geom_text_repel(data = even_years, aes(label = cases), 
+                  nudge_y = 60, size = 2.8, segment.size = 0.08) +
+  geom_text_repel(data = odd_years, aes(label = cases), 
+                  nudge_y = -50, size = 2.8, segment.size = 0.08) +
+  scale_color_manual(values = c("urban" = "#0fa3b1", "rural" = "#2F2C4E")) +
+  labs(title = "Notifications de Tuberculose en Australie", 
+       subtitle = "1993-2022",
+       caption = "Source : Département de la santé du gouvernement de l'État de Victoria",
+       x = "Année",
+       color = "Région") +
+  ggthemes::theme_few() +
+  theme(legend.position = "right")
+```
+
+------------------------------------------------------------------------
+
+**PRATIQUE !**
+
+Améliorez le graphique avec les cas de TB chez les enfants en Amérique du Sud.
+
+```{r, eval = FALSE}
+# Complétez le code avec votre réponse :
+tb_child_cases_southam <- tidyr::who2 %>% 
+  transmute(country, year, 
+            tb_cases_children = sp_m_014 + sp_f_014 + sn_m_014 + sn_f_014) %>% 
+  filter(country %in% c("Brésil", "Colombie", "Chili")) %>% 
+  filter(!is.na(tb_cases_children))
+
+tb_child_cases_southam %>% 
+  ggplot(aes(x = year, y = tb_cases_children, color = country)) +
+  geom_line() + 
+  geom_point() 
+```
+
+Mettez en œuvre les améliorations suivantes :
+
+-   Réglez les étiquettes `geom_text` pour alterner au-dessus et en dessous des lignes, similaire à l'exemple que nous avons vu ci-dessus.
+-   Utilisez la palette de couleurs suivante `c("#212738", "#F97068", "#067BC2")`.
+-   Appliquez `theme_classic()`.
+-   Ajoutez un titre, un sous-titre et une légende pour fournir du contexte et des informations. (Tapez `?tidyr::who` dans la console pour en savoir plus sur les données.)
+
+------------------------------------------------------------------------
+
+## Tracé des Intervalle de Confiance
+
+‣ Comprendre l'importance des **intervalles de confiance** dans les séries temporelles.
+
+‣ Utilisation de `geom_ribbon()` pour la visualisation.
+
+------------------------------------------------------------------------
+
+## Préparation des Données : Extraction des Intervalles de Confiance
+
+‣ Création d'un tableau d'incidence à partir d'une liste de lignes
+
+```{r render = .reactable_10_rows}
+hiv_data_brazil <- 
+  rio::import(here::here("data/new_hiv_infections_gho.xlsx")) %>% 
+  as_tibble() %>% 
+  janitor::clean_names()
+
+hiv_data_brazil
+```
+
+------------------------------------------------------------------------
+
+```{r render = .reactable_10_rows}
+hiv_data_brazil %>% 
+  separate(new_hiv_cases, 
+           into = c("cases", "cases_lower", "cases_upper"), 
+           sep = "\\[|–")
+```
+
+------------------------------------------------------------------------
+
+```{r render = .reactable_10_rows}
+hiv_data_brazil_clean <- 
+  hiv_data_brazil %>% 
+  separate(new_hiv_cases, 
+           into = c("cases", "cases_lower", "cases_upper"), 
+           sep = "\\[|–") %>% 
+  mutate(across(c("cases", "cases_lower", "cases_upper"),
+                ~ str_replace_all(.x, "[^0-9]", "") %>% 
+                  as.numeric()))
+
+hiv_data_brazil_clean
+```
+
+------------------------------------------------------------------------
+
+## Tracé des intervalles de confiance
+
+‣ Comprendre l'importance des **intervalles de confiance** dans les séries temporelles.
+
+‣ Utilisation de `geom_ribbon()` pour la visualisation.
+
+------------------------------------------------------------------------
+
+## Préparation des données : Extraction des intervalles de confiance
+
+‣ Création d'une table d'incidence à partir d'une liste de cas
+
+------------------------------------------------------------------------
+
+```{r render = .reactable_10_rows}
+hiv_data_brazil <- 
+  rio::import(here::here("data/new_hiv_infections_gho.xlsx")) %>% 
+  as_tibble() %>% 
+  janitor::clean_names()
+
+hiv_data_brazil
+```
+
+------------------------------------------------------------------------
+
+```{r render = .reactable_10_rows}
+hiv_data_brazil %>% 
+  separate(new_hiv_cases, 
+           into = c("cases", "cases_lower", "cases_upper"), 
+           sep = "\\[|–")
+```
+
+------------------------------------------------------------------------
+
+```{r render = .reactable_10_rows}
+hiv_data_brazil_clean <- 
+  hiv_data_brazil %>% 
+  separate(new_hiv_cases, 
+           into = c("cases", "cases_lower", "cases_upper"), 
+           sep = "\\[|–") %>% 
+  mutate(across(c("cases", "cases_lower", "cases_upper"),
+                ~ str_replace_all(.x, "[^0-9]", "") %>% 
+                  as.numeric()))
+
+hiv_data_brazil_clean
+```
+
+------------------------------------------------------------------------
+
+## Tracé avec `geom_ribbon()`
+
+‣ Affichage des intervalles de confiance avec `geom_ribbon()`.
+
+```{r render = .reactable_10_rows}
+# Créer le tracé avec un ruban pour les deux sexes
+hiv_data_brazil_clean %>% 
+  filter(sex == "Both sexes") %>% 
+  ggplot(aes(x = year, y = cases)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = cases_lower, ymax = cases_upper), alpha = 0.4)
+```
+
+------------------------------------------------------------------------
+
+‣ Tracé pour les hommes et les femmes séparément
+
+```{r render = .reactable_10_rows}
+# Créer le tracé avec un ruban pour les hommes et les femmes séparément
+hiv_data_brazil_clean %>% 
+  filter(sex != "Both sexes") %>% 
+  ggplot(aes(x = year, y = cases, color = sex, fill = sex)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = cases_lower, ymax = cases_upper), alpha = 0.4)
+```
+
+------------------------------------------------------------------------
+
+**PRATIQUE !**
+
+Créez un tracé avec des intervalles de confiance pour les cas de paludisme au Kenya et au Nigeria.
+
+```{r, eval = FALSE}
+# Complétez le code avec votre réponse :
+nig_ken_mal %>% 
+  _____________________
+```
+
+------------------------------------------------------------------------
+
+## Lissage des données bruyantes
+
+‣ Techniques pour **lisser les données** afin de mettre en évidence les tendances.
+
+```{r render = .reactable_10_rows}
+mal <- rio::import(here::here("data/pediatric_malaria_data_joao_2021.xlsx")) %>% 
+  as_tibble() %>% 
+  mutate(date_positive_test = as.Date(date_positive_test)) %>% 
+  # Conserver les données de 2019-2020 
+  filter(date_positive_test >= as.Date("2019-01-01"),
+         date_positive_test <= as.Date("2020-12-31")) 
+mal
+```
+
+------------------------------------------------------------------------
+
+```{r render = .reactable_10_rows}
+mal %>%
+  count(date_positive_test, name = "cases")
+```
+
+------------------------------------------------------------------------
+
+```{r render = .reactable_10_rows}
+mal_notif_count <- mal %>%
+  count(date_positive_test, name = "cases") %>% 
+  complete(date_positive_test = seq.Date(min(date_positive_test),
+                                         max(date_positive_test), 
+                                         by = "day"), 
+           fill = list(cases = 0))
+
+mal_notif_count
+```
+
+------------------------------------------------------------------------
+
+```{r render = .reactable_10_rows}
+# Créer une épicurve de base en utilisant ggplot2
+ggplot(mal_notif_count, aes(x = date_positive_test, y = cases)) +
+  geom_line()
+```
+
+------------------------------------------------------------------------
+
+‣ Utilisation de `geom_smooth()` et agrégation des données.
+
+```{r, warning=FALSE, message=FALSE}
+ggplot(mal_notif_count, aes(x = date_positive_test, y = cases)) +
+  geom_smooth(method = "loess")
+```
+
+------------------------------------------------------------------------
+
+```{r}
+# Ajuster la sensibilité du lissage
+ggplot(mal_notif_count, aes(x = date_positive_test, y = cases)) +
+  geom_smooth(method = "loess", span = 0.1)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+ggplot(mal_notif_count, aes(x = date_positive_test, y = cases)) +
+  geom_smooth(method = "loess", span = 0.9)
+```
+
+------------------------------------------------------------------------
+
+‣ Lissage des données en les agrégeant.
+
+```{r render = .reactable_10_rows}
+mal_notif_count %>% 
+  mutate(month = floor_date(date_positive_test, unit = "month")) 
+```
+
+------------------------------------------------------------------------
+
+```{r render = .reactable_10_rows}
+mal_monthly <- 
+  mal_notif_count %>% 
+  mutate(month = floor_date(date_positive_test, unit = "month")) %>% 
+  group_by(month) %>% 
+  summarize(cases = sum(cases))
+```
+
+------------------------------------------------------------------------
+
+```{r}
+ggplot(mal_monthly, aes(x = month, y = cases)) + 
+  geom_line()
+```
+
+------------------------------------------------------------------------
+
+**PRATIQUE !**
+
+Appliquez des techniques de lissage aux données sur les décès liés au VIH en Colombie.
+
+```{r, eval = FALSE}
+colom_hiv_deaths <- 
+  read_csv(here::here("colombia_hiv_deaths_2010_to_2016.csv")) %>% 
+  mutate(date_death = ymd(paste(death_year, death_month, death_day, sep = "-")))
+colom_hiv_deaths 
+```
+
+1.  Créer un tableau qui compte les décès liés au VIH par mois.
+2.  Tracer une épicourbe des décès par mois.
+3.  Appliquer `geom_smooth` à l'épicourbe pour une visualisation plus lisse. Assurez-vous de choisir une portée appropriée pour le lissage.
+
+------------------------------------------------------------------------
+
+## Lissage avec des Moyennes Mobiles
+
+‣ Lissage de données de séries temporelles bruyantes en calculant des **moyennes mobiles**.
+
+‣ Utilisation de la fonction `rollmean()` du package zoo pour calculer les moyennes mobiles.
+
+```{r render = .reactable_10_rows}
+mal_notif_count <- mal_notif_count %>%
+  mutate(roll_cases = rollmean(cases, k = 14, fill = NA)) 
+```
+
+------------------------------------------------------------------------
+
+```{r, warning=FALSE}
+mal_notif_count %>% 
+  ggplot(aes(x = date_positive_test, y = cases)) +
+  geom_line(color = "gray80") + 
+  geom_line(aes(y = roll_cases), color = "red")
+```
+
+------------------------------------------------------------------------
+
+**PRATIQUE !**
+
+Reconsidérez à nouveau le jeu de données des individus décédés du VIH en Colombie :
+
+```{r, eval=FALSE}
+colom_hiv_deaths%>%
+  ______________________
+```
+
+```{r, eval=FALSE}
+colom_hiv_deaths_per_day <- 
+  colom_hiv_deaths %>% 
+  group_by(date_death) %>%
+  summarize(deaths = n()) %>% 
+  complete(date_death = seq.Date(min(date_death),
+                                 max(date_death), 
+                                 by = "day"), 
+           fill = list(deaths = 0)) 
+  
+colom_hiv_deaths_per_day
+```
+
+------------------------------------------------------------------------
+
+En utilisant les étapes couvertes dans la leçon, vous devriez :
+
+1.  créer une nouvelle colonne qui calcule la moyenne mobile des décès par jour sur une période de 14 jours.
+
+2.  Ensuite, tracer cette moyenne mobile à côté des données brutes.
+
+------------------------------------------------------------------------
+
+## Axes Secondaires
+
+‣ Utilisation d'un **axe y secondaire** pour des mesures distinctes.
+
+‣ Étapes pour créer des tracés avec un axe y secondaire.
+
+------------------------------------------------------------------------
+
+**Étape 1 :** Créer des Comptes Cumulatifs de Cas
+
+```{r render = .reactable_10_rows}
+mal_notif_count_cum <- 
+  mal_notif_count %>% 
+  group_by(date_positive_test) %>% 
+  summarize(cases = sum(cases)) %>% 
+  mutate(cum_cases = cumsum(cases))
+
+mal_notif_count_cum
+```
+
+------------------------------------------------------------------------
+
+**Étape 2 : Identifier la nécessité d'un axe Y secondaire**
+
+```{r}
+# Tracer le total des cas de paludisme
+ggplot(mal_notif_count_cum, aes(x = date_positive_test)) +
+  geom_line(aes(y = cases))
+```
+
+------------------------------------------------------------------------
+
+```{r}
+# Ajout des cas cumulatifs de paludisme au tracé
+ggplot(mal_notif_count_cum, aes(x = date_positive_test)) +
+  geom_line(aes(y = cases)) +
+  geom_line(aes(y = cum_cases), color = "red")
+```
+
+------------------------------------------------------------------------
+
+**Étape 3 : Calculer et Appliquer le Facteur d'Échelle**
+
+```{r}
+max(mal_notif_count_cum$cases)
+max(mal_notif_count_cum$cum_cases)
+```
+
+```{r}
+scale_factor <- max(mal_notif_count_cum$cum_cases) / max(mal_notif_count_cum$cases)
+scale_factor
+```
+
+------------------------------------------------------------------------
+
+```{r}
+# obtenir le rapport exact
+ggplot(mal_notif_count_cum, aes(x = date_positive_test)) +
+  geom_line(aes(y = cases)) +
+  geom_line(aes(y = cum_cases / 49.97), color = "red") 
+```
+
+------------------------------------------------------------------------
+
+**Étape 4 : Ajouter l'Axe Y Secondaire**
+
+```{r}
+# Ajouter un axe y secondaire
+ggplot(mal_notif_count_cum, aes(x = date_positive_test)) +
+  geom_line(aes(y = cases)) +
+  geom_line(aes(y = cum_cases / 49.97), color = "red") +
+  scale_y_continuous(sec.axis = sec_axis(trans = ~ . * 49.97, 
+                                         name = "Cas Cumulatifs"))
+```
+
+------------------------------------------------------------------------
+
+**Étape 5 : Améliorer la Lisibilité du Tracé**
+
+```{r}
+# Finaliser le tracé avec des axes coordonnés en couleur
+ggplot(mal_notif_count_cum, aes(x = date_positive_test)) +
+  geom_line(aes(y = cases)) +
+  geom_line(aes(y = cum_cases / scale_factor), color = "red") +
+  scale_y_continuous(
+    name = "Cas Quotidiens",
+    sec.axis = sec_axis(~ . * scale_factor, name = "Cas Cumulatifs")
+  ) +
+
+  labs(title = "Cas de Paludisme dans la Municipalité de Sussundenga",
+       subtitle = "Cas Quotidiens et Cumulatifs",
+       x = NULL) + 
+  theme_economist() + 
+  theme(axis.text.y.right = element_text(color = "red"),
+        axis.title.y.right = element_text(color = "red"))
+```
+
+------------------------------------------------------------------------
+
+**PRATIQUE !**
+
+Créez un tracé pour les décès par VIH en Colombie avec deux axes y.
+
+```{r, eval = FALSE}
+# Complétez le code avec votre réponse :
+colom_hiv_deaths_per_day %>% 
+  _____________________
+```
+
+------------------------------------------------------------------------
+
+## Conclusion !
+
+‣ Visualiser les notifications de TB au fil du temps.
+
+‣ Surmonter les défis de la conversion des données trimestrielles en format annuel.
+
+‣ Créer des Graphiques en Ligne Basiques et Groupés en employant des méthodes de remodelage des données comme `pivot_longer()`.
+
+‣ Améliorer les tracés avec des techniques de gestion des étiquettes et de personnalisation des couleurs comme `ggrepel::geom_text_repel()` pour une clarté dans le placement des étiquettes.
+
+‣ Apprendre l'importance de représenter la variabilité à travers des intervalles de confiance dans les données avec `geom_ribbon()`.
+
+‣ Lisser les données bruyantes avec `geom_smooth()` et des moyennes mobiles pour une visualisation des tendances plus claire.
+
+‣ Maîtriser l'utilisation d'un axe y secondaire pour comparer des mesures distinctes.
