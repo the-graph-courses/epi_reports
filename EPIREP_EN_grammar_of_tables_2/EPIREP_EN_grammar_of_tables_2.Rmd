@@ -112,7 +112,7 @@ Here's the full details of the columns we will use:
 But for the purposes of this lesson we will use the tables directly, this this the table that we created with the right spanners and columns labels, we will base the rest of our lesson on this particular one.
 
 ```{r}
-hiv_malawi_summary <- read_rds(here::here("data", "clean", "malawi_hiv_summary_t3.rds"))
+hiv_malawi_summary <- read_rds(here::here("data/clean/malawi_hiv_summary_l2_t11.rds"))
 
 hiv_malawi_summary
 ```
@@ -499,12 +499,6 @@ t11 <- t10 %>%
   )
   
 t11
-```
-
-```{r message=FALSE, warning=FALSE, include=FALSE}
-# saving table for next lesson as rds object
-t11 %>% write_rds(here("data/clean/malawi_hiv_summary_l2_t11.rds"))
-t11 %>% gt::gtsave(here("data/clean/malawi_hiv_summary_l2_t11.png"))
 ```
 
 ::: challenge

@@ -1,5 +1,5 @@
 ---
-title: '\ '
+title: 'Automating Data Visualization with {ggplot2} and {purrr}'
 output:
   html_document:
     number_sections: true
@@ -28,25 +28,11 @@ source(here::here("global/functions/lesson_functions.R"))
 
 # knitr settings
 knitr::opts_chunk$set(warning = F, message = F, class.source = "tgc-code-block", error = T)
-
-
 ```
-
-# Automating Data Visualization
 
 ## Introduction
 
--   Situations requiring repetitive plotting tasks
--   Example: Plotting the same epidemic indicator for multiple regions
--   Focus on automating data visualizations
--   Tools: `{ggplot2}` and `{purrr}` in R
--   Programmatic approach with `{ggplot2}`
-    -   Creating custom plotting functions
-    -   Streamlining graphing tasks
--   Utilizing `{purrr}` for iteration
-    -   Handling different variables
-    -   Generating and saving multiple plots in a single step
--   Benefits of automating plotting for data analysis workflows
+There are often situations when you need to perform repetitive plotting tasks. For example, you'd like to plot the same kind of data (e.g. the same epidemic indicator) for several states, provinces, or cities. In this lesson, we will explore how to automate data visualizations using the powerful combination of `{ggplot2}` and `{purrr}` in R. First, we'll delve into the programmatic side of `{ggplot2}`, creating custom plotting functions to streamline your graphing tasks. Then we'll use `{purrr}` to iterate through different variables, allowing us to generate and save a multitude of plots in one step! Learning how to automate plotting will greatly enhance your data analysis workflows.
 
 ![](images/repetitive_plots.png)
 
@@ -85,16 +71,7 @@ pacman::p_load(tidyverse, here, glue)
 
 ## Introduction to the data: HIV in Malawi
 
--   Dataset Overview
-    -   Source: Malawi Ministry of Health Department of HIV & AIDS and Viral Hepatitis
-    -   Data for December 2022
-    -   Subnational HIV epidemic indicators
--   Estimation Method
-    -   Small‐area estimation model: Naomi
-    -   Estimates key measures
-    -   Stratified by subnational administrative units, sex, and age groups
--   Dataset Access
-    -   Original dataset link: [Malawi HIV Subnational Estimates Naomi Model 2023](https://dms.hiv.health.gov.mw/dataset/malawi-hiv-subnational-estimates-naomi-model-2023)
+Today, we will be looking at a dataset of subnational HIV epidemic indicators from the Malawi Ministry of Health Department of HIV & AIDS and Viral Hepatitis, for December 2022. These estimates were derived from a small‐area estimation model, called Naomi, to estimate key measures stratified by subnational administrative units, sex, and five‐year age groups. The original dataset can be accessed [here](https://dms.hiv.health.gov.mw/dataset/malawi-hiv-subnational-estimates-naomi-model-2023).
 
 We have prepared a subset of that data to analyse in this lesson:
 
@@ -111,7 +88,7 @@ hiv_mwi_agesex
     -   `area_name` - name of the geographic area
 -   **Demographic information**
     -   `age_group` and `sex`
--   **HIV indicators**: total population, people living with HIV (PLHIV), HIV prevalence, incidence, ART coverage, and PLHIV who are aware of their status.
+    -   **HIV indicators**: total population, people living with HIV (PLHIV), HIV prevalence, incidence, ART coverage, and PLHIV who are aware of their status.
     -   `indicator` - short code
     -   `indicator_label` - full name
 -   **Statistical measures**: model estimates with probabilistic uncertainty
@@ -123,21 +100,19 @@ The Naomi model synthesizes data from multiple data sources to give small-area e
 
 ### Visualizing age-sex distribution
 
--   Age and sex disparities in HIV prevalence influenced by various factors
+Age and sex disparities in HIV prevalence are observed globally and are affected by a multitude of overlapping factors, including gender discrimination, sexual behavior, and access to healthcare and education. These factors can influence both the likelihood of initial infection and the outcomes for people living with HIV.
 
--   Focus on visualizing age-sex distribution of indicators at different levels
-
--   Initial task: Create a national-level bar chart of HIV prevalence using `ggplot()`
+In this lesson we will focus on visualizing the age-sex distribution of various indicators at the national, regional, and district level. First let's use `ggplot()` to create a national-level bar chart of HIV prevalence, grouped by age and split by sex.
 
 ```{r}
 # Bar chart of age-sex distribution 
 hiv_mwi_agesex %>% 
-  filter(area_level == 'Country',
-         indicator == 'prevalence') %>% 
-  ggplot(aes(x = age_group,
+  filter(area_level == "Country",
+         indicator == "prevalence") %>% 
+  ggplot(aes(x = age_group, 
              y = mean, 
              fill = sex)) +
-  geom_col(position = 'dodge') +
+  geom_col(position = "dodge") +
   theme_minimal() +
   labs(title = 'National estimates of HIV prevalence, Malawi (Dec 2022)')
 ```
@@ -151,7 +126,7 @@ The variable **`age_group`** is a **character** vector, which is not inherently 
 
 ```{r}
 # View unique values the age_group variable
-hiv_mwi_agesex %>% pull(--------) %>% unique()
+hiv_mwi_agesex %>% pull(age_group) %>% unique()
 ```
 
 If we look at the unique values of the variable, we get a vector that is correctly ordered from youngest to oldest. However, `{ggplot2}` arranges character variables "alphabetically", which means our "5-9" age group is plotted in the wrong place.
@@ -160,11 +135,11 @@ To arrange our bar plot the correct age sequence, we can convert `age_group` to 
 
 ```{r}
 # Create a vector of correctly ordered age group values
-ordered_age_groups <- hiv_mwi_agesex %>% pull(------------) %>%  unique()
+ordered_age_groups <- hiv_mwi_agesex %>% pull(age_group) %>% unique()
 
 # Reorder age_group levels and save to a new data frame
 hiv_malawi <- hiv_mwi_agesex %>%
-  mutate(-----------------------------------)
+  mutate(age_group = forcats::fct_relevel(age_group, ordered_age_groups))
 ```
 
 Now we are ready to plot age distributions with our new **`hiv_malawi`** data frame.
@@ -175,12 +150,12 @@ Let's try the same `ggplot()` code again, with `hiv_malawi`:
 ```{r}
 # Plot with releveled age groups
 hiv_malawi %>% 
-  filter(area_level == --------,
-         indicator == ----------) %>% 
+  filter(area_level == "Country",
+         indicator == "prevalence") %>% 
   ggplot(aes(x = age_group, 
              y = mean, 
              fill = sex)) +
-  geom_col(----------------) +
+  geom_col(position = "dodge") +
   theme_minimal() +
   labs(title = "National estimates of HIV prevalence, Malawi (Dec 2022)")
 ```
@@ -190,39 +165,27 @@ Much better!
 ::: side-note
 **Insights on HIV prevalence**
 
--   Gender Disparity in HIV Prevalence
-    -   Starts at age 15, linked to sexual activity onset
-    -   Women have higher prevalence than men in their 20s to 40s
-    -   Possible reasons: biological vulnerability, social dynamics
-    -   Shift after age 50, with men having higher rates
-    -   Influenced by factors like sexual behavior, mortality rates, and treatment access
+The graph reveals a discernible gender disparity in HIV prevalence starting at age 15, likely tied to the onset of sexual activity. Women face a significantly higher prevalence than men through their 20s to 40s, which may reflect factors such as biological vulnerability and social dynamics. Interestingly, this trend reverses after the 50s, where men show higher rates. This shift could be influenced by men's sexual behavior, mortality rates, and access to or seeking of treatment.
 :::
 
--   Deeper Investigation: Examining trends in more localized areas
--   Geographic Areas: Dataset includes estimates for 3 main regions and 28 districts of Malawi
--   Initial Focus: Analyzing the three regions as the first administrative level
+Now, let's dig deeper and investigate if the same trends are observed when we zoom into more localized areas. We can filter the data to plot the age-sex distribution at different geographic areas. Our dataset includes estimates aggregated for the 3 main regions and 28 districts of Malawi. We'll start by focusing on Malawi's first administrative level --- the **three regions**.
 
 ![Malawi map of regions and districts](images/Malawi_district_map_2020.png)
 
 ## The challenge of repetitive plotting
 
--   Data Visualization Challenge
-    -   Repetitive filtering of data subsets
--   Task: Create a Plot for `"Northern"` Region
-    -   Adapt code from the national plot
-    -   Replace `"Country"` with `"Region"`
-    -   Addthe region's name to the filter
+In this section, we will highlight a common challenge in data visualization: repetitive filtering of data subsets.
+
+Let's first create a plot of HIV prevalence for the `"Northern"` region of Malawi. We can copy the code for the national plot we made earlier, and replace `"Country"` with `"Region"`, and `"Malawi"` with the name of the Region we want to plot.
 
 ```{r}
 # Example of repetitive filtering and plotting - Region 1
 
 hiv_malawi %>% 
   # Filter to Northern Region
-  filter(
-    area_level == ---------,
-    area_name == ---------,
-    indicator == ---------
-  ) %>% 
+  filter(area_level == "Region",
+         area_name == 'Northern',
+         indicator == "prevalence") %>% 
   ggplot(aes(x = age_group, 
              y = mean, 
              fill = sex)) +
@@ -240,7 +203,7 @@ Now let's repeat this for the other two regions:
 hiv_malawi %>% 
   # Filter to Southern Region
   filter(area_level == "Region",
-         area_name == ---------,
+         area_name == 'Southern',
          indicator == "prevalence") %>% 
   ggplot(aes(x = age_group, 
              y = mean, 
@@ -255,7 +218,7 @@ hiv_malawi %>%
 hiv_malawi %>% 
   # Filter to Central Region
   filter(area_level == "Region",
-         area_name == ---------,
+         area_name == 'Central',
          indicator == "prevalence") %>% 
   ggplot(aes(x = age_group, 
              y = mean, 
@@ -266,23 +229,14 @@ hiv_malawi %>%
   labs(title = "HIV Prevelance by age and sex in Central Region, Malawi (Dec 2022)")
 ```
 
--   Limitations of Manual Filtering
-    -   Works for a small number of subgroups
-    -   Becomes inefficient and error-prone as subgroups increase
--   Approach to Address Challenge
-    -   Demonstrate using `{ggplot2}` and functional programming techniques
-    -   Avoid copying and pasting code for each subgroup
+While the above method of copying and replacing names works for a small number of subgroups, the limitations of manual filtering become evident as the number of subgroups increases. Imagine doing this for each of the 28 districts in the data -- it would be highly inefficient and an error-prone process!
+
+Instead of copying and pasting the same code and adjusting the variables, we'll demonstrate how to handle this challenge in the next sections, using a combination of `{ggplot2}` and functional programming techniques.
 
 ::: side-note
 **Faceting for small multiples**
 
--   Faceted Plot as an Alternative
-    -   Breakdown by region or district
--   Limitation
-    -   Too many levels in grouping variable
-    -   Potential data overload with numerous subsets
--   Challenge with Crowded Plots
-    -   28 facets could make the plot unreadable
+Another option is to create a faceted plot, broken down by region or district. Again, the limitation is that there can be too many levels in your grouping variable, or too much data to fit in each subset. A plot made up of 28 facets would be crowded and virtually unreadable.
 
 ```{r}
 # Example of faceted subplots by region
@@ -295,8 +249,7 @@ hiv_malawi %>%
   geom_col(position = "dodge") +
   theme_minimal() +
   labs(title = "HIV Prevelance by age and sex for Regions of Malawi (Dec 2022)") +
-  facet_wrap(---------)
-  
+  facet_wrap(~area_name)
 ```
 
 Other times we may generate individual plots for separate documents or slides. Instead of sticking solely to faceting, we can create functions that allow us to create a series of plots systematically.
@@ -307,34 +260,14 @@ Other times we may generate individual plots for separate documents or slides. I
 
 Make an age-sex bar plot of **ART coverage** in **Lilongwe** district. You can start with the code we used to create the regional plots. This time, you will need to filter the data to **District**, and adjust the plot title accordingly.
 
-```{r include = F}
-# PQ1 ans A
-hiv_malawi %>% 
-  filter(area_level == "District",
-         area_name == "Lilongwe",
-         indicator == "art_coverage") %>% 
-  ggplot(aes(x = age_group, 
-             y = mean, 
-             fill = sex)) +
-  geom_col(position = "dodge") +
-  theme_minimal() +
-  labs(title = 'Estimates of ART coverage by age and sex for Lilongwe district')
+```{r include = F, eval = F}
+# PQ1 answer A
 ```
 
 Now adapt your code to create the same plot for **Mzimba** district.
 
-```{r include = F}
-# PQ1 ans B
-hiv_malawi %>% 
-  filter(area_level == "District",
-         area_name == "Mzimba",
-         indicator == "art_coverage") %>% 
-  ggplot(aes(x = age_group, 
-             y = mean, 
-             fill = sex)) +
-  geom_col(position = "dodge") +
-  theme_minimal() +
-  labs(title = 'Estimates of ART coverage by age and sex for Mzibma district')
+```{r include = F, eval = F}
+# PQ1 answer B
 
 ```
 :::
@@ -343,11 +276,9 @@ hiv_malawi %>%
 
 ### Single-argument function
 
--   First Step in Automation: Create a Filtering and Plotting Function
--   Example: Visualizing Mean Prevalence for a Region
-    -   Define a function
-    -   Input argument: Subset condition
-    -   Function creates regional plot using filtered data
+The first step to automating out plotting is to create a small function that filters the data for us, and plots the subsetted data.
+
+For example, to visualize the mean prevalence for a region, we can **define a function** that takes a subset condition as an input argument and creates the regional plot with the filtered data.
 
 ```{r}
 # Simple function for filtering to region and plotting age sex grouped bar chart
@@ -356,22 +287,18 @@ plot_region<- function(region_name){
   # copy the code from above and replace area name with a placeholder
   hiv_malawi %>% 
   filter(area_level == "Region",
-         area_name == ---------,
+         area_name == {{region_name}},
          indicator == "prevalence") %>% 
   ggplot(aes(x = age_group, 
              y = mean, 
              fill = sex)) +
   geom_col(position = "dodge") +
   theme_minimal() +
-  labs(title = ---------)
+  labs(title = {{region_name}})
 }
 ```
 
--   Code Inside User-Defined Function
-    -   Similar to previous chart creation
-    -   Placeholder for region name: `{{region_name}}`
-    -   Filtering with `filter()` function based on `region_name`
-    -   Using `region_name` as plot title in `labs()` function
+The code inside the user-defined function above is basically the same as the one to create the previous chart. The only difference is that we do not specify a specific region name, but create a **placeholder**, here called**`{{region_name}}`**, to control the filtering condition and title. In the `filter()` function, we subset our data based on `region_name`; in the `labs()` function we use this string as the plot title.
 
 ::: watch-out
 **Curly curlies**
@@ -393,21 +320,14 @@ southern
 central
 ```
 
--   Efficiency of Custom Function
-    -   Avoids repetitive code
-    -   Allows easy adjustments without altering individual plots
--   Consistency in Age-Sex Patterns
-    -   Observed at both national and regional levels
--   Variation in Prevalence
-    -   Higher prevalence in the Southern region compared to others
+You can see that using a custom function is much more efficient than repeating and editing the same code chunk. If changes are necessary, we don't need to alter the code for each individual plot. Instead, we can make a small adjustment to our `plot_region()` function.
+
+These plots show that the age-sex patterns of HIV prevalence holds the same at national and regional levels. But you can see that overall prevalence is much higher in the Southern region than others.
 
 ::: pro-tip
 **Customizing titles with `glue()`**
 
--   Custom Function Plots
-    -   Nearly identical to previous plots
-    -   Difference: Title
-    -   Title adjustment: From "Central" to 'Central region estimates of HIV prevalence'
+The plots generated by our custom function look *almost* exactly the same as the ones before - can you spot one difference? That's right, the title! Instead of just "Central", we want it to say 'Central region estimates of HIV prevalence'.
 
 We can fix that with the **`glue()`** function inside our custom function:
 
@@ -423,7 +343,7 @@ plot_region2 <- function(region_name){
              fill = sex)) +
   geom_col(position = "dodge") +
   theme_minimal() +
-  labs(title = glue("HIV Prevelance by age and sex in --------- Region, Malawi (Dec 2022)"))
+  labs(title = glue("HIV Prevelance by age and sex in {region_name} Region, Malawi (Dec 2022)"))
 }
 
 # Test function
@@ -436,39 +356,24 @@ plot_region2("Central")
 
 -   Create custom function called **`plot_district()`** which takes `district_name` as an input, and creates an age-sex plot of **persons living with HIV** (the "plhiv" indicator), at the district level. Use `glue()` to create a custom title.
 
-```{r include = F}
-## PQ2 ans A - same as the plot_region() function from above, but filter area_level to to "District", replace {{region_name}} with {{district_name}}, and change indicator to "plhiv"
+```{r include = F, eval = F}
+## PQ2 answer A 
 
-plot_district <- function(district_name){
-  hiv_malawi %>% 
-    filter(area_level == "District",
-           area_name == ---------,
-           indicator == ---------) %>% 
-    ggplot(aes(x = age_group, 
-               y = mean, 
-               fill = sex)) +
-    geom_col(position = "dodge") +
-    theme_minimal() +
-    labs(title = glue("PLHIV by age and sex in --------- District, Malawi (Dec 2022)"))
-}
 ```
 
 Use your function to create a plot for the **Chitipa** and **Neno** districts.
 
-```{r include=F}
-# PQ2 ans B - Test function
-plot_district("Chitipa")
-plot_district("Neno")
+```{r include=F, eval = F}
+# PQ2 answer B
+
 ```
 :::
 
 ### Multiple input function
 
--   Enhancing the `plot_region()` Function
-    -   Customization for versatility
--   New Input Parameters
-    -   HIV indicator for the y-axis
-    -   Filter by "Region" or "District"
+In the previous section, our `plot_region()` function accepted just one input: `region_name`, and filtered data to the "Region" level only.
+
+We can make our function even more versatile by allowing us to customize the HIV indicator to plot on the y-axis, and whether to filter by "Region" or "District".
 
 ```{r}
 # Create custom function with multiple inputs
@@ -476,16 +381,16 @@ plot_malawi <- function(area_name, area_level, hiv_indicator){
   hiv_malawi %>% 
     # filter by 3 conditions
   filter(
-    area_level == ---------,
-    area_name == ---------,
-    indicator == ---------) %>% 
+    area_level == {{area_level}},
+    area_name == {{area_name}},
+    indicator == {{hiv_indicator}}) %>% 
   ggplot(aes(x = age_group, 
              y = mean, 
              fill = sex)) +
   geom_col(position = "dodge") +
   theme_minimal() +
     # custom title
-  labs(title = glue("Mean --------- by age group in --------- ---------, Malawi (Dec 2022)"))
+  labs(title = glue("Mean {hiv_indicator} by age group in {area_name} {area_level}, Malawi (Dec 2022)"))
 }
 ```
 
@@ -502,20 +407,14 @@ plot_malawi("Southern", "Region", "population")
 ::: side-note
 **Filtering to area level**
 
--   Inclusion of `area_level` Parameter
-    -   Prevents conflicts when a district and region share the same name
-    -   Provides flexibility to handle similar cases in other datasets
-    -   Allows customization of the plot title to mention area level
+The reason we added **`area_level`** is to avoid a situation where a district and region share the same name. We don't have such cases in this dataset, however it is not uncommon for states/provinces to have the same name as a prominent district/city within its borders (e.g., New York city is in New York state). As an added bonus, it allows us to customize the title of out plot to mention area level.
 :::
 
--   Custom Functions for Effortless Plot Creation
-    -   Eliminate the need for manual code duplication
-    -   Achieve automation to save time and effort
+Using custom functions, we can create plots for different regions, districts, and indicators without the need to copy-paste the `{ggplot2}` code and make multiple adjustments manually.
 
-However, despite the improvements, some repetition remains:
+But this is still repetitive! It still requires some copying and pasting and replace the names. Even though it's just one line, it's still not automated!
 
--   Example: Creating a plot of PLHIV for each of the 28 districts
--   Still involves copying and pasting code and replacing names for each district
+For example, if we wanted to use our custom function to create a plot of PLHIV for each of the 28 districts, we'd have to do this:
 
 ```{r eval=F}
 # Apply custom function to each district
@@ -578,7 +477,7 @@ For example, here we have a custom function that takes an input and appends a "D
 ```{r}
 # Example single argument function
 add_dr <- function(full_name) {
-  return(glue("Dr.{full_name}"))
+  return(paste("Dr.", full_name))
 }
 # Apply the function to a single name
 add_dr("Mohamed Hsin Bennour")
@@ -622,9 +521,7 @@ We can use the same workflow to create a list of plots, by applying our custom `
 region_names <- c("Northern", "Central", "Southern")
 
 # Apply plot_region() to region_names
-
-region_names %>% map(plot_malawi, 'Region', 'prevalence')
-
+region_names %>% map(plot_malawi, "Region", "prevalence")
 ```
 
 Now we created 3 plots with 2 lines of code.
@@ -634,23 +531,22 @@ Now we created 3 plots with 2 lines of code.
 
 Create a vector of 5 district names from `hiv_malawi`.
 
-```{r include=F}
+```{r include=F, eval = F}
 districts5 <- "WRITE YOUR CODE HERE"
 ```
 
 Apply the `plot_malawi()` function to the vector of disctrict names, to create five plots for **PLHIV** in one step.
 
-```{r include=F}
-districts5 %>% purrr::map("District", "plhiv")
+```{r include=F, eval = F}
+districts5 %>% "WRITE YOUR CODE HERE"
 ```
 :::
 
 #### Area level helper function
 
--   Analyzing Disease Patterns at Various Geographic Scales
-    -   Vital for epidemiological analysis
--   Objective: Create plots for different geographic scales
--   Approach: Generate a vector of all district names from `hiv_malawi` dataset
+Looking at disease patterns at different geographic scales (country, state, county, city, etc.) is crucial in epidemiological analysis. We may want to make a plot for every state, or every county.
+
+We can create a vector of all district names from `hiv_malawi` using this code pattern:
 
 ```{r}
 # Creating a vector of unique district names
@@ -662,11 +558,7 @@ district_names <- hiv_malawi %>%
 district_names
 ```
 
--   Introduction of Helper Function: `area_lvl()`
-    -   Aids in optimizing the identification of unique area names at different levels
--   Purpose
-    -   Efficiently generate unique area names for various geographic levels
-    -   Avoid manual repetition
+This code identifies unique area names at the "District" level. However, manually repeating this for different levels is inefficient. To optimize, we introduce a helper function called `area_lvl()`:
 
 ```{r}
 # Write helper function to get unique area names for a given level
@@ -683,40 +575,34 @@ area_lvl("Region")
 area_lvl("District")
 ```
 
--   Simplification with `area_lvl()` Function
-    -   Facilitates obtaining unique names for any area level
-    -   Integration with `map()` for efficient iteration through regions or districts
-    -   Eliminates the need to manually create custom vectors
+This function simplifies obtaining unique names for any area level. We can use `area_lvl()` in conjunction with `map()` to iterate through all regions or all districts, without having to create a custom vector first.
 
 ```{r}
 # Plot incidence for all regions
-area_lvl(---------) %>% map(plot_malawi, ---------, ---------)
+area_lvl("Region") %>% map(plot_malawi, "Region", "incidence")
 ```
 
 ```{r eval= F}
-# Plot HIV awareness ('aware_plhiv_prop') for all districts
-area_lvl(---------) %>% map(plot_malawi, ---------, '---------)
+# Plot HIV awareness for all districts
+area_lvl("District") %>% map(plot_malawi, "District", "aware_plhiv_prop")
 ```
 
 ### Looping through two vectors
 
--   Handling Multiple Response Variables
-    -   Manual copy-pasting of code for different response variables is cumbersome
-    -   For many indicators, a more efficient approach is needed
--   Approach
-    -   Create a vector of indicators
-    -   Utilize a `for` loop to iterate through the indicators
-    -   Feed each indicator to `map()` for plot generation
-    -   Results in multiple plots, improving efficiency and clarity
+For only a few response variables we could easily copy and paste the code above, changing the hard-coded y-axis variable (`indicator`) each time. This process can get burdensome if we want to do this for many indicators, though.
+
+Though we could use a nested loop, with a second `map()` function nested inside our previous one, this method is not as easy to interpret as using a for loop.
+
+Here we will create a vector of two indicators, and feed them to a for loop. The for loop will feed each indicator to `map()`, and we will end up with 6 plots.
 
 ```{r}
 # Choose indicators: PLHIV and Prevalence
 indicators <- c("plhiv", "prevalence")
 
 # Nested loop to plot 3 regions x 2 indicators
-for (i in ---------) {
-  area_lvl(---------) %>% 
-    map(plot_malawi, ---------, ---------) %>% 
+for (i in 1:length(indicators)) {
+  area_lvl("Region") %>% 
+    map(plot_malawi, "Region", indicators[i]) %>% 
     print()
 }
 ```
@@ -725,13 +611,11 @@ We could change "Region" to "District", and the above code would give us 56 plot
 
 ## Finalize and save
 
--   Automating the Plotting Process
-    -   Prepare for finalization and image saving
-    -   Examine plots for adjustments
-    -   Modify `plot_malawi()` function if needed
-    -   Rerun with `map()` function for efficient management of multiple plots
+Now that our plotting process is fully automated, we can get ready to finalize them and save the images for further use.
 
-Let's revisit our original `ggplot()` code, which we've been filtering and reusing for all the plots:
+First let's examine the plots and decide if any adjustments are needed. If changes are necessary, we don't need to alter the code for each individual plot. Instead, we can make a small adjustment to our `plot_malawi()` function and then rerun it with the `map()` function. This is a powerful way to manage multiple plots efficiently.
+
+Let's revisit out original `ggplot()` code, which we've been filtering and reusing for all the plots:
 
 ```{r}
 # National prevalence age-sex bar chart
@@ -746,9 +630,9 @@ hiv_malawi %>%
   labs(title = "National estimates of HIV prevalence, Malawi (Dec 2022)")
 ```
 
--   Enhancing Plot Appearance for Publication
-    -   Customization options for `ggplot()` graphs
--   Code Modifications for a More Refined Final Plot
+This plot is not bad by any means, but there are still lots of features we can adjust and polish to make a final, publication-ready graph. Remember that `ggplot()` graphs are infinitely customizable!
+
+The code below makes several modifications to create a final plot that looks more refined.
 
 ```{r}
 # National prevalence age-sex bar chart with additional modifications
@@ -757,9 +641,10 @@ hiv_malawi %>%
   ggplot(aes(x = age_group, y = mean, fill = sex,
              ymin = lower, ymax = upper)) + 
   geom_col(position = position_dodge(width = 0.9)) +
-  geom_errorbar(position = position_dodge(width = 0.9), ## add error bars
-                width = 0.25, linewidth = 0.8) +   # Adjust the size for thicker lines
-####################################################################################
+  geom_errorbar(position = position_dodge(width = 0.9), # Add error bars
+                width = 0.25, 
+                linewidth = 0.8) +   # Adjust the size for thicker lines
+
   scale_y_continuous(expand = c(0, 0)) +  # Start y-axis at 0
   scale_fill_manual(values = c("female" = "#E69F00", "male" = "#56B4E9"),
                     labels = c("Female", "Male")) +  # Use colorblind-friendly colors
@@ -778,12 +663,13 @@ hiv_malawi %>%
 Once we are satisfied with the look of the plot, we can use this new `ggplot()` code in a custom function:
 
 ```{r}
+# Create custom function with multiple inputs
 plot_malawi_final <- function(area_name, area_level, hiv_indicator){
-  # prevalence age-sex bar chart with additional modifications
-hiv_malawi %>% 
-  filter(indicator == ---------, 
-         area_level == ---------,  
-         area_name == ---------) %>% 
+  hiv_malawi %>% 
+    # ADD PLACEHOLDERS FOR FILTERING BASED ON INPUTS
+    filter(indicator == {{hiv_indicator}},
+           area_level == {{area_level}},
+           area_name=={{area_name}}) %>% 
   ggplot(aes(x = age_group, y = mean, fill = sex,
              ymin = lower, ymax = upper)) + 
   geom_col(position = position_dodge(width = 0.9)) +
@@ -798,13 +684,15 @@ hiv_malawi %>%
   theme(legend.position = c(0.05, 0.95), # Place legend in the top left corner
         legend.justification = c(0, 1),  # Anchor the legend at the top left corner
         legend.background = element_rect(color = "darkgray", linewidth = 0.5),
-        legend.title = element_blank()) +
-  labs(x = "Age (years)",
-       y = "Prevalence",
-       title = glue("Age-Sex Distribution of --------- in ---------"),
-       subtitle = "Naomi model estimates, December 2022")
+        legend.title = element_blank()) + +
+    # ADD PLACEHOLDERS FOR TITLE AND Y AXIS NAME
+  labs(x = "Age (years)", 
+       y = hiv_indicator, 
+       title = glue("Age-Sex Distribution of {hiv_indicator} in {area_name} {area_level}"),
+       subtitle = "Naomi model estimates, Malawi, December 2022")
 }
 
+# Test function
 plot_malawi_final("Chitipa", "District", "plhiv")
 ```
 
@@ -815,20 +703,18 @@ We can use this new function to get plots for a set of regions or districts, jus
 area_lvl("Region") %>% map(plot_malawi_final, "Region", "prevalence")
 ```
 
--   Saving Generated Plots Locally
-    -   Avoiding the need to regenerate plots repeatedly
--   Final Change to Plotting Function
-    -   Adding `ggsave()` function
-    -   Saving plots as image files with unique and descriptive names
+Now that we know the function works correctly and generates the plots we want, it's time to save them locally. This will enable us to access the plots without having to rerun the code and generate them every time.
+
+We'll do this by making one final change to our plotting function. This time we will add the `ggsave()` function at the end, to save our plots as image files with unique and descriptive names.
 
 ```{r}
 # Create custom function to plot AND save to a specific file path
 plot_save_final <- function(area_name, area_level, hiv_indicator){
- # prevalence age-sex bar chart with additional modifications
-hiv_malawi %>% 
-  filter(indicator == {{hiv_indicator}}, 
-         area_level == {{area_level}},  
-         area_name == {{area_name}}) %>% 
+  hiv_malawi %>% 
+    # ADD PLACEHOLDERS FOR FILTERING BASED ON INPUTS
+    filter(indicator == {{hiv_indicator}},
+           area_level == {{area_level}},
+           area_name=={{area_name}}) %>% 
   ggplot(aes(x = age_group, y = mean, fill = sex,
              ymin = lower, ymax = upper)) + 
   geom_col(position = position_dodge(width = 0.9)) +
@@ -842,12 +728,12 @@ hiv_malawi %>%
   theme(legend.position = c(0.05, 0.95), # Place legend in the top left corner
         legend.justification = c(0, 1),  # Anchor the legend at the top left corner
         legend.background = element_rect(color = "darkgray", linewidth = 0.5),
-        legend.title = element_blank()) +
-  labs(x = "Age (years)",
-       y = "Prevalence",
-       title = glue("Age-Sex Distribution of {hiv_indicator} in {area_name}"),
-       subtitle = "Naomi model estimates, December 2022")
-  
+        legend.title = element_blank()) + +
+    # ADD PLACEHOLDERS FOR TITLE AND Y AXIS NAME
+  labs(x = "Age (years)", 
+       y = hiv_indicator, 
+       title = glue("Age-Sex Distribution of {hiv_indicator} in {area_name} {area_level}"),
+       subtitle = "Naomi model estimates, Malawi, December 2022") +
   # NEW CODE STARTS HERE: Save plot with custom file names
   ggsave(filename = here(glue("outputs/{hiv_indicator}_{area_level}_{area_name}.jpg")))
 }
@@ -861,10 +747,7 @@ plot_save_final("Chitipa", "District", "plhiv")
 
 You should now see a new file named "plhiv_District_Chitipa.jpg" in your outputs folder.
 
--   Using a For Loop to Create and Save Plots
-    -   Utilizing `plot_save_final()` function
-    -   Creating plots and saving images in the "outputs" folder
--   Streamlining the process for indicators `plhiv` and `prevalence`
+Just like before, let's now try to create a for loop for our two indicators `plhiv` and `prevalence`, but this time we will use our `plot_save_final()` function to create the plots **and** save the images in our outputs folder!
 
 ```{r eval=F}
 # Iterate over regions and SAVE
@@ -891,30 +774,21 @@ If you access the `outputs` folder, you should now find **6** newly created and 
 
 Using your `districts5` vector from the last question, write a for loop to create and save age-sex distribution graphs for: - Prevalence - ART coverage - PLHIV
 
-```{r include=F}
-# PQ4 ans
-indicators3 <- c(----------)
+```{r include=F, eval = F}
+# PQ4 answer
 
-# Loop through plot saving function
-for (i in 1:length(------)) {
-  ------- %>% 
-    map(plot_save_final, "District", ------)
-}
 ```
 :::
 
 ## WRAP UP! {.unnumbered}
 
--   Key Learnings in the Lesson
-    -   Development of custom filtering and plotting functions with `{dplyr}` and `{ggplot2}`
-    -   Utilization of `purrr::map()` and for loops for two-dimensional iteration
-    -   Efficient generation and saving of customized plots
-    -   Demonstrates the power of functional programming principles
-    -   Advantages: Cleaner, more modular, and easily maintainable code
+In this lesson, we learned how to develop custom filtering and plotting functions with `{dplyr}` and `{ggplot2}`, and iterate them over vectors in two dimensions with `purrr::map()` and for loops.
+
+In this way, we can efficiently generate customized plots and save them for future use without having to create them individually each time. This approach offers a powerful demonstration of how functional programming principles can be used to write cleaner, more modular, and easily maintainable code.
 
 ## Answer Key {.unnumbered}
 
-[Joy will add]
+
 
 ## Contributors {.unlisted .unnumbered}
 
@@ -924,6 +798,6 @@ The following team members contributed to this lesson:
 
 ## References {.unlisted .unnumbered}
 
-[Joy will add]
+
 
 `r .tgc_license()`

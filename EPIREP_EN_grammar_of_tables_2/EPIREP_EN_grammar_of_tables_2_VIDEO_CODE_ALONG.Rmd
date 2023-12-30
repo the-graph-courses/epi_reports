@@ -29,7 +29,6 @@ The previous `{gt}` lesson focused mainly on the components of the table its str
 
 Let's dig in.
 
-
 ------------------------------------------------------------------------
 
 # Learning objectives
@@ -44,7 +43,6 @@ Let's dig in.
 
 5.  Add borders to text
 
-
 By the conclusion of this lesson, you will have the skills to artfully style your **`{gt}`** tables to meet your specific preferences achieving a level of detail similar to this:
 
 ![](images/malawi_hiv_summary_l2_t11-02.png){width="482"}
@@ -57,13 +55,11 @@ In this lesson, we will use the following packages:
 
 -   `{gt}` for nice tables
 
-
 -   `{dplyr}` , `{tidyr}` , and `{purrr}`.
 
 -   `{janitor}`
 
 -   `ggsci` for color palettes
-
 
 ```{r}
 # Load packages
@@ -75,14 +71,13 @@ pacman::p_load(tidyverse, janitor, gt, ggsci, here)
 # Previously in part 1
 
 ::: recap
-
 In the previous `{gt}` lesson we had the opportunity to :
 
 -   Discover the HIV prevalence data of Malawi.
 
 -   Discover the grammar of tables and the `{gt}` package.
 
--   Create a simple {gt} table.
+-   Create a simple `{gt}` table.
 
 -   Add details like title and footnote to the table.
 
@@ -214,7 +209,6 @@ t4
 ::: reminder
 Remember in the previous lesson we used the [`tidyselect`](https://tidyselect.r-lib.org/reference/starts_with.html) functions to select columns, in the code above we used the function `ends_with` to select the columns ending either with the word 'negative' or 'positive' which is perfect for the purpose of our table.
 
-
 Again, the column labels in the `{gt}` table and the actual column names in the `data.frame` can be different, in our case we refer to the names in the data.
 :::
 
@@ -273,7 +267,6 @@ t6
 ```
 
 ::: practice
-
 **Question 1: Conditional Formatting** To highlight (in yellow) rows in a **`{gt}`** table where the "hiv_positive" column exceeds 1,000, which R code snippet should you use?
 
 A.  
@@ -329,8 +322,7 @@ D.
 
 **Question 2: Cell Coloration Fill**
 
-
-Using the **`hiv_malawi`** data frame, create a **`{gt}`** table that displays the total number (**sum**) of "*`new_positive`*" cases for each "*`region`*". Highlight cells with values more than 50 cases in *red* and cells with less or equal to 50 in *green*. Complete the missing parts (__________) of this code to achieve this.
+Using the **`hiv_malawi`** data frame, create a **`{gt}`** table that displays the total number (**sum**) of "*`new_positive`*" cases for each "*`region`*". Highlight cells with values more than 50 cases in *red* and cells with less or equal to 50 in *green*. Complete the missing parts (\_\_\_\_\_\_\_\_\_\_) of this code to achieve this.
 
 ```{r eval=FALSE, echo=TRUE}
 # Calculate the total_new_pos summary
@@ -434,7 +426,6 @@ In this code, `cell_fill(background = "#ffffff")` changes the background color t
 :::
 
 ::: practice
-
 **Question 2: Fonts and Text** Which R code snippet allows you to change the font size of the footnote text in a **`{gt}`** table?
 
 A.  
@@ -485,12 +476,10 @@ D.
 
 # Borders
 
-
-* In `{gt}`, we can draw borders in the tables to help users focus on specific areas.
-* To add borders to a `{gt}` table, we'll use the `tab_style` function and specify the `style` and `locations` arguments.
-* The difference this time is that we'll use the `cell_borders` helper function and assign it to the `style` argument.
-* The following instructions will demonstrate how to do this.
-
+-   In `{gt}`, we can draw borders in the tables to help users focus on specific areas.
+-   To add borders to a `{gt}` table, we'll use the `tab_style` function and specify the `style` and `locations` arguments.
+-   The difference this time is that we'll use the `cell_borders` helper function and assign it to the `style` argument.
+-   The following instructions will demonstrate how to do this.
 
 Let's first add a vertical line:
 
@@ -533,7 +522,6 @@ t11 %>% gt::gtsave(here("data/clean/malawi_hiv_summary_l2_t11.png"))
 ```
 
 ::: challenge
-
 **Question 4: Borders** To add a solid border around the entire **`{gt}`** table, which R code snippet should you use?
 
 Hint : we can use a function that sets options for the entirety of the table, just like the `theme` function for the `ggplot` package.
@@ -590,11 +578,9 @@ data %>%
 
 # Answer Key {.unnumbered}
 
-
-1. **Question 1: Conditional Formatting**
-   - *C*
-
-2. **Question 2: Cell Coloration Fill**
+1.  **Question 1: Conditional Formatting**
+    -   *C*
+2.  **Question 2: Cell Coloration Fill**
 
 ```{r eval=FALSE, echo=TRUE}
 # Solutions are where the numbered lines are
@@ -623,12 +609,10 @@ summary_table <- total_summary %>%
   )
 ```
 
-3. **Question 2: Fonts and Text**
-   - *B*
-
-4. **Question 4: Borders**
-   - *B* 
-
+3.  **Question 2: Fonts and Text**
+    -   *B*
+4.  **Question 4: Borders**
+    -   *B*
 
 ------------------------------------------------------------------------
 

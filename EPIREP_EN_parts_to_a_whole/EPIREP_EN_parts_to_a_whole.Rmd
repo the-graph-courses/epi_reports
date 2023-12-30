@@ -39,7 +39,7 @@ We will start our journey by examining bar charts, a foundational element in dat
 
 This tutorial aims to equip you with the skills to effectively visualize aggregated data and make comparisons. By the end, you'll have a solid understanding of how to use {ggplot2} functions to visualize and compare groups in your data, enhancing your ability to draw meaningful insights from your datasets. Let's get started!
 
-![Chart types covered in this lesson.](images/chart_types.jpg)
+![Chart types covered in this lesson.](images/parts_to_whole_charts.jpg)
 
 # Learning objectives
 

@@ -2010,18 +2010,18 @@ from the World Health Organization (WHO) and can be accessed <a href="https://ww
 <span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>()</span>
 <span id="cb25-6"><a href="#cb25-6" tabindex="-1"></a>hiv_data_brazil</span></code></pre></div>
 <pre><code>## # A tibble: 89 × 5
-##    continent country  year sex        new_hiv_cases         
-##    &lt;chr&gt;     &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;                 
-##  1 Americas  Brazil   2022 Female     13 000 [12 000 – 15 0…
-##  2 Americas  Brazil   2022 Male       37 000 [35 000 – 40 0…
-##  3 Americas  Brazil   2022 Both sexes 51 000 [47 000 – 54 0…
-##  4 Americas  Brazil   2021 Female     14 000 [12 000 – 15 0…
-##  5 Americas  Brazil   2021 Male       37 000 [34 000 – 39 0…
-##  6 Americas  Brazil   2021 Both sexes 50 000 [47 000 – 53 0…
-##  7 Americas  Brazil   2020 Female     14 000 [13 000 – 15 0…
-##  8 Americas  Brazil   2020 Male       35 000 [32 000 – 37 0…
-##  9 Americas  Brazil   2020 Both sexes 49 000 [46 000 – 52 0…
-## 10 Americas  Brazil   2019 Female     14 000 [13 000 – 15 0…
+##    continent country  year sex        new_hiv_cases           
+##    &lt;chr&gt;     &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;                   
+##  1 Americas  Brazil   2022 Female     13 000 [12 000 – 15 000]
+##  2 Americas  Brazil   2022 Male       37 000 [35 000 – 40 000]
+##  3 Americas  Brazil   2022 Both sexes 51 000 [47 000 – 54 000]
+##  4 Americas  Brazil   2021 Female     14 000 [12 000 – 15 000]
+##  5 Americas  Brazil   2021 Male       37 000 [34 000 – 39 000]
+##  6 Americas  Brazil   2021 Both sexes 50 000 [47 000 – 53 000]
+##  7 Americas  Brazil   2020 Female     14 000 [13 000 – 15 000]
+##  8 Americas  Brazil   2020 Male       35 000 [32 000 – 37 000]
+##  9 Americas  Brazil   2020 Both sexes 49 000 [46 000 – 52 000]
+## 10 Americas  Brazil   2019 Female     14 000 [13 000 – 15 000]
 ## # ℹ 79 more rows</code></pre>
 <p>We can see that the <code>new_hiv_cases</code> column contains both
 the number of cases and the corresponding confidence intervals in square
@@ -2034,20 +2034,19 @@ need to extract them into pure numeric forms.</p>
 <span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a>           <span class="at">into =</span> <span class="fu">c</span>(<span class="st">&quot;cases&quot;</span>, <span class="st">&quot;cases_lower&quot;</span>, <span class="st">&quot;cases_upper&quot;</span>), </span>
 <span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a>           <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">[|–&quot;</span>)</span></code></pre></div>
 <pre><code>## # A tibble: 89 × 7
-##    continent country  year sex        cases     cases_lower
-##    &lt;chr&gt;     &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;     &lt;chr&gt;      
-##  1 Americas  Brazil   2022 Female     &quot;13 000 &quot; &quot;12 000 &quot;  
-##  2 Americas  Brazil   2022 Male       &quot;37 000 &quot; &quot;35 000 &quot;  
-##  3 Americas  Brazil   2022 Both sexes &quot;51 000 &quot; &quot;47 000 &quot;  
-##  4 Americas  Brazil   2021 Female     &quot;14 000 &quot; &quot;12 000 &quot;  
-##  5 Americas  Brazil   2021 Male       &quot;37 000 &quot; &quot;34 000 &quot;  
-##  6 Americas  Brazil   2021 Both sexes &quot;50 000 &quot; &quot;47 000 &quot;  
-##  7 Americas  Brazil   2020 Female     &quot;14 000 &quot; &quot;13 000 &quot;  
-##  8 Americas  Brazil   2020 Male       &quot;35 000 &quot; &quot;32 000 &quot;  
-##  9 Americas  Brazil   2020 Both sexes &quot;49 000 &quot; &quot;46 000 &quot;  
-## 10 Americas  Brazil   2019 Female     &quot;14 000 &quot; &quot;13 000 &quot;  
-## # ℹ 79 more rows
-## # ℹ 1 more variable: cases_upper &lt;chr&gt;</code></pre>
+##    continent country  year sex        cases     cases_lower cases_upper
+##    &lt;chr&gt;     &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;     &lt;chr&gt;       &lt;chr&gt;      
+##  1 Americas  Brazil   2022 Female     &quot;13 000 &quot; &quot;12 000 &quot;   &quot; 15 000]&quot; 
+##  2 Americas  Brazil   2022 Male       &quot;37 000 &quot; &quot;35 000 &quot;   &quot; 40 000]&quot; 
+##  3 Americas  Brazil   2022 Both sexes &quot;51 000 &quot; &quot;47 000 &quot;   &quot; 54 000]&quot; 
+##  4 Americas  Brazil   2021 Female     &quot;14 000 &quot; &quot;12 000 &quot;   &quot; 15 000]&quot; 
+##  5 Americas  Brazil   2021 Male       &quot;37 000 &quot; &quot;34 000 &quot;   &quot; 39 000]&quot; 
+##  6 Americas  Brazil   2021 Both sexes &quot;50 000 &quot; &quot;47 000 &quot;   &quot; 53 000]&quot; 
+##  7 Americas  Brazil   2020 Female     &quot;14 000 &quot; &quot;13 000 &quot;   &quot; 15 000]&quot; 
+##  8 Americas  Brazil   2020 Male       &quot;35 000 &quot; &quot;32 000 &quot;   &quot; 37 000]&quot; 
+##  9 Americas  Brazil   2020 Both sexes &quot;49 000 &quot; &quot;46 000 &quot;   &quot; 52 000]&quot; 
+## 10 Americas  Brazil   2019 Female     &quot;14 000 &quot; &quot;13 000 &quot;   &quot; 15 000]&quot; 
+## # ℹ 79 more rows</code></pre>
 <p>In the code above, we split the <code>new_hiv_cases</code> column
 into three new columns: <code>cases</code>, <code>cases_lower</code>,
 and <code>cases_upper</code>. We use the <code>[</code> and
@@ -2076,20 +2075,19 @@ removing any non-numeric characters.</p>
 <span id="cb29-9"><a href="#cb29-9" tabindex="-1"></a></span>
 <span id="cb29-10"><a href="#cb29-10" tabindex="-1"></a>hiv_data_brazil_clean</span></code></pre></div>
 <pre><code>## # A tibble: 89 × 7
-##    continent country  year sex        cases cases_lower
-##    &lt;chr&gt;     &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;      &lt;dbl&gt;       &lt;dbl&gt;
-##  1 Americas  Brazil   2022 Female     13000       12000
-##  2 Americas  Brazil   2022 Male       37000       35000
-##  3 Americas  Brazil   2022 Both sexes 51000       47000
-##  4 Americas  Brazil   2021 Female     14000       12000
-##  5 Americas  Brazil   2021 Male       37000       34000
-##  6 Americas  Brazil   2021 Both sexes 50000       47000
-##  7 Americas  Brazil   2020 Female     14000       13000
-##  8 Americas  Brazil   2020 Male       35000       32000
-##  9 Americas  Brazil   2020 Both sexes 49000       46000
-## 10 Americas  Brazil   2019 Female     14000       13000
-## # ℹ 79 more rows
-## # ℹ 1 more variable: cases_upper &lt;dbl&gt;</code></pre>
+##    continent country  year sex        cases cases_lower cases_upper
+##    &lt;chr&gt;     &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;      &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
+##  1 Americas  Brazil   2022 Female     13000       12000       15000
+##  2 Americas  Brazil   2022 Male       37000       35000       40000
+##  3 Americas  Brazil   2022 Both sexes 51000       47000       54000
+##  4 Americas  Brazil   2021 Female     14000       12000       15000
+##  5 Americas  Brazil   2021 Male       37000       34000       39000
+##  6 Americas  Brazil   2021 Both sexes 50000       47000       53000
+##  7 Americas  Brazil   2020 Female     14000       13000       15000
+##  8 Americas  Brazil   2020 Male       35000       32000       37000
+##  9 Americas  Brazil   2020 Both sexes 49000       46000       52000
+## 10 Americas  Brazil   2019 Female     14000       13000       15000
+## # ℹ 79 more rows</code></pre>
 <p>The code above looks complex, but essentially, it cleans the data by
 keeping only numeric characters and then converts these numbers to
 actual numeric values. See our lesson on the <code>across()</code>
@@ -2318,20 +2316,25 @@ URL</a>.</p>
 <span id="cb50-3"><a href="#cb50-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">date_death =</span> <span class="fu">ymd</span>(<span class="fu">paste</span>(death_year, death_month, death_day, <span class="at">sep =</span> <span class="st">&quot;-&quot;</span>)))</span>
 <span id="cb50-4"><a href="#cb50-4" tabindex="-1"></a>colom_hiv_deaths </span></code></pre></div>
 <pre><code>## # A tibble: 445 × 26
-##    municipality_type death_location  birth_date birth_year
-##    &lt;chr&gt;             &lt;chr&gt;           &lt;date&gt;          &lt;dbl&gt;
-##  1 Municipal head    Hospital/clinic 1956-05-26       1956
-##  2 Municipal head    Hospital/clinic 1983-10-10       1983
-##  3 Municipal head    Hospital/clinic 1967-11-22       1967
-##  4 Municipal head    Home/address    1964-03-14       1964
-##  5 Municipal head    Hospital/clinic 1960-06-27       1960
-##  6 Municipal head    Hospital/clinic 1982-03-23       1982
-##  7 Municipal head    Hospital/clinic 1964-12-09       1964
-##  8 Municipal head    Hospital/clinic 1975-01-15       1975
-##  9 Municipal head    Hospital/clinic 1988-02-15       1988
-## 10 Municipal head    Hospital/clinic NA                 NA
+##    municipality_type death_location  birth_date birth_year birth_month birth_day
+##    &lt;chr&gt;             &lt;chr&gt;           &lt;date&gt;          &lt;dbl&gt; &lt;chr&gt;           &lt;dbl&gt;
+##  1 Municipal head    Hospital/clinic 1956-05-26       1956 May                26
+##  2 Municipal head    Hospital/clinic 1983-10-10       1983 Oct                10
+##  3 Municipal head    Hospital/clinic 1967-11-22       1967 Nov                22
+##  4 Municipal head    Home/address    1964-03-14       1964 Mar                14
+##  5 Municipal head    Hospital/clinic 1960-06-27       1960 Jun                27
+##  6 Municipal head    Hospital/clinic 1982-03-23       1982 Mar                23
+##  7 Municipal head    Hospital/clinic 1964-12-09       1964 Dec                 9
+##  8 Municipal head    Hospital/clinic 1975-01-15       1975 Jan                15
+##  9 Municipal head    Hospital/clinic 1988-02-15       1988 Feb                15
+## 10 Municipal head    Hospital/clinic NA                 NA &lt;NA&gt;               NA
 ## # ℹ 435 more rows
-## # ℹ 22 more variables: birth_month &lt;chr&gt;, …</code></pre>
+## # ℹ 20 more variables: death_year &lt;dbl&gt;, death_month &lt;chr&gt;, death_day &lt;dbl&gt;,
+## #   age_at_death &lt;dbl&gt;, gender &lt;chr&gt;, education_level &lt;chr&gt;, occupation &lt;chr&gt;,
+## #   racial_id &lt;chr&gt;, health_insurance_status &lt;chr&gt;, marital_status &lt;chr&gt;,
+## #   municipality_name &lt;chr&gt;, primary_cause_death_description &lt;chr&gt;,
+## #   primary_cause_death_code &lt;chr&gt;, secondary_cause_death_description &lt;chr&gt;,
+## #   secondary_cause_death_code &lt;chr&gt;, tertiary_cause_death_description &lt;chr&gt;, …</code></pre>
 <p>Using the steps taught above:</p>
 <ol style="list-style-type: decimal">
 <li>Create a table that counts HIV-related deaths per month.</li>
@@ -2434,20 +2437,25 @@ patterns in noisy time series data.</p>
 <p>Consider again the dataset of HIV patient deaths in Colombia:</p>
 <div class="sourceCode" id="cb59"><pre class="sourceCode r tgc-code-block"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" tabindex="-1"></a>colom_hiv_deaths </span></code></pre></div>
 <pre><code>## # A tibble: 445 × 26
-##    municipality_type death_location  birth_date birth_year
-##    &lt;chr&gt;             &lt;chr&gt;           &lt;date&gt;          &lt;dbl&gt;
-##  1 Municipal head    Hospital/clinic 1956-05-26       1956
-##  2 Municipal head    Hospital/clinic 1983-10-10       1983
-##  3 Municipal head    Hospital/clinic 1967-11-22       1967
-##  4 Municipal head    Home/address    1964-03-14       1964
-##  5 Municipal head    Hospital/clinic 1960-06-27       1960
-##  6 Municipal head    Hospital/clinic 1982-03-23       1982
-##  7 Municipal head    Hospital/clinic 1964-12-09       1964
-##  8 Municipal head    Hospital/clinic 1975-01-15       1975
-##  9 Municipal head    Hospital/clinic 1988-02-15       1988
-## 10 Municipal head    Hospital/clinic NA                 NA
+##    municipality_type death_location  birth_date birth_year birth_month birth_day
+##    &lt;chr&gt;             &lt;chr&gt;           &lt;date&gt;          &lt;dbl&gt; &lt;chr&gt;           &lt;dbl&gt;
+##  1 Municipal head    Hospital/clinic 1956-05-26       1956 May                26
+##  2 Municipal head    Hospital/clinic 1983-10-10       1983 Oct                10
+##  3 Municipal head    Hospital/clinic 1967-11-22       1967 Nov                22
+##  4 Municipal head    Home/address    1964-03-14       1964 Mar                14
+##  5 Municipal head    Hospital/clinic 1960-06-27       1960 Jun                27
+##  6 Municipal head    Hospital/clinic 1982-03-23       1982 Mar                23
+##  7 Municipal head    Hospital/clinic 1964-12-09       1964 Dec                 9
+##  8 Municipal head    Hospital/clinic 1975-01-15       1975 Jan                15
+##  9 Municipal head    Hospital/clinic 1988-02-15       1988 Feb                15
+## 10 Municipal head    Hospital/clinic NA                 NA &lt;NA&gt;               NA
 ## # ℹ 435 more rows
-## # ℹ 22 more variables: birth_month &lt;chr&gt;, …</code></pre>
+## # ℹ 20 more variables: death_year &lt;dbl&gt;, death_month &lt;chr&gt;, death_day &lt;dbl&gt;,
+## #   age_at_death &lt;dbl&gt;, gender &lt;chr&gt;, education_level &lt;chr&gt;, occupation &lt;chr&gt;,
+## #   racial_id &lt;chr&gt;, health_insurance_status &lt;chr&gt;, marital_status &lt;chr&gt;,
+## #   municipality_name &lt;chr&gt;, primary_cause_death_description &lt;chr&gt;,
+## #   primary_cause_death_code &lt;chr&gt;, secondary_cause_death_description &lt;chr&gt;,
+## #   secondary_cause_death_code &lt;chr&gt;, tertiary_cause_death_description &lt;chr&gt;, …</code></pre>
 <p>The following code calculates the number of deaths per day:</p>
 <div class="sourceCode" id="cb61"><pre class="sourceCode r tgc-code-block"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" tabindex="-1"></a>colom_hiv_deaths_per_day <span class="ot">&lt;-</span> </span>
 <span id="cb61-2"><a href="#cb61-2" tabindex="-1"></a>  colom_hiv_deaths <span class="sc">%&gt;%</span> </span>
