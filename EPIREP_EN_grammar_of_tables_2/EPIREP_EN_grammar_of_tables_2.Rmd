@@ -405,7 +405,7 @@ If you want to change the fill background of the title, you can do so by adjusti
 ```{r eval = FALSE}
 t9 <- t7 %>% 
   tab_style(
-    style = cell_fill(background = "#ffffff"),
+    style = cell_fill(color = "#ffffff"),
     locations = cells_title(groups = "title")
   )
 t9

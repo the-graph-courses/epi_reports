@@ -31,7 +31,7 @@ registerS3method(".reactable_5_rows", "data.frame", .reactable_5_rows)
 
 Tables are a powerful tool for visualizing data in a clear and concise format. With R and the gt package, we can leverage the visual appeal of tables to efficiently communicate key information. In this lesson, we will learn how to build aesthetically pleasing, customizable tables that support data analysis goals.
 
-# Learning objectives {.unlisted .unnumbered}
+# Learning objectives
 
 -   Use the `gt()` function to create basic tables.
 
@@ -59,7 +59,7 @@ By the end, you will be able to generate polished, reproducible tables like this
 pacman::p_load(tidyverse, gt, here)
 ```
 
-# The dataset
+# Introducing the dataset
 
 * Our data comes from the Malawi HIV Program.
 * Covers antenatal care and HIV treatment during 2019.
@@ -124,9 +124,9 @@ cols <- c("new_positive", "previous_positive", "new_negative", "previous_negativ
 
 # Create summary by quarter
 hiv_malawi_summary <- hiv_malawi %>%  
-  group_by(period) %>%
+  group_by(______) %>%
   summarize(
-    across(all_of(cols), sum) # Summarize all columns
+    across(______) # Summarize all columns
   )
 
 hiv_malawi_summary
@@ -141,8 +141,9 @@ This aggregates the data nicely for passing to `{gt}` to generate a clean summar
 
 
 ```{r}
-hiv_malawi_summary %>%  
-  gt() 
+# Create gt table
+hiv_malawi_summary %>% 
+  ______
 ```
 
 
@@ -160,17 +161,17 @@ hiv_malawi_summary %>%
 
 As seen in the figure from the package website, The main components of a `{gt}`table are:
 
--**Table Header**: Contains an optional title and subtitle
+- **Table Header**: Contains an optional title and subtitle
 
--**Stub**: Row labels that identify each row
+- **Stub**: Row labels that identify each row
 
--**Stub Head**: Optional grouping and labels for stub rows
+- **Stub Head**: Optional grouping and labels for stub rows
 
--**Column Labels**: Headers for each column
+- **Column Labels**: Headers for each column
 
--**Table Body**: The main data cells of the table
+- **Table Body**: The main data cells of the table
 
--**Table Footer**: Optional footnotes and source notes
+- **Table Footer**: Optional footnotes and source notes
 
 Understanding this anatomy allows us to systematically construct `{gt}` tables using its grammar.
 
@@ -186,24 +187,23 @@ Understanding this anatomy allows us to systematically construct `{gt}` tables u
 
 
 ```{r}
+# Add table header
 hiv_malawi_summary %>%
   gt() %>%
-  tab_header(
-    title = "HIV Testing in Malawi", 
-    subtitle = "Q1 to Q4 2019"
-  )
+  ______
 ```
 
 We can add a footer with the function `tab_source_note()` to cite where the data came from:
 
 ```{r}
+# Add source note
 hiv_malawi_summary %>%
   gt() %>% 
   tab_header(
     title = "HIV Testing in Malawi",
     subtitle = "Q1 to Q4 2019"
   ) %>%
-  tab_source_note("Source: Malawi HIV Program")  
+  ______  
 ```
 
 - Footnotes are useful for providing further details about certain data points or labels.
@@ -214,6 +214,7 @@ hiv_malawi_summary %>%
 
 
 ```{r}
+# Add footnote
 hiv_malawi_summary %>%
   gt() %>%
   tab_header(
@@ -221,12 +222,7 @@ hiv_malawi_summary %>%
     subtitle = "Q1 to Q2 2019"
   ) %>%
   tab_source_note("Source: Malawi HIV Program") %>%  
-  tab_footnote(
-    footnote = "New diagnosis",
-    locations = cells_column_labels(
-      columns = c(new_positive, new_negative)
-    )
-  )
+  ______
 ```
 
 * These small additions greatly improve the professional appearance and informativeness of tables.
@@ -278,14 +274,13 @@ t1
 * This can be achieved using the `tab_spanner()` function.
 
 
-* Let's create two spanner columns for new and Previous tests. We'll start with the "New tests" spanner so you can observe the syntax:
+* Let's create two spanner columns for new and previous tests. We'll start with the "New tests" spanner so you can observe the syntax:
 
 ```{r}
+# Create spanner column
 t1 %>%  
-  tab_spanner(
-    label = "New tests",
-    columns = starts_with("new") # selects columns starting with "new"
-  )
+  # First spanner for "New tests"
+  ______
 ```
 
 * The `columns` argument lets us select the relevant columns, and the `label` argument takes in the span label.
@@ -301,9 +296,7 @@ t2 <- t1 %>%
     columns = starts_with("new") 
   ) %>%
   # Second spanner for "Previous tests"
-  tab_spanner(
-    label = "Previous tests",
-    columns = starts_with("prev")
+  ______
   )
 
 t2 
@@ -328,7 +321,7 @@ D. To sort the data in ascending order.
 
 Using the **`hiv_malawi`** data frame, create a **`{gt}`** table that displays a summary of the **`sum`** of `new_positive` and `previous_positive` cases for each region. Create spanner headers to label these two summary columns. To achieve this, fill in the missing parts of the code below:
 
-```{r eval=FALSE, echo=TRUE}
+```{r}
 
 region_summary <- hiv_malawi %>%
   group_by(region) %>%
@@ -351,7 +344,7 @@ summary_table_spanners <- region_summary %>%
 
 # Renaming Table Columns
 
-- The column names currently contain unneeded prefixes like "new\_" and "previous\_". For better readability, we can rename these using `cols_label()`.
+- The column names currently contain unneeded prefixes like "new_" and "previous_". For better readability, we can rename these using `cols_label()`.
 
 - `cols_label()` takes a set of old names to match (on the left side of a tilde, `~`) and new names to replace them with (on the right side of the tilde).
 
@@ -360,27 +353,18 @@ summary_table_spanners <- region_summary %>%
 
 ```{r}
 t3 <- t2 %>%
-  cols_label(
-    contains("positive") ~ "Positive", 
-    contains("negative") ~ "Negative"
-  )
+  ______
 
 t3
 ```
 
-
-
 * `cols_label()` accepts several column selection helpers like `contains()`, `starts_with()`, `ends_with()` etc. 
 
-* These come from the tidyselect package and provide flexibility in renaming.
+* These come from the `{tidyselect}` package and provide flexibility in renaming.
 
-```{r message=FALSE, warning=FALSE, include=FALSE, eval=FALSE}
-t3 %>% write_rds("data/clean/malawi_hiv_summary_t3.rds")
-
-```
 
 ::: pro-tip
-`cols_label()` has more identification function like `contains()` that work in a similar manner that are identical to the [`tidyselect`](https://tidyselect.r-lib.org/reference/starts_with.html) helpers, these also include :
+`cols_label()` has more identification function like `contains()` that work in a similar manner that are identical to the [`{tidyselect}`](https://tidyselect.r-lib.org/reference/starts_with.html) helpers, these also include :
 
 -   `starts_with()`: Starts with an exact prefix.
 
@@ -393,12 +377,13 @@ t3 %>% write_rds("data/clean/malawi_hiv_summary_t3.rds")
 -   `num_range()`: Matches a numerical range like x01, x02, x03.
 
 These helpers are useful especially in the case of multiple columns selection.
-:::
 
 More on the `cols_label()` function can be found here: <https://gt.rstudio.com/reference/cols_label.html>
+:::
+
 
 ::: practice
-**Question 3: column labels**
+**Question 3: Column labels**
 
 Which function is used to change the labels or names of columns in a **`{gt}`** table?
 
@@ -433,8 +418,7 @@ D. `tab_relabel()`
 summary_data_2 <- hiv_malawi %>% 
   group_by(
     # Note the order of the variables we group by.
-    region,
-    period
+    ______
   ) %>% 
   summarise(
     across(all_of(cols), sum) 
@@ -494,11 +478,7 @@ Remember that our 4 columns of interest are : `new_positive`, `previous_positive
 ```{r}
 t5 <- t4 %>% 
   summary_rows(
-    columns = cols, #using columns = 3:6 also works 
-    fns = list( 
-      TOTAL = "sum",
-      AVERAGE = "mean"
-    )
+    ______
   )
 
 t5
@@ -506,7 +486,7 @@ t5
 
 
 ::: practice
-**Question 4 : summary rows**
+**Question 4 : Summary rows**
 
 What is the correct answer (or answers) if you had to summarize the standard deviation of the rows of columns `new_positive` and `previous_negative` only?
 
@@ -578,7 +558,7 @@ your_data %>%
 
 2. **Question 2: Spanners Creation**
 
-```{r eval=FALSE, echo=TRUE}
+```{r}
 # Solutions are where the numbered lines are
 
 # summarize data first

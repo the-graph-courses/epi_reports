@@ -59,7 +59,7 @@ Cependant, elles présentent des défis :
 
 Dans la section suivante, vous apprendrez à créer une carte choroplèthe en utilisant le package {ggplot2} dans R.
 
-## Objectifs d'apprentissage {.unlisted .unnumbered}
+## Objectifs d'apprentissage {.unlisted}
 
 1.  **Cartes choroplèthes avec {ggplot2} :**
 

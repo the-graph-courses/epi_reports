@@ -132,13 +132,7 @@ hiv_malawi_summary
 
 ```{r}
 t1 <- hiv_malawi_summary %>% 
-  opt_stylize(
-    style = 1, 
-    color = 'cyan'
-  ) %>% 
-  tab_options(
-    stub.background.color = '#F4F4F4',
-  )
+  ___________
 
 t1
 ```
@@ -159,10 +153,7 @@ For more sophisticated themes and styling, you can refer to the function `tab_op
 
 ```{r}
 t2 <- t1 %>% 
-  data_color(
-    columns = new_positive, # the column or columns as we will see later
-    palette = "ggsci::red_material" # the palette form the ggsci package.
-  )
+  ___________
 
 t2
 ```
@@ -178,11 +169,7 @@ t2
 
 ```{r}
 t2 %>% 
-  data_color(
-    columns = previous_negative,
-    palette = "ggsci::green_material"
-  ) 
-  
+  ___________
 ```
 
 -   Similarly, we can also color multiple columns at once.
@@ -196,14 +183,10 @@ t4 <- t1 %>%
     columns = ends_with("positive"), # selecting columns ending with the wor positive
     palette = "ggsci::red_material" # red palette 
   ) %>% 
-  data_color(
-    columns = ends_with("negative"), # selecting columns ending with the wor negative
-    palette = "ggsci::green_material" # green palette
-  )
+  ___________
 
 
 t4
-
 ```
 
 ::: reminder
@@ -226,15 +209,8 @@ We'll use `t2` as demonstration fro this process:
 
 ```{r}
 t5 <- t2 %>% 
-  tab_style(
-    style = cell_text(
-      color = "red", 
-    ),
-    locations = cells_body(
-      columns = previous_positive,
-      rows = previous_positive >= 15700
-    )
-  )
+  ___________
+
 t5  
 ```
 
@@ -252,15 +228,7 @@ Also, note that we can pass more arguments to the `cell_text` function, such as 
 
 ```{r}
 t6 <- t5 %>% 
-  tab_style(
-    style = cell_text(
-      color = 'cyan' 
-    ),
-    location = cells_body(
-      columns = 'previous_positive',
-      rows = previous_positive < 15700
-    )
-  )
+  ___________
 
 t6
 
@@ -322,7 +290,7 @@ D.
 
 **Question 2: Cell Coloration Fill**
 
-Using the **`hiv_malawi`** data frame, create a **`{gt}`** table that displays the total number (**sum**) of "*`new_positive`*" cases for each "*`region`*". Highlight cells with values more than 50 cases in *red* and cells with less or equal to 50 in *green*. Complete the missing parts (\_\_\_\_\_\_\_\_\_\_) of this code to achieve this.
+Using the **`hiv_malawi`** data frame, create a **`{gt}`** table that displays the total number (**sum**) of "*`new_positive`*" cases for each "*`region`*". Highlight cells with values more than 50 cases in *red* and cells with less or equal to 50 in *green*. Complete the missing parts (___________) of this code to achieve this.
 
 ```{r eval=FALSE, echo=TRUE}
 # Calculate the total_new_pos summary
@@ -372,18 +340,19 @@ To specifically modify the title or subtitle, you can use `locations = cells_tit
 
 **Using lists to pass arguments in gt:** Lists in R are an integral part of the language and are extremely versatile. A list can contain elements of different types (numbers, strings, vectors, and even other lists) and each element can be accessed by its index. In the context of our {gt} table, we use lists to group together style properties (with the style argument) and to specify multiple locations in the table where these styles should be applied (with the locations argument).
 
-**Using Hexadecimal Color Codes:** Colors in many programming languages, including R, can be specified using hexadecimal color codes. These codes start with a hash symbol (\#) and are followed by six hexadecimal digits. The first two digits represent the red component, the next two represent the green component, and the last two represent the blue component. So, when we set color = "#00353f", we're specifying a color that has no red, a bit of green, and a good amount of blue, which results in a deep blue color. This allows us to have precise control over the colors we use in our tables.
+**Using Hexadecimal Color Codes:** Colors in many programming languages, including R, can be specified using hexadecimal color codes. These codes start with a hash symbol (#) and are followed by six hexadecimal digits. The first two digits represent the red component, the next two represent the green component, and the last two represent the blue component. So, when we set color = "#00353f", we're specifying a color that has no red, a bit of green, and a good amount of blue, which results in a deep blue color. This allows us to have precise control over the colors we use in our tables.
 :::
 
 ```{r}
 t7 <- t4 %>% 
   tab_style(
       style = cell_text(
-          font = google_font(name = 'Yanone Kaffeesatz'), 
+          font = google_font(name = '___________'), 
           color = "#00353f"
         ),
-      locations = cells_title(groups = c("title", "subtitle"))
+      locations = cells_title(groups = c("___________"))
   )
+
 t7
 ```
 
@@ -396,7 +365,7 @@ t8 <- t7 %>%
   tab_style(
     style = list(
       cell_text(
-        font = google_font(name = "Montserrat"),
+        font = google_font(name = "___________"),
         color = "#00353f"
       )
     ),
@@ -415,10 +384,8 @@ If you want to change the fill background of the title, you can do so by adjusti
 
 ```{r eval = FALSE}
 t9 <- t7 %>% 
-  tab_style(
-    style = cell_fill(background = "#ffffff"),
-    locations = cells_title(groups = "title")
-  )
+  ___________
+
 t9
 ```
 
@@ -485,14 +452,8 @@ Let's first add a vertical line:
 
 ```{r}
 t10 <- t8 %>% 
-  tab_style(
-    style = cell_borders( # we are adding a border
-      sides = "left",     # to the left of the selected location
-      color = "#45785e",     # with a dark green color
-      weight = px(5)      # and five pixels of thickness
-    ),
-    locations = cells_body(columns = 2) # add this border line to the left of column 2
-  )
+  ___________
+
 t10
 ```
 
@@ -506,19 +467,10 @@ t11 <- t10 %>%
       color = "#45785e",     # with a dark green color
       weight = px(5)      # and five pixels of thickness
     ),
-    locations = list(
-      cells_column_labels(columns = everything()), # add this border line to the bottom of the column labels
-      cells_stubhead()                             # and to the stubhead 
-    )
+    locations = ___________
   )
   
 t11
-```
-
-```{r message=FALSE, warning=FALSE, include=FALSE}
-# saving table for next lesson as rds object
-t11 %>% write_rds(here("data/clean/malawi_hiv_summary_l2_t11.rds"))
-t11 %>% gt::gtsave(here("data/clean/malawi_hiv_summary_l2_t11.png"))
 ```
 
 ::: challenge

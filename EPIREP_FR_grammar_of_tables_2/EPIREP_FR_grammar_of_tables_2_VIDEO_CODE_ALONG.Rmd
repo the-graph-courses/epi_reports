@@ -12,14 +12,14 @@ editor_options:
 ---
 
 ```{r installation, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, class.source = "bloc-de-code-tgc")
+knitr::opts_chunk$set(echo = TRUE, class.source = "tgc-code-block")
 
-if(!require(paletteer)) install.packages("paletteer")
+if(!require(pacman)) install.packages("pacman")
 
-# fonctions
+# functions
 source(here::here("global/functions/lesson_functions.R"))
 
-# rendu par défaut
+# default render
 registerS3method(".reactable_5_rows", "data.frame", .reactable_5_rows)
 ```
 
@@ -328,7 +328,7 @@ data %>%
 
 **Question 2: Remplissage de la Couleur des Cellules**
 
-En utilisant le jeu de données **`hiv_malawi`**, créer un tableau **`{gt}`** affichant le nombre total (**sum**) de cas "*`new_positive`*" pour chaque "*`region`*". Mettre en surbrillance les cellules avec des valeurs supérieures à 50 cas en *rouge* et les cellules inférieures ou égales à 50 en *vert*. Complétez les parties manquantes (\_\_\_\_\_\_\_\_\_\_) de ce code pour y parvenir.
+En utilisant le jeu de données **`hiv_malawi`**, créer un tableau **`{gt}`** affichant le nombre total (**sum**) de cas "*`new_positive`*" pour chaque "*`region`*". Mettre en surbrillance les cellules avec des valeurs supérieures à 50 cas en *rouge* et les cellules inférieures ou égales à 50 en *vert*. Complétez les parties manquantes (_________) de ce code pour y parvenir.
 
 ```{r eval=FALSE, echo=TRUE}
 # Calculer le résumé total_new_pos 

@@ -349,9 +349,6 @@ t3
 -   `cols_label()` accepte plusieurs aides à la sélection de colonnes comme `contains()`, `starts_with()`, `ends_with()`, etc.
 -   Celles-ci proviennent du paquet tidyselect et offrent une flexibilité dans le renommage.
 
-```{r message=FALSE, warning=FALSE, include=FALSE, eval=FALSE}
-t3 %>% write_rds("data/clean/malawi_hiv_summary_t3.rds")
-```
 
 ::: pro-tip
 `cols_label()` a d'autres fonctions d'identification comme `contains()` qui fonctionnent de manière similaire et sont identiques aux aides de [`tidyselect`](https://tidyselect.r-lib.org/reference/starts_with.html), celles-ci incluent également :
@@ -470,11 +467,6 @@ t5 <- t4 %>%
 t5
 ```
 
-```{r message=FALSE, warning=FALSE, include=FALSE, eval=FALSE}
-# saving table for next lesson as rds object
-t5 %>% write_rds("data/clean/malawi_hiv_summary_t5.rds")
-t5 %>% gtsave("data/clean/malawi_hiv_summary_t5.png")
-```
 
 ::: pratice
 **Question 4 : lignes résumées**

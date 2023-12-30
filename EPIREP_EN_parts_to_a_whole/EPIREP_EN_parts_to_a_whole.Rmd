@@ -29,7 +29,7 @@ source(here::here("global/functions/lesson_functions.R"))
 knitr::opts_chunk$set(warning = F, message = F, class.source = "tgc-code-block", error = T)
 ```
 
-# Introduction
+# Introduction {.unnumbered}
 
 Welcome to our tutorial on visualizing comparisons and compositions using {ggplot2} in R. Analyzing and comparing categories, as well as visually representing the composition of elements, are fundamental aspects of data visualization in R.
 
@@ -41,7 +41,7 @@ This tutorial aims to equip you with the skills to effectively visualize aggrega
 
 ![Chart types covered in this lesson.](images/parts_to_whole_charts.jpg)
 
-# Learning objectives
+# Learning objectives {.unnumbered}
 
 1)  Understand the difference between visualizing comparisons and visualizing compositions, and recall the appropriate chart types for these two types of analysis.
 2)  Create and customize bar charts using {ggplot2} for comparing categorical data, with `geom_col()`, `geom_errorbar()`, and `position` adjustments.
