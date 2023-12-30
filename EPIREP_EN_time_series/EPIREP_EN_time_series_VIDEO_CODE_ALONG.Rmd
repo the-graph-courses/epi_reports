@@ -61,7 +61,7 @@ options(scipen=999)
 
 ‣ Start by loading and inspecting the data
 
-```{r}dd}
+```{r}
 tb_data_aus <- read_csv(here::here("data/aus_tb_notifs.csv"))
 # view data
 ```
