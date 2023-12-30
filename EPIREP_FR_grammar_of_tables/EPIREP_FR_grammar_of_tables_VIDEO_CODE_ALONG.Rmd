@@ -29,11 +29,10 @@ registerS3method(".reactable_5_rows", "data.frame", .reactable_5_rows)
 
 # Introduction
 
-
-- Les tables sont un outil puissant pour visualiser les données de manière claire et concise.
-- Avec R et le package `{gt}`, nous pouvons exploiter l'attrait visuel des tables pour communiquer efficacement des informations clés.
-- Dans cette leçon, nous apprendrons comment construire des tables esthétiquement agréables et personnalisables.
-- Ces tables soutiendront les objectifs d'analyse de données.
+-   Les tables sont un outil puissant pour visualiser les données de manière claire et concise.
+-   Avec R et le package `{gt}`, nous pouvons exploiter l'attrait visuel des tables pour communiquer efficacement des informations clés.
+-   Dans cette leçon, nous apprendrons comment construire des tables esthétiquement agréables et personnalisables.
+-   Ces tables soutiendront les objectifs d'analyse de données.
 
 # Objectifs d'apprentissage {.unlisted .unnumbered}
 
@@ -59,15 +58,15 @@ Nous utiliserons ces packages :
 
 ```{r}
 # Charger les packages
-pacman::p_load(tidyverse, gt, here)
+pacman::p_load(__________, __________, __________)
 ```
 
 # Présentation du jeu de données
 
-- Nos données proviennent du **Programme VIH du Malawi**.
-- Elles couvrent les soins prénataux et le traitement du VIH en 2019.
-- Nous nous concentrerons sur les agrégats régionaux et au niveau des installations par trimestre.
-- Ces données sont disponibles [ici](https://dms.hiv.health.gov.mw/dataset/?tags=HIV&res_format=XLSX&year=2019).
+-   Nos données proviennent du **Programme VIH du Malawi**.
+-   Elles couvrent les soins prénataux et le traitement du VIH en 2019.
+-   Nous nous concentrerons sur les agrégats régionaux et au niveau des installations par trimestre.
+-   Ces données sont disponibles [ici](https://dms.hiv.health.gov.mw/dataset/?tags=HIV&res_format=XLSX&year=2019).
 
 ```{r message=FALSE}
 # Importer les données
@@ -86,31 +85,31 @@ head(hiv_malawi)
 glimpse(hiv_malawi)
 ```
 
-- Les données couvrent les régions géographiques.
-- Elles incluent des informations sur les établissements de santé.
-- Elles couvrent différentes périodes de temps.
-- Les données démographiques des patients sont incluses.
-- Elles comprennent les résultats des tests.
-- Les informations sur les thérapies préventives sont incluses.
-- Elles contiennent des informations sur les médicaments antirétroviraux.
-- Plus d'informations sur le jeu de données sont disponibles dans la section des annexes.
+-   Les données couvrent les régions géographiques.
+-   Elles incluent des informations sur les établissements de santé.
+-   Elles couvrent différentes périodes de temps.
+-   Les données démographiques des patients sont incluses.
+-   Elles comprennent les résultats des tests.
+-   Les informations sur les thérapies préventives sont incluses.
+-   Elles contiennent des informations sur les médicaments antirétroviraux.
+-   Plus d'informations sur le jeu de données sont disponibles dans la section des annexes.
 
 Les variables clés que nous examinerons sont :
 
-1.  previous_negative: Le nombre de patients qui ont visité l'établissement de santé au cours de ce trimestre et qui avaient auparavant des tests VIH négatifs.
+1.  `previous_negative`: Le nombre de patients qui ont visité l'établissement de santé au cours de ce trimestre et qui avaient auparavant des tests VIH négatifs.
 
-2.  previous_positive: Le nombre de patients (comme ci-dessus) avec des tests VIH positifs précédents.
+2.  `previous_positive`: Le nombre de patients (comme ci-dessus) avec des tests VIH positifs précédents.
 
-3.  new_negative: Le nombre de patients testant nouvellement négatif pour le VIH.
+3.  `new_negative`: Le nombre de patients testant nouvellement négatif pour le VIH.
 
-4.  new_positive: Le nombre de patients testant nouvellement positif pour le VIH.
+4.  `new_positive`: Le nombre de patients testant nouvellement positif pour le VIH.
 
 Dans cette leçon, nous allons agréger les données par trimestre et résumer les changements dans les résultats des tests VIH.
 
 # Création de tables simples avec `{gt}`
 
-- La flexibilité, l'efficacité et la puissance de `{gt}` en font un package redoutable pour la création de tables dans R.
-- Nous explorerons certaines de ses principales caractéristiques dans cette leçon.
+-   La flexibilité, l'efficacité et la puissance de `{gt}` en font un package redoutable pour la création de tables dans R.
+-   Nous explorerons certaines de ses principales caractéristiques dans cette leçon.
 
 ::: key-point
 ![](images/gt_workflow_diagram.svg)
@@ -118,11 +117,10 @@ Dans cette leçon, nous allons agréger les données par trimestre et résumer l
 Le package `{gt}` contient un ensemble de fonctions qui prennent des données brutes en entrée et produisent une table joliment formatée pour une analyse et un rapport ultérieurs.
 :::
 
-
-- Pour utiliser efficacement le package `{gt}`, nous devons d'abord transformer nos données dans un format résumé approprié.
-- Dans le bloc de code ci-dessous, nous utilisons les fonctions de {dplyr} pour résumer les tests de VIH dans certains centres de dépistage du Malawi par trimestre.
-- Nous regroupons d'abord les données par période.
-- Ensuite, nous additionnons les cas sur plusieurs variables en utilisant `across()`.
+-   Pour utiliser efficacement le package `{gt}`, nous devons d'abord transformer nos données dans un format résumé approprié.
+-   Dans le bloc de code ci-dessous, nous utilisons les fonctions de {dplyr} pour résumer les tests de VIH dans certains centres de dépistage du Malawi par trimestre.
+-   Nous regroupons d'abord les données par période.
+-   Ensuite, nous additionnons les cas sur plusieurs variables en utilisant `across()`.
 
 ```{r}
 # Variables à résumer
@@ -130,9 +128,9 @@ cols <- c("new_positive", "previous_positive", "new_negative", "previous_negativ
 
 # Créer un résumé par trimestre
 hiv_malawi_summary <- hiv_malawi %>%  
-  group_by(period) %>%
+  group_by(__________) %>%
   summarize(
-    across(all_of(cols), sum) # Résumer toutes les colonnes
+    across(__________) # Résumer toutes les colonnes
   )
 
 hiv_malawi_summary
@@ -147,11 +145,9 @@ hiv_malawi_summary %>%
   gt() 
 ```
 
-
-- Comme vous pouvez le voir, le formatage de table par défaut est assez simple et non raffiné.
-- Cependant, `{gt}` offre de nombreuses options pour personnaliser et embellir la sortie de table.
-- Nous approfondirons ces aspects dans la prochaine section.
-
+-   Comme vous pouvez le voir, le formatage de table par défaut est assez simple et non raffiné.
+-   Cependant, `{gt}` offre de nombreuses options pour personnaliser et embellir la sortie de table.
+-   Nous approfondirons ces aspects dans la prochaine section.
 
 # Personnalisation des tableaux `{gt}`
 
@@ -163,37 +159,32 @@ Pour tirer pleinement parti de {gt}, il est utile de comprendre certains éléme
 
 Comme on le voit dans la figure du site du package, les principaux composants d'un tableau {gt} sont :
 
-\-**En-tête du tableau**: Contient un titre et un sous-titre facultatifs
+-   **En-tête du tableau**: Contient un titre et un sous-titre facultatifs
 
-\-**Colonne d'étiquette**: Étiquettes de lignes qui identifient chaque ligne
+-   **Colonne d'étiquette**: Étiquettes de lignes qui identifient chaque ligne
 
-\-**En-tête de colonne d'étiquette**: Regroupement et étiquettes facultatifs pour les lignes de colonne d'étiquette
+-   **En-tête de colonne d'étiquette**: Regroupement et étiquettes facultatifs pour les lignes de colonne d'étiquette
 
-\-**Étiquettes de colonne**: En-têtes pour chaque colonne
+-   **Étiquettes de colonne**: En-têtes pour chaque colonne
 
-\-**Corps du tableau**: Les principales cellules de données du tableau
+-   **Corps du tableau**: Les principales cellules de données du tableau
 
-\-**Pied de tableau**: Notes de bas de page et notes de source facultatives
+-   **Pied de tableau**: Notes de bas de page et notes de source facultatives
 
 Comprendre cette anatomie nous permet de construire systématiquement des tableaux {gt} en utilisant sa grammaire.
 
 ## En-tête et pied de tableau
 
-Here's your paragraph transformed into bullet points:
-
-- Le tableau de base que nous avions peut maintenant être mis à jour avec plus de composants.
-- Les tableaux deviennent plus informatifs et professionnels avec l'ajout d'en-têtes, de notes de source et de notes de bas de page.
-- Nous pouvons facilement améliorer le tableau de base d'avant en ajoutant ces éléments à l'aide des fonctions `{gt}`.
-- Pour créer un en-tête, nous utilisons `tab_header()` et spécifions un `title` et `subtitle`.
-- Cela donne au lecteur le contexte de ce que montre le tableau.
+-   Le tableau de base que nous avions peut maintenant être mis à jour avec plus de composants.
+-   Les tableaux deviennent plus informatifs et professionnels avec l'ajout d'en-têtes, de notes de source et de notes de bas de page.
+-   Nous pouvons facilement améliorer le tableau de base d'avant en ajoutant ces éléments à l'aide des fonctions `{gt}`.
+-   Pour créer un en-tête, nous utilisons `tab_header()` et spécifions un `title` et `subtitle`.
+-   Cela donne au lecteur le contexte de ce que montre le tableau.
 
 ```{r}
 hiv_malawi_summary %>%
   gt() %>%
-  tab_header(
-    title = "Dépistage du VIH au Malawi",
-    subtitle = "T1 à T4 2019"
-  )
+  _______________ # Complétez ici
 ```
 
 Nous pouvons ajouter un pied de page avec la fonction `tab_source_note()` pour citer la provenance des données :
@@ -205,12 +196,12 @@ hiv_malawi_summary %>%
     title = "Dépistage du VIH au Malawi",
     subtitle = "T1 à T4 2019"
   ) %>%
-  tab_source_note("Source : Programme VIH du Malawi")
+  __________________________ # Complétez ici
 ```
 
-- Les notes de bas de page sont utiles pour fournir des détails supplémentaires sur certains points de données ou étiquettes.
-- La fonction `tab_footnote()` attache les notes de bas de page aux cellules de tableau indiquées.
-- Par exemple, nous pouvons annoter les colonnes de diagnostic.
+-   Les notes de bas de page sont utiles pour fournir des détails supplémentaires sur certains points de données ou étiquettes.
+-   La fonction `tab_footnote()` attache les notes de bas de page aux cellules de tableau indiquées.
+-   Par exemple, nous pouvons annoter les colonnes de diagnostic.
 
 ```{r}
 hiv_malawi_summary %>%
@@ -220,10 +211,7 @@ hiv_malawi_summary %>%
     subtitle = "T1 à T2 2019"
   ) %>%
   tab_source_note("Source : Programme VIH du Malawi") %>%
-  tab_footnote(
-    footnote = "Nouveau diagnostic",
-    locations = cells_column_labels(columns = c(new_positive, new_negative))
-  )
+ _______________________ # Complétez ici
 ```
 
 Ces petits ajouts améliorent grandement l'apparence professionnelle et informative des tableaux.
@@ -233,12 +221,13 @@ Ces petits ajouts améliorent grandement l'apparence professionnelle et informat
 Le stub est la section gauche d'un tableau contenant les étiquettes de ligne. Elles fournissent un contexte pour les données de chaque ligne.
 
 ::: reminder
-Cette image montre le composant stub d'un tableau `{gt}`, marqué par un carré rouge. ![](images/gt_stub.PNG)
+Cette image montre le composant stub d'un tableau `{gt}`, marqué par un carré rouge.
+
+![](images/gt_stub.PNG)
 :::
 
-
-- Dans notre tableau de cas de VIH, la colonne `period` contient les étiquettes de ligne que nous voulons utiliser.
-- Pour générer un stub, nous spécifions cette colonne dans `gt()` en utilisant l'argument `rowname_col`.
+-   Dans notre tableau de cas de VIH, la colonne `period` contient les étiquettes de ligne que nous voulons utiliser.
+-   Pour générer un stub, nous spécifions cette colonne dans `gt()` en utilisant l'argument `rowname_col`.
 
 ```{r}
 hiv_malawi_summary %>%
@@ -256,7 +245,7 @@ Pour plus de commodité, sauvegardons le tableau dans une variable `t1`:
 
 ```{r}
 t1 <- hiv_malawi_summary %>%
-  gt(rowname_col = "period") %>%
+  gt(__________) %>%
   tab_header(
     title = "Dépistage du VIH au Malawi",
     subtitle = "T1 à T2 2019"
@@ -268,23 +257,21 @@ t1
 
 ## Colonnes Spanner & sous-colonnes
 
-- Pour mieux structurer notre tableau, nous pouvons regrouper des colonnes liées sous des "spanners".
-- Les spanners sont des titres qui couvrent plusieurs colonnes, fournissant une organisation catégorielle de niveau supérieur.
-- Nous pouvons le faire avec la fonction `tab_spanner()`.
-- Créons deux colonnes spanner pour les tests nouveaux et précédents.
-- Nous commencerons par le spanner "Nouveaux tests" afin que vous puissiez observer la syntaxe.
+-   Pour mieux structurer notre tableau, nous pouvons regrouper des colonnes liées sous des "spanners".
+-   Les spanners sont des titres qui couvrent plusieurs colonnes, fournissant une organisation catégorielle de niveau supérieur.
+-   Nous pouvons le faire avec la fonction `tab_spanner()`.
+-   Créons deux colonnes spanner pour les tests nouveaux et précédents.
+-   Nous commencerons par le spanner "Nouveaux tests" afin que vous puissiez observer la syntaxe.
 
 ```{r}
 t1 %>%  
-  tab_spanner(
-    label = "Nouveaux tests",
-    columns = starts_with("new") # sélectionne les colonnes commençant par "new"
+  tab_spanner(________________,
+    __________________ # sélectionne les colonnes commençant par "new"
   )
 ```
 
-
-- L'argument `columns` nous permet de sélectionner les colonnes pertinentes.
-- L'argument `label` prend en entrée l'étiquette du spanner.
+-   L'argument `columns` nous permet de sélectionner les colonnes pertinentes.
+-   L'argument `label` prend en entrée l'étiquette du spanner.
 
 Ajoutons maintenant les deux spanners :
 
@@ -296,11 +283,7 @@ t2 <- t1 %>%
     label = "Nouveaux tests",
     columns = starts_with("new") 
   ) %>%
-  # Second spanner pour "Tests précédents"
-  tab_spanner(
-    label = "Tests précédents",
-    columns = starts_with("prev")
-  )
+_______________________  # Second spanner pour "Tests précédents"
 
 t2 
 ```
@@ -347,26 +330,24 @@ summary_table_spanners <- region_summary %>%
 
 # Renommage des colonnes du tableau
 
-
-- Les noms des colonnes contiennent actuellement des préfixes inutiles comme "new\_" et "previous\_".
-- Pour une meilleure lisibilité, nous pouvons les renommer en utilisant `cols_label()`.
-- `cols_label()` prend un ensemble d'anciens noms à apparier (du côté gauche d'une tilde, `~`) et de nouveaux noms pour les remplacer (du côté droit de la tilde).
-- Nous pouvons utiliser `contains()` pour sélectionner des colonnes avec "positive" ou "negative".
+-   Les noms des colonnes contiennent actuellement des préfixes inutiles comme "new_" et "previous_".
+-   Pour une meilleure lisibilité, nous pouvons les renommer en utilisant `cols_label()`.
+-   `cols_label()` prend un ensemble d'anciens noms à apparier (du côté gauche d'une tilde, `~`) et de nouveaux noms pour les remplacer (du côté droit de la tilde).
+-   Nous pouvons utiliser `contains()` pour sélectionner des colonnes avec "positive" ou "negative".
 
 ```{r}
 t3 <- t2 %>%
   cols_label(
-    contains("positive") ~ "Positive", 
-    contains("negative") ~ "Negative"
+    ___________________________, 
+    ___________________________
   )
 
 t3
 ```
 
-
-- Ceci renomme les colonnes d'une manière plus propre.
-- `cols_label()` accepte plusieurs aides à la sélection de colonnes comme `contains()`, `starts_with()`, `ends_with()`, etc.
-- Celles-ci proviennent du paquet tidyselect et offrent une flexibilité dans le renommage.
+-   Ceci renomme les colonnes d'une manière plus propre.
+-   `cols_label()` accepte plusieurs aides à la sélection de colonnes comme `contains()`, `starts_with()`, `ends_with()`, etc.
+-   Celles-ci proviennent du paquet tidyselect et offrent une flexibilité dans le renommage.
 
 ```{r message=FALSE, warning=FALSE, include=FALSE, eval=FALSE}
 t3 %>% write_rds("data/clean/malawi_hiv_summary_t3.rds")
@@ -408,9 +389,9 @@ D. `tab_relabel()`
 
 # Lignes de résumé
 
-- Prenons les mêmes données avec lesquelles nous avons commencé au début de cette leçon.
-- Au lieu de regrouper uniquement par période (trimestres), regroupons à la fois par période et par région.
-- Nous faisons cela pour illustrer la puissance des fonctionnalités de résumé dans `{gt}` : les tableaux récapitulatifs.
+-   Prenons les mêmes données avec lesquelles nous avons commencé au début de cette leçon.
+-   Au lieu de regrouper uniquement par période (trimestres), regroupons à la fois par période et par région.
+-   Nous faisons cela pour illustrer la puissance des fonctionnalités de résumé dans `{gt}` : les tableaux récapitulatifs.
 
 ::: reminder
 **Rappel {gt} - Lignes de résumé** Cette image montre le composant des lignes de résumé d'un tableau `{gt}`, clairement indiqué dans un carré rouge. Les lignes de résumé fournissent des données agrégées ou des résumés statistiques des données contenues dans les colonnes correspondantes. ![](images/gt_summary_rows.PNG)
@@ -422,8 +403,8 @@ Tout d'abord, recréons les données :
 summary_data_2 <- hiv_malawi %>% 
   group_by(
     # Notez l'ordre des variables par lesquelles nous regroupons.
-    region,
-    period
+    _______,
+    _______
   ) %>% 
   summarise(
     across(all_of(cols), sum) 
@@ -465,29 +446,25 @@ t4 <- summary_data_2 %>%
 t4
 ```
 
-- Maintenant, que faire si nous voulons visualiser sur le tableau un résumé de chaque variable pour chaque groupe de régions ?
-- Plus précisément, nous voulons voir la somme et la moyenne pour les 4 colonnes que nous avons pour chaque région.
+-   Maintenant, que faire si nous voulons visualiser sur le tableau un résumé de chaque variable pour chaque groupe de régions ?
+-   Plus précisément, nous voulons voir la somme et la moyenne pour les 4 colonnes que nous avons pour chaque région.
 
-::: rappel
-
-- N'oubliez pas que nos 4 colonnes d'intérêt sont : "new_positive", "previous_positive", "new_negative", et "previous_negative".
-- Nous n'avons changé les labels de ces colonnes que dans la table `{gt}` et non dans le data.frame lui-même.
-- Nous pouvons donc utiliser les noms de ces colonnes pour indiquer à `{gt}` où appliquer la fonction de résumé.
-- De plus, nous avons déjà stocké les noms de ces 4 colonnes dans l'objet `cols`, donc nous allons l'utiliser à nouveau ici.
+::: reminder
+-   N'oubliez pas que nos 4 colonnes d'intérêt sont : "new_positive", "previous_positive", "new_negative", et "previous_negative".
+-   Nous n'avons changé les labels de ces colonnes que dans la table `{gt}` et non dans le data.frame lui-même.
+-   Nous pouvons donc utiliser les noms de ces colonnes pour indiquer à `{gt}` où appliquer la fonction de résumé.
+-   De plus, nous avons déjà stocké les noms de ces 4 colonnes dans l'objet `cols`, donc nous allons l'utiliser à nouveau ici.
 :::
 
-- Pour atteindre cet objectif, nous allons utiliser la fonction pratique `summary_rows`.
-- Nous fournissons explicitement les colonnes que nous voulons résumer et les fonctions avec lesquelles nous voulons résumer, dans notre cas c'est `sum` et `mean`.
-- Notez que nous assignons le nom de la nouvelle ligne (non citée) à un nom de fonction ("cité").
+-   Pour atteindre cet objectif, nous allons utiliser la fonction pratique `summary_rows`.
+-   Nous fournissons explicitement les colonnes que nous voulons résumer et les fonctions avec lesquelles nous voulons résumer, dans notre cas c'est `sum` et `mean`.
+-   Notez que nous assignons le nom de la nouvelle ligne (non citée) à un nom de fonction ("cité").
 
 ```{r}
 t5 <- t4 %>% 
   summary_rows(
-    columns = cols, #using columns = 3:6 also works 
-    fns = list( 
-      TOTAL = "sum",
-      MOYENNE = "mean"
-    )
+    ______________, 
+    ______________
   )
 
 t5
@@ -499,7 +476,7 @@ t5 %>% write_rds("data/clean/malawi_hiv_summary_t5.rds")
 t5 %>% gtsave("data/clean/malawi_hiv_summary_t5.png")
 ```
 
-::: pratique
+::: pratice
 **Question 4 : lignes résumées**
 
 Quelle est la bonne réponse (ou les bonnes réponses) si vous deviez résumer l'écart type des lignes des colonnes "new_positive" et "previous_negative" uniquement?
@@ -551,15 +528,14 @@ your_data %>%
 
 # Conclusion
 
+-   Dans la leçon d'aujourd'hui, nous nous sommes attaqués aux tables de données dans R en utilisant `{gt}`.
+-   Nous avons commencé par définir des objectifs clairs, présenté les packages que nous utiliserons et découvert notre jeu de données.
+-   Ensuite, nous avons mis la main à la pâte en créant des tables simples.
+-   Nous avons appris à organiser nos données proprement en utilisant des colonnes spanner et en ajustant les étiquettes des colonnes pour rendre les choses parfaitement claires et cohérentes.
+-   Nous avons ensuite conclu avec quelques résumés de table astucieux.
+-   Ce sont les bases de la création de tables dans R et `{gt}`, et elles seront très utiles à mesure que nous poursuivrons notre voyage pour créer des tables engageantes et informatives dans R.
 
-- Dans la leçon d'aujourd'hui, nous nous sommes attaqués aux tables de données dans R en utilisant `{gt}`.
-- Nous avons commencé par définir des objectifs clairs, présenté les packages que nous utiliserons et découvert notre jeu de données.
-- Ensuite, nous avons mis la main à la pâte en créant des tables simples.
-- Nous avons appris à organiser nos données proprement en utilisant des colonnes spanner et en ajustant les étiquettes des colonnes pour rendre les choses parfaitement claires et cohérentes.
-- Nous avons ensuite conclu avec quelques résumés de table astucieux.
-- Ce sont les bases de la création de tables dans R et `{gt}`, et elles seront très utiles à mesure que nous poursuivrons notre voyage pour créer des tables engageantes et informatives dans R.
-
-# Corrigé {.unnumbered}
+# Solutions {.unnumbered}
 
 1.  B
 
@@ -596,7 +572,7 @@ summary_table_spanners <- district_summary %>%
 
 Les membres de l'équipe suivants ont contribué à cette leçon :
 
-`r .tgc_contributors_list(ids = c("benn","joy"))`
+`r .tgc_contributors_list(ids = c("benn","joy", "guy"))`
 
 # Références {.unlisted .unnumbered}
 

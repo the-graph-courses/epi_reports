@@ -1,14 +1,18 @@
 ---
-title: "Améliorer les visualisations de tableaux gt"
+title: "Présentation des données de santé avec les tableaux gt dans R: Fondamentaux"
 output:
   html_document:
-    number_sections: true
-    toc: true
-    toc_float: true
+    number_sections: yes
+    toc: yes
+    toc_float: yes
     css: !expr here::here("global/style/style.css")
     highlight: kate
-editor_options: 
-  chunk_output_type: inline
+  word_document:
+    toc: yes
+editor_options:
+  markdown:
+    wrap: 100 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -22,567 +26,548 @@ source(here::here("global/functions/lesson_functions.R"))
 # default render
 registerS3method(".reactable_5_rows", "data.frame", .reactable_5_rows)
 ```
+
+
 # Introduction
 
-La leçon précédente `gt` s'est principalement concentrée sur les composants de la table, sa structure et comment la manipuler correctement. Cette leçon, présentant la deuxième partie de la série `gt`, se concentrera sur l'utilisation du package pour perfectionner, styliser et personnaliser les effets visuels des tables d'une manière qui élève la qualité et l'efficacité de vos rapports.
+Les tables sont un outil puissant pour visualiser les données de manière claire et concise. Avec R et le package gt, nous pouvons exploiter l'attrait visuel des tables pour communiquer efficacement des informations clés. Dans cette leçon, nous apprendrons comment construire des tables esthétiquement agréables et personnalisables qui soutiennent les objectifs d'analyse de données.  
 
-Plongeons-y.
+# Objectifs d'apprentissage {.unlisted .unnumbered} 
 
-# Objectifs d'apprentissage
+- Utiliser la fonction `gt()` pour créer des tables basiques
 
--   Formatage des cellules
+- Regrouper les colonnes sous des en-têtes spanner
 
--   Coloration conditionnelle
+- Renommer les noms des colonnes
 
--   Formater le texte (couleur de la police, gras, etc.)
+- Ajouter des lignes récapitulatives pour les groupes
 
--   Ajouter des bordures au texte
+À la fin, vous serez capable de générer des tables polies et reproductibles comme celle-ci :
 
-À la fin de cette leçon, vous aurez les compétences pour styliser artistiquement vos tables **`gt`** pour répondre à vos préférences spécifiques, atteignant un niveau de détail similaire à ceci :
+![Tableau récapitulatif exemple](images/malawi_hiv_summary_t5.png){width="577"}
 
-![](images/malawi_hiv_summary_l2_t11.png){width="432"}
 
 # Packages
 
-Dans cette leçon, nous utiliserons les packages suivants :
+Nous utiliserons ces packages :
 
--   `gt`
-
--   `dplyr` , `tidyr` , et `purrr`.
-
--   `janitor`
-
--   `KableExtra`
-
--   `Paletteer` , `ggsci`
+- `{gt}` pour créer des tables
+- `{tidyverse}` pour la manipulation des données
+- `{here}` pour les chemins de fichiers
 
 ```{r}
-pacman::p_load(tidyverse, janitor, gt, here)
+# Charger les packages
+pacman::p_load(tidyverse, gt, here)
 ```
 
-# Précédemment dans pt1
+# Présentation du jeu de données
 
-::: recap
-Dans la leçon `gt` précédente, nous avons eu l'opportunité de :
+Nos données proviennent du ** Programme VIH du Malawi ** et couvrent les soins prénataux et le traitement du VIH en 2019. Nous nous concentrerons sur les agrégats régionaux et au niveau des installations par trimestre (disponibles [ici](https://dms.hiv.health.gov.mw/dataset/?tags=HIV&res_format=XLSX&year=2019)).
 
--   Découvrir les données sur la prévalence du VIH au Malawi.
+```{r message=FALSE}
+# Importer les données
+hiv_malawi <- read_csv(here::here("data/clean/hiv_malawi.csv"))
+```
 
--   Découvrir la grammaire des tables et le package `gt`.
+Explorons les variables :
 
--   créer une table simple.
-
--   Ajouter des détails comme le titre et la note de bas de page à la table.
-
--   Regrouper les colonnes en en-têtes.
-
--   Créer des lignes de résumé.
-
-![](images/gt_parts_of_a_table.svg)
-:::
-
-
-
-# Jeu de données
-
-Dans cette leçon, nous utiliserons les mêmes données que la leçon précédente. Vous pouvez revenir en arrière pour une description détaillée des données et du processus de préparation que nous avons effectué.
-
-::: recap
-Voici les détails complets des colonnes que nous utiliserons :
-
--   region: La région géographique ou la zone où les données ont été collectées ou sont analysées.
-
--   period: Une période spécifique associée aux données, souvent utilisée pour l'analyse temporelle.
-
--   previous_negative: Le nombre d'individus avec un résultat de test négatif précédent.
-
--   previous_positive: Le nombre d'individus avec un résultat de test positif précédent.
-
--   new_negative: Le nombre de nouveaux cas diagnostiqués avec un résultat négatif.
-
--   new_positive: Le nombre de nouveaux cas diagnostiqués avec un résultat positif.
-:::
-
-Mais pour les besoins de cette leçon, nous utiliserons directement les tableaux. Voici le tableau que nous avons créé avec les bonnes en-têtes et étiquettes de colonnes. Nous baserons le reste de notre leçon sur ce tableau en particulier.
+```{r render = .reactable_10_rows} 
+# Les 6 premières lignes
+head(hiv_malawi)
+```
 
 ```{r}
-hiv_malawi_summary <- read_rds(here::here("data", "clean", "malawi_hiv_summary_t3.rds"))
+# Les noms et les types de variables
+glimpse(hiv_malawi)
+```
+
+Les données couvrent les régions géographiques, les établissements de santé, les périodes de temps, les données démographiques des patients, les résultats des tests, les thérapies préventives, les médicaments antirétroviraux, et plus encore. Plus d'informations sur le jeu de données sont dans la section des annexes.
+
+Les variables clés que nous examinerons sont :
+
+1. `previous_negative`: Le nombre de patients qui ont visité l'établissement de santé au cours de ce trimestre et qui avaient auparavant des tests VIH négatifs.
+
+2. `previous_positive`: Le nombre de patients (comme ci-dessus) avec des tests VIH positifs précédents.
+
+3. `new_negative`: Le nombre de patients testant nouvellement négatif pour le VIH.
+
+4. `new_positive`: Le nombre de patients testant nouvellement positif pour le VIH.
+
+Dans cette leçon, nous allons agréger les données par trimestre et résumer les changements dans les résultats des tests VIH.
+
+# Création de tables simples avec `{gt}`
+
+La flexibilité, l'efficacité et la puissance de `{gt}` en font un package redoutable pour la création de tables dans R. Nous explorerons certaines de ses principales caractéristiques dans cette leçon.
+
+::: key-point
+
+![](images/gt_workflow_diagram.svg)
+
+Le package `{gt}` contient un ensemble de fonctions qui prennent des données brutes en entrée et produisent une table joliment formatée pour une analyse et un rapport ultérieurs.
+
+:::
+
+Pour utiliser efficacement le package `{gt}`, nous devons d'abord transformer nos données dans un format résumé approprié.
+
+Dans le bloc de code ci-dessous, nous utilisons les fonctions de {dplyr} pour résumer les tests de VIH dans certains centres de dépistage du Malawi par trimestre. Nous regroupons d'abord les données par période, puis nous additionnons les cas sur plusieurs variables en utilisant `across()` :
+
+```{r}
+# Variables à résumer
+cols <- c("new_positive", "previous_positive", "new_negative", "previous_negative")
+
+# Créer un résumé par trimestre
+hiv_malawi_summary <- hiv_malawi %>%  
+  group_by(period) %>%
+  summarize(
+    across(all_of(cols), sum) # Résumer toutes les colonnes
+  )
 
 hiv_malawi_summary
 ```
 
-# Thèmes
+Ceci agrège les données de manière appropriée pour les passer à `{gt}` afin de générer un tableau résumé propre.
 
-Comme l'objectif de cette leçon est principalement le style, commençons par utiliser un thème prédéfini pour ajouter plus de visuels et de couleurs au tableau et à ses composants. Pour ce faire, nous utilisons la fonction `opt_stylize`. La fonction contient plusieurs styles prédéfinis et peut accepter une couleur également. Dans notre cas, nous avons choisi d'opter pour le style No.6 et la couleur 'cyan'. Vous pouvez définir ces arguments selon vos préférences.
+Pour créer une table simple à partir des données agrégées, nous pouvons ensuite appeler la fonction `gt()` :
 
 ```{r}
-t1 <- hiv_malawi_summary %>% 
-  opt_stylize(
-    style = 6, 
-    color = 'gray'
+hiv_malawi_summary %>%  
+  gt() 
+```
+
+Comme vous pouvez le voir, le formatage de table par défaut est assez simple et non raffiné. Cependant, `{gt}` offre de nombreuses options pour personnaliser et embellir la sortie de table. Nous approfondirons ces aspects dans la prochaine section.
+
+Voici la traduction en français du fragment de tutoriel Rmd, en gardant la syntaxe Rmd et le code valide :
+
+# Personnalisation des tableaux `{gt}`
+
+Le package {gt} permet une personnalisation complète des tableaux grâce à son cadre de « grammaire des tableaux ». C'est similaire à la façon dont la grammaire graphique de {ggplot2} fonctionne pour les graphiques. 
+
+Pour tirer pleinement parti de `{gt}`, il est utile de comprendre certains éléments clés de sa grammaire.
+
+![](images/gt_parts_of_a_table.svg)
+
+Comme on le voit dans la figure du site du package, les principaux composants d'un tableau `{gt}` sont :
+
+- **En-tête du tableau**: Contient un titre et un sous-titre facultatifs
+
+- **Colonne d'étiquette**: Étiquettes de lignes qui identifient chaque ligne
+
+- **En-tête de colonne d'étiquette**: Regroupement et étiquettes facultatifs pour les lignes de colonne d'étiquette
+
+- **Étiquettes de colonne**: En-têtes pour chaque colonne
+
+- **Corps du tableau**: Les principales cellules de données du tableau
+
+- **Pied de tableau**: Notes de bas de page et notes de source facultatives
+
+Comprendre cette anatomie nous permet de construire systématiquement des tableaux `{gt}` en utilisant sa grammaire.
+
+## En-tête et pied de tableau
+
+Le tableau de base que nous avions peut maintenant être mis à jour avec plus de composants.
+
+Les tableaux deviennent plus informatifs et professionnels avec l'ajout d'en-têtes, de notes de source et de notes de bas de page. Nous pouvons facilement améliorer le tableau de base d'avant en ajoutant ces éléments à l'aide des fonctions `{gt}`.
+
+Pour créer un en-tête, nous utilisons `tab_header()` et spécifions un `title` et `subtitle`. Cela donne au lecteur le contexte de ce que montre le tableau.
+
+```{r}
+hiv_malawi_summary %>%
+  gt() %>%
+  tab_header(
+    title = "Dépistage du VIH au Malawi",
+    subtitle = "T1 à T4 2019"
   )
+```
+
+Nous pouvons ajouter un pied de page avec la fonction `tab_source_note()` pour citer la provenance des données :
+
+```{r}
+hiv_malawi_summary %>%
+  gt() %>%
+  tab_header(
+    title = "Dépistage du VIH au Malawi",
+    subtitle = "T1 à T4 2019"
+  ) %>%
+  tab_source_note("Source : Programme VIH du Malawi")
+```
+
+Les notes de bas de page sont utiles pour fournir des détails supplémentaires sur certains points de données ou étiquettes. La fonction `tab_footnote()` attache les notes de bas de page aux cellules de tableau indiquées. Par exemple, nous pouvons annoter les colonnes de diagnostic :
+
+```{r}
+hiv_malawi_summary %>%
+  gt() %>%
+  tab_header(
+    title = "Dépistage du VIH au Malawi",
+    subtitle = "T1 à T2 2019"
+  ) %>%
+  tab_source_note("Source : Programme VIH du Malawi") %>%
+  tab_footnote(
+    footnote = "Nouveau diagnostic",
+    locations = cells_column_labels(columns = c(new_positive, new_negative))
+  )
+```
+
+Ces petits ajouts améliorent grandement l'apparence professionnelle et informative des tableaux.
+
+## Stub
+
+Le stub est la section gauche d'un tableau contenant les étiquettes de ligne. Elles fournissent un contexte pour les données de chaque ligne.
+
+::: reminder
+Cette image montre le composant stub d'un tableau `{gt}`, marqué par un carré rouge.
+![](images/gt_stub.PNG)
+:::
+
+Dans notre tableau de cas de VIH, la colonne `period` contient les étiquettes de ligne que nous voulons utiliser. Pour générer un stub, nous spécifions cette colonne dans `gt()` en utilisant l'argument `rowname_col`:
+
+```{r}
+hiv_malawi_summary %>%
+  gt(rowname_col = "period") %>%
+  tab_header(
+    title = "Dépistage du VIH au Malawi",
+    subtitle = "T1 à T2 2019"  
+  ) %>%
+  tab_source_note("Source: Programme VIH du Malawi")
+```
+
+Notez que le nom de la colonne passé à `rowname_col` doit être entre guillemets.
+
+Pour plus de commodité, sauvegardons le tableau dans une variable `t1`:
+
+```{r}
+t1 <- hiv_malawi_summary %>%
+  gt(rowname_col = "period") %>%
+  tab_header(
+    title = "Dépistage du VIH au Malawi",
+    subtitle = "T1 à T2 2019"
+  ) %>% 
+  tab_source_note("Source: Programme VIH du Malawi")
 
 t1
 ```
 
-::: challenge
-Pour des thèmes et des styles plus sophistiqués, vous pouvez consulter la fonction `tab_options` (documentation [ici](https://gt.rstudio.com/reference/tab_options.html?q=tab%20options#null)) qui est essentiellement l'équivalent de la fonction `theme` dans `ggplot2`. Cette fonction contient des arguments et des options pour chaque couche et composant du tableau. Pour les besoins de cette leçon, nous n'approfondirons pas.
-:::
 
-# Formatage des valeurs dans le tableau
+## Colonnes Spanner & sous-colonnes
 
-Ne serait-il pas utile de visualiser en couleurs la différence entre les valeurs d'une colonne spécifique ? Dans de nombreux rapports, ces types de tableaux sont très utiles, surtout si le nombre de lignes est assez grand. Faisons cela pour notre tableau de sorte que la colonne `new_positive` soit formatée en rouge.
+Pour mieux structurer notre tableau, nous pouvons regrouper des colonnes liées sous des "spanners". Les spanners sont des titres qui couvrent plusieurs colonnes, fournissant une organisation catégorielle de niveau supérieur. Nous pouvons le faire avec la fonction `tab_spanner()`. 
+
+Créons deux colonnes spanner pour les tests nouveaux et précédents. Nous commencerons par le spanner "Nouveaux tests" afin que vous puissiez observer la syntaxe :
 
 ```{r}
-# révisé la documentation, paletteer n'est pas nécessaire.
-# my_colors <- paletteer::paletteer_d("ggsci::red_material")
+t1 %>%  
+  tab_spanner(
+    label = "Nouveaux tests",
+    columns = starts_with("new") # sélectionne les colonnes commençant par "new"
+  )
 ```
 
-Nous pouvons le faire à l'aide de la fonction `data_color` pour laquelle nous devons spécifier deux arguments : `columns` (c'est-à-dire sur quelle colonne ce style sera-t-il appliqué ?) et `palette` pour la palette de couleurs que nous souhaitons utiliser.
+L'argument `columns` nous permet de sélectionner les colonnes pertinentes, et l'argument `label` prend en entrée l'étiquette du spanner. 
+
+Ajoutons maintenant les deux spanners :
 
 ```{r}
-t2 <- t1 %>% 
-  data_color(
-    columns = new_positive, # la colonne ou les colonnes comme nous le verrons plus tard
-    palette = "ggsci::red_material" # la palette du package ggsci.
+# Enregistre le tableau dans t2 pour un accès facile  
+t2 <- t1 %>%  
+  # Premier spanner pour "Nouveaux tests"   
+  tab_spanner(
+    label = "Nouveaux tests",
+    columns = starts_with("new") 
+  ) %>%
+  # Second spanner pour "Tests précédents"
+  tab_spanner(
+    label = "Tests précédents",
+    columns = starts_with("prev")
   )
 
-t2
+t2 
 ```
 
-::: side-note
-`ggsci::red_material` n'est pas la seule palette que nous pouvons utiliser, en fait, il existe des centaines de palettes conçues pour être utilisées dans R. Vous pouvez en trouver beaucoup plus dans la documentation du package `paletteer` [ici](https://emilhvitfeldt.github.io/paletteer/#included-packages), ou dans la documentation officielle de `data_color` [ici](https://gt.rstudio.com/reference/data_color.html?q=data_color#null).
+Notez que la fonction `tab_spanner` a automatiquement réarrangé les colonnes de manière appropriée.
+
+::: practice
+**Question 1 : Le but des Spanners**
+
+Quel est le but de l'utilisation de "colonnes spanner" dans un tableau **`gt`** ?
+
+A. Appliquer des styles CSS personnalisés à des colonnes spécifiques.
+
+B. Créer des colonnes de groupe et augmenter la lisibilité.
+
+C. Formater la taille de la police de toutes les colonnes de manière uniforme.
+
+D. Trier les données par ordre croissant.
+
+**Question 2 : Création de Spanners**
+
+En utilisant le cadre de données **`hiv_malawi`**, créez un tableau **`gt`** qui affiche un résumé de la **`somme`** des cas "nouveaux_positifs" et "précédents_positifs" pour chaque région. Créez des en-têtes spanner pour étiqueter ces deux colonnes de résumé. Pour y parvenir, remplissez les parties manquantes du code ci-dessous :
+
+```{r eval=FALSE, echo=TRUE}
+
+region_summary <- hiv_malawi %>%
+  group_by(region) %>%
+  summarize(
+    _________(
+      c(nouveaux_positifs, précédents_positifs),
+      ______
+    )
+  )
+
+# Créer un tableau gt avec des en-têtes spanner
+summary_table_spanners <- region_summary %>%
+  _____________ %>%
+  ___________(
+    label = "Cas positifs",
+    ________ = c(nouveaux_positifs, précédents_positifs)
+  )
+```
 :::
 
-Nous pouvons faire cela pour la colonne `previous_negative` également. Nous pouvons utiliser un autre type de palette, pour ce cas, j'utilise la palette verte du même package : [`ggsci::green_material`](https://github.com/nanxstats/ggsci), la palette que vous choisissez est une question de commodité et de goût personnel, vous pouvez en savoir plus à ce sujet si vous vous référez à la note de marge ci-dessus.
+# Renommage des colonnes du tableau
+
+Les noms des colonnes contiennent actuellement des préfixes inutiles comme "new_" et "previous_". Pour une meilleure lisibilité, nous pouvons les renommer en utilisant `cols_label()`.
+
+`cols_label()` prend un ensemble d'anciens noms à apparier (du côté gauche d'une tilde, `~`) et de nouveaux noms pour les remplacer (du côté droit de la tilde). Nous pouvons utiliser `contains()` pour sélectionner des colonnes avec "positive" ou "negative" :
 
 ```{r}
-t2 %>% 
-  data_color(
-    columns = previous_negative,
-    palette = "ggsci::green_material"
-  ) 
-  
+t3 <- t2 %>%
+  cols_label(
+    contains("positive") ~ "Positive", 
+    contains("negative") ~ "Negative"
+  )
+
+t3
 ```
 
-De même, nous pouvons également colorer plusieurs colonnes à la fois, par exemple nous pouvons styliser les colonnes avec des cas positifs en rouge, et celles avec des cas négatifs en vert. Pour faire cela, nous devons écrire *deux* instructions `data_color`, une pour chaque style de couleur :
+Ceci renomme les colonnes d'une manière plus propre.
+
+`cols_label()` accepte plusieurs aides à la sélection de colonnes comme `contains()`, `starts_with()`, `ends_with()` etc. Celles-ci proviennent du paquet tidyselect et offrent une flexibilité dans le renommage.
+
+```{r message=FALSE, warning=FALSE, include=FALSE, eval=FALSE}
+t3 %>% write_rds("data/clean/malawi_hiv_summary_t3.rds")
+```
+
+::: pro-tip
+`cols_label()` a d'autres fonctions d'identification comme `contains()` qui fonctionnent de manière similaire et sont identiques aux aides de [`tidyselect`](https://tidyselect.r-lib.org/reference/starts_with.html), celles-ci incluent également :
+
+-   `starts_with()`: Commence par un préfixe exact.
+
+-   `ends_with()`: Se termine par un suffixe exact.
+
+-   `contains()`: Contient une chaîne de caractères littérale.
+
+-   `matches()`: Correspond à une expression régulière.
+
+-   `num_range()`: Correspond à une plage numérique comme x01, x02, x03.
+
+Ces aides sont utiles, en particulier dans le cas de la sélection de plusieurs colonnes.
+:::
+
+Pour en savoir plus sur la fonction `cols_label()`, vous pouvez consulter ici : <https://gt.rstudio.com/reference/cols_label.html>
+
+
+::: practice
+**Question 3 : étiquettes de colonnes**
+
+Quelle fonction est utilisée pour changer les étiquettes ou les noms des colonnes dans un tableau **`gt`** ?
+
+```         
+A. `tab_header()`
+
+B. `tab_style()`
+
+C. `tab_options()`
+
+D. `tab_relabel()`
+```
+:::
+
+# Lignes de résumé
+
+Prenons les mêmes données avec lesquelles nous avons commencé au début de cette leçon et, au lieu de regrouper uniquement par période (trimestres), regroupons à la fois par période et par région. Nous faisons cela pour illustrer la puissance des fonctionnalités de résumé dans `gt` : les tableaux récapitulatifs.
+
+::: reminder
+**Rappel {gt} - Lignes de résumé**
+Cette image montre le composant des lignes de résumé d'un tableau `{gt}`, clairement indiqué dans un carré rouge. Les lignes de résumé fournissent des données agrégées ou des résumés statistiques des données contenues dans les colonnes correspondantes.
+![](images/gt_summary_rows.PNG)
+:::
+
+Tout d'abord, recréons les données :
 
 ```{r}
-t4 <- t1 %>% 
-  data_color(
-    columns = ends_with("positive"), # sélection des colonnes se terminant par le mot positive
-    palette = "ggsci::red_material" # palette rouge 
+summary_data_2 <- hiv_malawi %>% 
+  group_by(
+    # Notez l'ordre des variables par lesquelles nous regroupons.
+    region,
+    period
   ) %>% 
-  data_color(
-    columns = ends_with("negative"), # sélection des colonnes se terminant par le mot negative
-    palette = "ggsci::green_material" # palette verte
+  summarise(
+    across(all_of(cols), sum) 
+    ) %>% 
+  gt()
+
+summary_data_2
+```
+
+::: watch-out
+L'ordre dans la fonction `group_by()` affecte les groupes de lignes dans le tableau `gt`.
+:::
+
+Deuxièmement, réincorporons tous les changements que nous avons précédemment effectués dans ce tableau :
+
+```{r}
+# sauvegardant les progrès dans l'objet t4
+
+t4 <- summary_data_2 %>% 
+  tab_header(
+    title = "Somme des tests VIH au Malawi",
+    subtitle = "du T1 2019 au T4 2019"
+  ) %>% 
+  tab_source_note("Source des données : Programme VIH du Malawi") %>% tab_spanner(
+    label = "Nouveaux tests",
+    columns = starts_with("new") # sélectionne les colonnes commençant par "new"
+  ) %>% 
+   # création du premier spanner pour les tests précédents
+  tab_spanner(
+    label = "Tests précédents",
+    columns = starts_with("prev") # sélectionne les colonnes commençant par "prev"
+  ) %>% 
+  cols_label(
+    # localiser ### assigner 
+    contains("positive") ~ "Positif",
+    contains("negative") ~ "Négatif"
   )
 
 t4
-
 ```
 
-::: reminder
-Rappelez-vous, dans la leçon précédente, nous avons utilisé les fonctions [`tidyselect`](https://tidyselect.r-lib.org/reference/starts_with.html) pour sélectionner des colonnes, dans le code ci-dessus, nous avons utilisé la fonction `ends_with` pour sélectionner les colonnes se terminant soit par le mot 'négatif' soit par 'positif', ce qui est parfait pour l'objectif de notre tableau.
+Maintenant, que faire si nous voulons visualiser sur le tableau un résumé de chaque variable pour chaque groupe de régions ? Plus précisément, nous voulons voir la somme et la moyenne pour les 4 colonnes que nous avons pour chaque région.
 
-De plus, les étiquettes des colonnes dans le tableau `gt` et les noms réels des colonnes dans le `data.frame` peuvent être différents, dans notre cas, nous nous référons aux noms dans les données.
+::: rappel
+N'oubliez pas que nos 4 colonnes d'intérêt sont : "new_positive", "previous_positive", "new_negative", et "previous_negative". Nous n'avons changé les labels de ces colonnes que dans la table `gt` et non dans le data.frame lui-même, nous pouvons donc utiliser les noms de ces colonnes pour indiquer à `gt` où appliquer la fonction de résumé. De plus, nous avons déjà stocké les noms de ces 4 colonnes dans l'objet `cols` donc nous allons l'utiliser à nouveau ici.
 :::
 
-# Formatage conditionnel
-
-Nous pouvons également configurer le tableau pour changer conditionnellement le style d'une cellule en fonction de sa valeur. Dans notre cas, nous voulons mettre en évidence les valeurs de la colonne `previous_positive` en fonction d'un seuil (la valeur 15700). Les valeurs supérieures ou égales au seuil devraient être en vert.
-
-Pour ce faire, nous utilisons la fonction `tab_style` où nous spécifions deux arguments :
-
--   `style` : où nous spécifions la couleur dans la fonction `cell_text` car nous avons l'intention de manipuler le texte à l'intérieur des cellules.
-
--   `locations` : où nous spécifions les colonnes et les rangées de notre manipulation dans `cells_body` puisque ces cellules sont dans le corps principal du tableau.
+Pour atteindre cet objectif, nous allons utiliser la fonction pratique `summary_rows` où nous fournissons explicitement les colonnes que nous voulons résumer, et les fonctions avec lesquelles nous voulons résumer, dans notre cas c'est `sum` et `mean`. Notez que nous assignons le nom de la nouvelle ligne (non citée) à un nom de fonction ("cité").
 
 ```{r}
 t5 <- t4 %>% 
-  tab_style(
-    style = cell_text(
-      color = "red", 
-    ),
-    locations = cells_body(
-      columns = previous_positive,
-      rows = previous_positive >= 15700
+  summary_rows(
+    columns = cols, #using columns = 3:6 also works 
+    fns = list( 
+      TOTAL = "sum",
+      MOYENNE = "mean"
     )
   )
-t5  
+
+t5
 ```
 
-::: attention
-Dans le code ci-dessus, la condition sur laquelle le style s'appliquera est déclarée dans :
-
-locations = cells_body(columns = previous_positive, `rows = previous_positive >= 15700 )`
-
-Notez également que nous pouvons passer plus d'arguments à la fonction `cell_text`, comme la taille et la police des cellules que nous souhaitons styler.
-:::
-
-Et si nous voulions avoir une condition à deux côtés sur le même seuil ? Pouvons-nous avoir des cellules avec des valeurs supérieures ou égales au seuil stylisées en vert, et simultanément d'autres cellules avec des valeurs inférieures au seuil stylisées en.... lightgreen ?
-
-Nous le pouvons absolument, nous avons déjà fait la première partie (dans le bloc de code précédent), nous devons simplement ajouter une seconde condition de manière similaire mais dans une déclaration `tab_style` différente :
-
-```{r}
-t6 <- t5 %>%
-  tab_style(
-    style = cell_text(
-      color = 'lightgreen'
-    ),
-    location = cells_body(
-      columns = 'previous_positive',
-      rows = previous_positive < 15700  
-    )
-  )
-
-t6
+```{r message=FALSE, warning=FALSE, include=FALSE, eval=FALSE}
+# saving table for next lesson as rds object
+t5 %>% write_rds("data/clean/malawi_hiv_summary_t5.rds")
+t5 %>% gtsave("data/clean/malawi_hiv_summary_t5.png")
 ```
 
 ::: pratique
-**Question 1 : Mise en forme conditionnelle** Pour mettre en surbrillance (en jaune) les lignes d'un tableau **`gt`** où la colonne "hiv_positive" dépasse 1 000, quel extrait de code R devriez-vous utiliser ?
+**Question 4 : lignes résumées**
 
+Quelle est la bonne réponse (ou les bonnes réponses) si vous deviez résumer l'écart type des lignes des colonnes "new_positive" et "previous_negative" uniquement?
 
-A.
+**A.** Utilisez **`summary_rows()`** avec l'argument **`columns`** défini sur "new_positive" et "previous_negative" et l'argument **`fns`** défini sur "sd".
 
 ```{r eval=FALSE, echo=TRUE}
-data %>%
-  gt() %>%
-  tab_style(
-    style = cells_body(),
-    columns = "Sales",
-    conditions = style_number(Sales > 1000, background = "yellow")
+# Option A 
+your_data %>%   
+  summary_rows(
+    columns = c("new_positive", "previous_negative"),     
+    fns = "sd" 
   )
 ```
 
-B.  
+**B.** Utilisez **`summary_rows()`** avec l'argument **`columns`** défini sur "new_positive" et "previous_negative" et l'argument **`fns`** défini sur "summarize(sd)".
 
 ```{r eval=FALSE, echo=TRUE}
-data %>%
-  gt() %>%
-  tab_style(
-    style = cells_data(columns = "Sales"),
-    conditions = style_number(Sales > 1000, background = "yellow")
+# Option B 
+your_data %>%   
+  summary_rows(
+    columns = c("new_positive", "previous_negative"),     
+    fns = summarize(sd) 
   )
 ```
 
-C.  
+**C.** Utilisez **`summary_rows()`** avec l'argument **`columns`** défini sur "new_positive" et "previous_negative" et l'argument **`fns`** défini sur **`list(ECART_TYPE = "sd")`**.
 
 ```{r eval=FALSE, echo=TRUE}
-data %>%
-  gt() %>%
-  tab_style(
-    style = cell_fill(
-      color = "yellow"
-    ),
-    locations = cells_body(
-      columns = "hiv_positive",
-      rows = hiv_positive > 1000  
-    )
-  )  
-```
-
-D.  
-
-```{r eval=FALSE, echo=TRUE}
-data %>%
-  gt() %>%
-  tab_style(
-    style = cells_data(columns = "Sales"),
-    conditions = style_text(Sales > 1000, background = "yellow") 
+# Option C 
+your_data %>%   
+  summary_rows(
+    columns = c("new_positive", "previous_negative"),     
+    fns = list(ECART_TYPE = "sd")   
   )
 ```
 
-**Question 2 : Coloration de la cellule**
-
-En utilisant la dataframe **`hiv_malawi`**, créez un tableau **`gt`** qui affiche le nombre total (**somme**) de cas "*new_positive*" pour chaque "*region*". Mettez en surbrillance les cellules avec des valeurs supérieures à 50 cas en *rouge* et les cellules avec 50 ou moins en *vert*. Complétez les parties manquantes (\_\_\_\_\_\_\_\_) de ce code pour y parvenir.
+**D.** Utilisez **`summary_rows()`** avec l'argument **`columns`** défini sur "new_positive" et "previous_negative" et l'argument **`fns`** défini sur "standard_deviation".
 
 ```{r eval=FALSE, echo=TRUE}
-# Calculate the total_new_pos summary
-total_summary <- hiv_malawi %>%
-  group_by(_________) %>%
-  summarize(total_new_positive = __________)
-
-# Create a gt table and apply cell coloration  
-summary_table <- total_summary %>%
-  gt() %>%
-  tab_style(
-    style = cell_fill(color = "red"), 
-    locations = _________(
-      columns = "new_positive",
-      rows = _________________  
-    )
-  ) %>%
-  tab_style(
-    style = ___________________,
-    locations = cells_body(
-      columns = "new_positive",
-      _______ new_positive <= 50
-    )
+# Option D
+your_data %>%
+  summary_rows(
+    columns = c("new_positive", "previous_negative"),
+    fns = "standard_deviation"
   )
 ```
 :::
 
-# Polices et texte
+# Conclusion
 
-C'est maintenant le bon moment pour ajouter une personnalisation au texte dans le tableau. en utilisant la même fonction `gt::tab_style`.
+Dans la leçon d'aujourd'hui, nous nous sommes attaqués aux tables de données dans R en utilisant `gt`. Nous avons commencé par définir des objectifs clairs, présenté les packages que nous utiliserons et découvert notre jeu de données. Ensuite, nous avons mis la main à la pâte en créant des tables simples. Nous avons appris à organiser nos données proprement en utilisant des colonnes spanner et en ajustant les étiquettes des colonnes pour rendre les choses parfaitement claires et cohérentes. Nous avons ensuite conclu avec quelques résumés de table astucieux. Ce sont les bases de la création de tables dans R et `gt`, et elles seront très utiles à mesure que nous poursuivrons notre voyage pour créer des tables engageantes et informatives dans R.
 
-Changeons la police et la couleur du titre et du sous-titre par exemple, je choisis d'utiliser la police `Yanone Kaffeesatz` de google. Google fonts vous fournit des centaines de milliers de polices et de styles parmi lesquels choisir, qui peuvent être plus intéressants que les polices Excel rigides et ennuyeuses.
+# Corrigé {.unlisted .unnumbered}
 
-Pour cela, nous devons spécifier quelques détails dans la fonction `gt::tab_style` :
+1.  B
 
-- Argument `style` : attribue la fonction `cell_text` :
+2.  
 
-  - Nous utilisons la fonction `google_font` pour utiliser la police choisie depuis google et l'attribuer à l'argument `font`
+```{r eval=FALSE, echo=TRUE}
+# Les solutions sont où les lignes sont numérotées
 
-  - Nous spécifions la couleur du texte.
-
-- Argument `locations` : attribue la fonction `cells_title` :
-
-  - Nous spécifions l'emplacement `title` et `subtitle` via l'argument `groups` dans une notation vectorielle `c(...)`
-
-::: note
-Notez que pour apporter des modifications à l'apparence du titre ou du sous-titre, vous pouvez simplement utiliser : `locations = cells_title(groups = "title")` pour appliquer des modifications au titre, ou `locations = cells_title(groups = "subtitle")` pour appliquer des modifications au sous-titre sans avoir besoin d'utiliser `c(...)`.
-:::
-
-```{r}
-t7 <- t6 %>%
-  tab_style(
-    style = cell_text(
-      font = google_font(name = 'Yanone Kaffeesatz'),
-      color = "pink"
-    ), 
-    locations = cells_title(groups = c("title", "subtitle"))
-  )
-
-t7
-```
-
-De plus, nous pouvons effectuer les mêmes changements sur les libellés de colonnes et de lignes, tout ce que nous devons faire est de spécifier correctement l'emplacement des modifications que nous souhaitons apporter, sauf que cette fois nous modifions la couleur d'arrière-plan (ou couleur de remplissage) des cellules que nous allons modifier. Nous pouvons le faire en ajoutant une autre fonction de style `cell_fill` où nous fournissons la couleur que nous voulons pour l'arrière-plan de nos cellules. Enfin, dans l'argument `locations`, et de manière similaire à l'argument `style`, nous attribuons une liste dans laquelle nous fournissons les informations de localisation des modifications que nous souhaitons apporter à l'aide de la fonction `cells_column_labels`, où nous spécifions les libellés de colonne que nous souhaitons modifier.
-
-```{r}
-t8 <- t7 %>%
-  tab_style(
-    style = list(
-      cell_text(
-        font = google_font(name = "Righteous"),
-        color = "pink" 
-      )
-    ),
-    locations = list(
-      cells_column_labels(columns = everything()), # select every column
-      cells_column_spanners(spanners = everything()) # select all spanners
+# résumer les données d'abord
+district_summary <- hiv_malawi %>%
+  group_by(region) %>%
+  summarize(
+    across(  #1
+      c(new_positive, previous_positive),
+      sum #2
     )
   )
 
-t8
-```
-
-De manière similaire, nous pouvons faire la même chose pour les lignes de groupe et les périodes, tout ce que nous devons faire est de les ajouter à l'argument locations en utilisant `cells_rows_groups` pour les lignes de groupe, et `cells_body` pour le reste de la colonne période comme suit :
-
-```{r} 
-t9 <- t8 %>%
-  tab_style(
-    style = list( # we wrap the arguments in a list when we have multiple stuling
-      cell_text( # text styling  
-        font = google_font(name = "Righteous"),
-        color = "pink"
-      ),
-      cell_fill(color = "gray") # cell background color fill styling
-    ),
-    locations = list( # similar with locations
-      cells_row_groups(groups = everything()),
-      cells_body(columns = period) 
-    )
-  )
-
-t9
-```
-
-::: key-point
-L'idée derrière ce que nous avons fait ici est de vous donner le contrôle sur ce que VOUS voulez réaliser et non un exemple de ce que vous devez faire exactement. Il y a d'innombrables façons de personnaliser une table `gt`. C'est à vous de choisir ce dont vous avez besoin et ce qui fonctionne pour votre flux de travail.
-:::
-
-::: practice
-**Question 2: Polices et Texte** Quel extrait de code R permet de changer la taille de la police du texte de bas de page dans une table **`gt`** ?
-
-A.  
-
-```{r eval=FALSE, echo=TRUE}
-data %>% 
-  gt() %>% 
-  tab_header(font.size = px(16))
-```
-
-B.  
-
-```{r eval=FALSE, echo=TRUE}
-data %>% 
-  gt() %>% 
-  tab_style(
-    style = cell_text(
-      size = 16
-    ),
-    locations = cells_footnotes()
-  )
-```
-
-C.  
-
-```{r eval=FALSE, echo=TRUE}
- data %>% 
-   gt() %>% 
-   tab_style(
-     style = cells_header(), 
-     css = "font-size: 16px;"
-   )
-```
-
-D.  
-
-```{r eval=FALSE, echo=TRUE}
- data %>% 
-   gt() %>% 
-   tab_style(
-     style = cells_header(), 
-     css = "font-size: 16;"
-   )
-```
-:::
-
-# Bordures
-
-Avec `gt`, il est également possible de dessiner des bordures dans les tables pour aider l'utilisateur final à se concentrer sur une zone spécifique de la table. Pour ajouter des bordures à une table `gt`, nous utiliserons, encore une fois, la fonction `tab_style` et, de nouveau, spécifierons l'argument style et locations. La seule différence maintenant est que nous utiliserons la fonction d'aide `cell_borders` et l'attribuerons à l'argument style. Voici comment :
-
-Commençons par ajouter une ligne verticale :
-
-```{r}
-t10 <- t9 %>% 
-  tab_style(
-    style = cell_borders( # nous ajoutons une bordure
-      sides = "left",     # à gauche de l'emplacement sélectionné
-      color = "pink",     # avec une couleur rose
-      weight = px(5)      # et cinq pixels d'épaisseur
-    ),
-    locations = cells_body(columns = 2) # ajoutez cette ligne de bordure à gauche de la colonne 2
-  )
-t10
-```
-
-Ajoutons maintenant une autre ligne de bordure horizontale rose :
-
-```{r}
-t11 <- t10 %>% 
-    tab_style(
-    style = cell_borders( # nous ajoutons une ligne de bordure
-      sides = "bottom",   # en bas de l'emplacement sélectionné
-      color = "pink",     # avec une couleur rose
-      weight = px(5)      # et cinq pixels d'épaisseur
-    ),
-    locations = cells_column_labels(columns = everything()) # ajoutez cette ligne de bordure en bas des étiquettes de colonne
+# Créer une table gt avec des en-têtes spanner
+summary_table_spanners <- district_summary %>%
+  gt() %>% #3
+  tab_spanner( #4
+    label = "Cas positifs",
+    columns = c(new_positive, previous_positive) #5
   )
   
-t11
 ```
 
-```{r message=FALSE, warning=FALSE, include=FALSE}
-# saving table for next lesson as rds object
-t11 %>% write_rds(here("data/clean/malawi_hiv_summary_l2_t11.rds"))
-t11 %>% gt::gtsave(here("data/clean/malawi_hiv_summary_l2_t11.png"))
-```
+3.  D
 
-::: challenge
-**Question 4 : Bordures** Pour ajouter une bordure solide autour de l'ensemble du tableau **`gt`**, quel extrait de code R devriez-vous utiliser ?
-
-Astuce : nous pouvons utiliser une fonction qui définit des options pour l'ensemble du tableau, tout comme la fonction `theme` pour le package `ggplot`.
-
-A.  
-
-```{r eval=FALSE, echo=TRUE}
-data %>% 
-  gt() %>% 
-  tab_options(table.border.top.style = "solid")
-```
-
-B.  
-
-```{r eval=FALSE, echo=TRUE}
-data %>% 
-  gt() %>% 
-  tab_options(table.border.style = "solid")
-```
-
-C.  
-
-```{r eval=FALSE, echo=TRUE}
-data %>% 
-  gt() %>% 
-  tab_style(
-    style = cells_table(), 
-    css = "border: 1px solid black;"
-  )
-```
-
-D.  
-
-```{r eval=FALSE, echo=TRUE}
-data %>% 
-  gt() %>% 
-  tab_style(
-    style = cells_body(), 
-    css = "border: 1px solid black;"
-  )
-```
-:::
-
-# Corrigé {.unnumbered}
-
-1.C
-
-2\.
-
-```{r eval=FALSE, echo=TRUE}
-# Les solutions sont là où les lignes sont numérotées
-
-# Calculez le résumé total_new_pos
-total_summary <- hiv_malawi %>%
-  group_by(region) %>% ##1
-  summarize(total_new_positive = new_positive) ##2 
-
-# Créez un tableau gt et appliquez une coloration de cellule
-summary_table <- total_summary %>%
-  gt() %>% ##3
-  tab_style(
-    style = cell_fill(color = "red"),
-    locations = cells_body( ##4
-      columns = "new_positive",
-      rows = new_positive >= 50 ##5
-    )
-  ) %>%
-  tab_style(
-    style = cell_fill(color = "green"), ##6
-    locations = cells_body(
-      columns = "new_positive",
-      rows = new_positive < 50  ##7
-    )
-  )
-```
-
-3.B
-
-4.B
+4.  C
 
 # Contributeurs {.unlisted .unnumbered}
 
-Les membres suivants de l'équipe ont contribué à cette leçon :
+Les membres de l'équipe suivants ont contribué à cette leçon :
 
-`r .tgc_contributors_list(ids = c("benn", "joy"))`
+`r .tgc_contributors_list(ids = c("benn","joy", "guy"))`
 
-# Ressources et packages externes
+# Références {.unlisted .unnumbered}
 
--   The definite cookbook of `gt` by Tom Mock : <https://themockup.blog/static/resources/gt-cookbook.html#introduction>
+1.  Tom Mock, "The Definite Cookbook of {gt}" (2021), The Mockup Blog, <https://themockup.blog/static/resources/gt-cookbook.html#introduction>.
 
--   the Grammar of Table article : <https://themockup.blog/posts/2020-05-16-gt-a-grammar-of-tables/#add-titles>
+2.  Tom Mock, "The Grammar of Tables" (May 16, 2020), The Mockup Blog, <https://themockup.blog/posts/2020-05-16-gt-a-grammar-of-tables/#add-titles>.
 
--   official `gt` documentation page : <https://gt.rstudio.com/articles/intro-creating-gt-tables.html>
+3.  RStudio, "Introduction to Creating gt Tables," Official {gt} Documentation, <https://gt.rstudio.com/articles/intro-creating-gt-tables.html>.
 
--   Create Awesome HTML Table with knitr::kable and kableExtra book by Hao Zhu : <https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html#Overview>
+4.  Fleming, Jessica A., Alister Munthali, Bagrey Ngwira, John Kadzandira, Monica Jamili-Phiri, Justin R. Ortiz, Philipp Lambach, et al. 2019. "Maternal Immunization in Malawi: A Mixed Methods Study of Community Perceptions, Programmatic Considerations, and Recommendations for Future Planning." *Vaccine* 37 (32): 4568--75. <https://doi.org/10.1016/j.vaccine.2019.06.020>.
+
+`r .tgc_license()`
