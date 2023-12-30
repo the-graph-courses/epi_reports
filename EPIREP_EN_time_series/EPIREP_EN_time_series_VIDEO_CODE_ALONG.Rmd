@@ -12,31 +12,6 @@ editor_options:
 ---
 
 ```{r, echo = F, message = F, warning = F}
-
-# Line1
-# Line2
-# Line3
-# Line4
-# Line5
-# Line1
-# Line2
-# Line3
-# Line4
-# Line5
-# Line1
-# Line2
-# Line3
-# Line4
-# Line5
-# Line1
-# Line2
-# Line3
-# Line4
-# Line5
-
-
-
-
 # Load packages 
 if(!require(pacman)) install.packages("pacman")
 pacman::p_load(rlang, tidyverse, knitr, here, reactable, gt, flextable, zoo)
@@ -86,10 +61,9 @@ options(scipen=999)
 
 ‣ Start by loading and inspecting the data
 
-```{r}
+```{r}dd}
 tb_data_aus <- read_csv(here::here("data/aus_tb_notifs.csv"))
 # view data
-View(tb_data_aus)
 ```
 
 ‣ Dataset includes `period` (time in quarterly format), `rural` (cases in rural areas), and `urban` (cases in urban areas)
@@ -100,23 +74,20 @@ View(tb_data_aus)
 
 ```{r}
 tb_data_aus %>% 
-  mutate(year = str_sub(period, 1, 4)) %>% 
-  mutate(year = as.numeric(year))
+# year as str_sub of period, 1 to 4
+# convert to numeric
 ```
 
 ‣ Aggregate the data by year using `group_by()` and `summarise()`
 
 ```{r}
-annual_data_aus <- 
+________________ <- 
   tb_data_aus %>%
   mutate(year = str_sub(period, 1, 4)) %>% 
   mutate(year = as.numeric(year)) %>% 
   # group by year
-  group_by(year) %>% 
   # sum the number of cases in each year, with vars named rural and urban
-  summarise(rural = sum(rural), 
-            urban = sum(urban))
-  
+
   
 annual_data_aus # view data
 ```
@@ -125,9 +96,6 @@ annual_data_aus # view data
 
 ```{r}
 # ggplot of annual_data_aus
-ggplot(annual_data_aus) + 
-  geom_line(aes(x = year, y = rural), color = "blue") + 
-  geom_line(aes(x = year, y = urban), color = "red")
 ```
 
 ‣ Not ideal though. Unnecessary code duplication! Consider we try to add additional geoms, such as points, or text:
@@ -148,11 +116,7 @@ ggplot(annual_data_aus, aes(x = year)) +
 
 ```{r}
 # Pivot, rename name to region, and value to cases. Store as aus_long
-aus_long <- 
-  annual_data_aus %>% 
-  pivot_longer(cols = c(rural, urban)) %>%
-  rename(region = name, 
-         cases = value)
+
 ```
 
 ## A Basic Grouped Line Graph
@@ -160,9 +124,6 @@ aus_long <-
 ‣ Now, we have a better way to plot. Map colour and group aesthetics to the `region` column:
 
 ```{r}
-ggplot(aus_long) + 
-  geom_line(aes(x = year, y = cases, colour = region, group = region))
-
 # line chart of aus_long, with x = year, y = cases, colour = region, group = region
 ```
 
@@ -170,12 +131,10 @@ ggplot(aus_long) +
 
 ```{r}
 ggplot(aus_long, aes(x = year, y = cases, colour = region, group = region)) + 
-  geom_line() + 
-  geom_point() + 
-  geom_text(aes(label = cases), size = 2, nudge_y = 20)
+  geom_line() 
+        # add points
+        # add text labels, size 2, nudge_y of 20
 ```
-
-![](images/blank.png)
 
 ::: practice
 ### Q: Reshaping and Plotting TB Data {.unlisted .unnumbered}
@@ -202,7 +161,7 @@ Reshape the dataset using `pivot_longer()`, then create a plot with two lines, o
 ggplot(aus_long, aes(x = year, y = cases, colour = region, group = region)) +
   geom_line() +
   geom_point() +
-  geom_text(aes(label = cases), size = 3.3, nudge_y = 20)
+  geom_text(aes(label = cases), size = 2, nudge_y = 20)
 ```
 
 ‣ Can increase size (e.g. to 3, but we get overlap)
@@ -213,16 +172,10 @@ ggplot(aus_long, aes(x = year, y = cases, colour = region, group = region)) +
 
 ```{r}
 even_years <- 
-  aus_long %>% 
-  filter(year %%2 == 0)
   # filter aus_long to keep only even years using %% 2 == 0
 
 ggplot(aus_long, aes(x = year, y = cases, colour = region, group = region)) +
-  geom_line() +
-  geom_point() +
-  geom_text(data = even_years, aes(label = cases), size = 2.8, nudge_y = 20)
-
-# Add geom_line, geom_point
+  # Add geom_line, geom_point
   # Use geom_text with even_years as data, size 2.8, nudge_y 20
 ```
 
@@ -236,14 +189,12 @@ ggplot(aus_long, aes(x = year, y = cases, colour = region, group = region)) +
 
 ```{r}
 odd_years <- # filter aus_long to keep only odd years
-  aus_long %>% 
-  filter(year %% 2 == 1)
-  
+  aus_long 
+
 ggplot(aus_long, aes(x = year, y = cases, colour = region, group = region)) +
   geom_line() + 
   geom_point() + 
-  geom_text(data = even_years, aes(label = cases), size = 2.8, nudge_y = 20)  + 
-  geom_text(data = odd_years, aes(label = cases), size = 2.8, nudge_y = -20)
+  geom_text(data = even_years, aes(label = cases), size = 2.8, nudge_y = 20)  # add odd_years
 ```
 
 ### `ggrepel::geom_text_repel()`
@@ -256,10 +207,10 @@ ggplot(aus_long, aes(x = year, y = cases, colour = region, group = region)) +
 ggplot(aus_long, aes(x = year, y = cases, colour = region, group = region)) +
   geom_line() + 
   geom_point() + 
-  geom_text_repel(data = even_years, aes(label = cases), 
-            nudge_y = 60, size = 2.8, segment.size = 0.1) +
-  geom_text_repel(data = odd_years, aes(label = cases), 
-            nudge_y = -60, size = 2.8, segment.size = 0.1)
+  geom_text(data = even_years, aes(label = cases), 
+            nudge_y = 20, size = 2.8) +
+  geom_text(data = odd_years, aes(label = cases), 
+            nudge_y = -20, size = 2.8)
 ```
 
 ### Customizing the Color Palette
@@ -275,9 +226,7 @@ ggplot(aus_long, aes(x = year, y = cases, colour = region, group = region)) +
   geom_text_repel(data = even_years, aes(label = cases), 
                   nudge_y = 60, size = 2.8, segment.size = 0.1) +
   geom_text_repel(data = odd_years, aes(label = cases), 
-                  nudge_y = -60, size = 2.8, segment.size = 0.1) + 
-  scale_color_manual(values = c("urban" = "#0fa3b1", "rural" = "#2F2C4E"))
-
+                  nudge_y = -60, size = 2.8, segment.size = 0.1) 
 # scale_color_manual with values = c("urban" = "#0fa3b1", "rural" = "#2F2C4E")
 ```
 
@@ -326,6 +275,7 @@ Build on this plot, implementing the following improvements:
 -   Use the following color palette `c("#212738", "#F97068", "#067BC2")`
 -   Apply `theme_classic()`
 -   Add a title, subtitle, and caption to provide context and information about the data. (You can type `?tidyr::who2` into the console to learn more about the data source.)
+
 :::
 
 # Plotting Confidence Intervals with `geom_ribbon()`
@@ -345,12 +295,10 @@ hiv_data_brazil
 
 ‣ The `new_hiv_cases` column contains both the number of cases and the confidence intervals, which need to be **extracted into numeric forms**.
 
-‣ We use `separate()` to split `new_hiv_cases` into `cases`, `cases_lower`, and `cases_upper`.
+‣ We use `separate()` to split `new_hiv_cases` into `cases`, `cases_lower`, and `cases_upper`:
 
 ```{r}
-hiv_data_brazil %>% 
-  separate(col = new_hiv_cases, into = c("cases", "cases_lower", "cases_upper"), 
-           sep = "\\[|–")
+hiv_data_brazil # separate
 ```
 
 ::: pro-tip
@@ -363,20 +311,17 @@ Large Language Models like ChatGPT are great for understanding and generating re
 hiv_data_brazil_clean <- 
   hiv_data_brazil %>% 
   separate(new_hiv_cases, 
-           into = c("cases", "cases_lower", "cases_upper"), sep = "\\[|–") %>% 
-  mutate(across(.cols = c(cases, cases_lower, cases_upper), 
-                .fns = ~ as.numeric(str_remove_all(.x, "[^0-9]"))
-                ))
+           into = c("cases", "cases_lower", "cases_upper"), sep = "\\[|–") 
+# convert the relevant vars to numeric 
 ```
 
 ‣ Ready to **plot the data** using `geom_ribbon()` to display confidence intervals.
 
 ```{r}
 hiv_data_brazil_clean %>% 
-  filter(sex == "Both sexes") %>% 
-  ggplot(aes(y = cases, x = year)) + 
-  geom_line() + 
-  geom_ribbon(aes(ymin = cases_lower, ymax = cases_upper), alpha = 0.4)
+  filter(___________) %>%  # plot "Both sexes"
+                           # add line geom
+                           # add confidence with geom_ribbon, ymin and ymax
 ```
 
 ‣ Create separate ribbons for men and women to **compare infection trends**.
@@ -384,13 +329,14 @@ hiv_data_brazil_clean %>%
 ```{r}
 hiv_data_brazil_clean %>% 
   filter(sex != "Both sexes") %>%  # Drop "both sexes"
-  ggplot(aes(y = cases, x = year, color = sex, fill = sex)) + 
-  geom_line() + 
-  geom_ribbon(aes(ymin = cases_lower, ymax = cases_upper), alpha = 0.4)
+  ggplot(__________) + # plot cases vs. year, with color and fill set to sex
+  geom_line() + # add line graph
+  geom_ribbon(___________) # add confidence intervals
 
 ```
 
 ::: practice
+
 ### Q: Plotting confidence intervals {.unlisted .unnumbered}
 
 Consider the following dataset that shows the number of annual malaria cases in Kenya and Nigeria. The data is sourced from the WHO Global Health Observatory data repository and can be accessed [here](https://www.who.int/data/gho/data/indicators).
@@ -429,8 +375,7 @@ mal
 ‣ To create an **incidence table**, count cases per day using `count()`:
 
 ```{r}
-mal %>% 
-  count(date_positive_test, name = "cases") %>% kable()
+mal
 # count date_positive_test, name the count column "cases"
 ```
 
@@ -439,11 +384,7 @@ mal %>%
 ```{r}
 mal_notif_count <- 
   mal %>%
-  count(date_positive_test, name = "cases") %>% 
-  complete(date_positive_test = seq.Date(from = min(mal$date_positive_test), 
-                                         to = max(mal$date_positive_test), 
-                                         by = "day"), 
-           fill = list(cases = 0))
+  count(date_positive_test, name = "cases") 
   # complete date_positive_test as seq.Date() from min to max, by "day"
   # and fill with list(cases = 0)
 
@@ -456,10 +397,7 @@ mal_notif_count
 
 ```{r}
 # Basic epicurve using ggplot2
-ggplot(mal_notif_count) + 
-  geom_line(aes(x = date_positive_test, y = cases))
-  
-  # line plot of cases against date_positive_test
+ggplot(mal_notif_count) # line plot of cases against date_positive_test
 ```
 
 ## Smoothing with `geom_smooth()`
@@ -469,8 +407,6 @@ ggplot(mal_notif_count) +
 ‣ Let's see how it smooths out the time series.
 
 ```{r, warning=FALSE, message=FALSE}
-ggplot(mal_notif_count, aes(x = date_positive_test, y = cases)) + 
-  geom_smooth()
 # replace code geom_line from previous plot with geom_smooth()
 ```
 
@@ -481,7 +417,7 @@ ggplot(mal_notif_count, aes(x = date_positive_test, y = cases)) +
 ```{r}
 # Experiment with span 0.1 and 0.9
 ggplot(mal_notif_count, aes(x = date_positive_test, y = cases)) +
-  geom_smooth(method = "loess", span = 0.9)
+  geom_smooth(method = "loess")
 ```
 
 ## Smoothing by Aggregating
@@ -492,7 +428,7 @@ ggplot(mal_notif_count, aes(x = date_positive_test, y = cases)) +
 
 ```{r}
 mal_notif_count %>% 
-  mutate(month = floor_date(date_positive_test, "month"))
+  mutate(month = floor_date(_____________________))
 ```
 
 ‣ Use `group_by()` and `summarize()` for total cases per month:
@@ -500,18 +436,13 @@ mal_notif_count %>%
 ```{r}
 mal_monthly <- 
   mal_notif_count %>% 
-  mutate(month = floor_date(date_positive_test, unit = "month")) %>% 
-  group_by(month) %>% 
-  summarise(cases = sum(cases))
+  mutate(month = floor_date(date_positive_test, unit = "month")) 
   # group by month, summarize cases as sum of cases
-mal_monthly %>% kable()
 ```
 
 ‣ Now plot monthly data for a clearer trend visualization.
 
 ```{r}
-ggplot(mal_monthly) + 
-  geom_line(aes(x = month, y = cases))
 # line plot of cases against month
 ```
 
@@ -544,10 +475,7 @@ Using the steps taught above:
 
 ```{r}
 mal_notif_count <- mal_notif_count %>%
-  mutate(roll_cases = rollmean(x = cases, k = 14, fill = NA))
   # new column called roll_cases which is rolling mean: cases, k=14, fill=NA
-
-mal_notif_count %>% kable()
 ```
 
 ‣ Key arguments for `rollmean()`: - `x`: time series data to smooth - `k`: number of points to average - `fill`: handling missing data in each window
@@ -564,11 +492,7 @@ mal_notif_count %>%
 
 ```{r}
 mal_notif_count <- mal_notif_count %>%
-  mutate(roll_cases = rollmean(cases, k = 7, fill = NA, align = "right"))
-
-
-mal_notif_count %>% kable()
-# Use head(mal_notif_count_right, 15) to see the first 15 days
+  mutate(roll_cases = rollmean(cases, k = 14, fill = NA))
 ```
 
 ‣ With `align = "right"`, first 13 days are NA (no 14 days before)
@@ -625,26 +549,18 @@ Your task is to create a new column that calculates the rolling average of death
 # Aggregate data into `mal_notif_count_cumul` object
 mal_notif_count_cumul <- 
   mal_notif_count %>% 
-  select(!roll_cases) %>% 
-  mutate(cumul_cases = cumsum(cases))
   # group by date_positive_test
   # summarize with cases as sum of cases per date
   # mutate with cumul_cases as cumsum of cases
   
-mal_notif_count_cumul %>% kable()
+mal_notif_count_cumul
 ```
 
 ‣ **Identifying the Need for a Secondary Y-Axis** - Plot both daily cases and cumulative cases on the same y-axis.
 
 ```{r}
-ggplot(mal_notif_count_cumul) + 
-  geom_line(aes(x = date_positive_test, y = cases)) + 
-  geom_line(aes(x = date_positive_test, y = cumul_cases))
-
-# Plot total malaria cases
+# Plot total malaria cases AND daily cases
 # Using ggplot with date_positive_test on x-axis and cases on y-axis
-
-
 ```
 
 ‣ **Calculating the Scale Factor** - Determine scale factor by comparing ranges of cases and cumulative cases.
@@ -655,7 +571,6 @@ max(mal_notif_count_cumul$cases)
 max(mal_notif_count_cumul$cumul_cases)
 
 # Calculate scale factor as larger value divided by smaller value
-max(mal_notif_count_cumul$cumul_cases)/ max(mal_notif_count_cumul$cases)
 ```
 
 ‣ Now divide the cumulative cases by the scale factor
@@ -663,7 +578,7 @@ max(mal_notif_count_cumul$cumul_cases)/ max(mal_notif_count_cumul$cases)
 ```{r}
 ggplot(mal_notif_count_cumul, aes(x = date_positive_test)) +
   geom_line(aes(y = cases)) +
-  geom_line(aes(y = cumul_cases/ 49.97), color = "red") # divide cumul_cases by scale factor
+  geom_line(aes(y = cumul_cases), color = "red") # divide cumul_cases by scale factor
 ```
 
 ‣ SIDE-NOTE: You would normally store the scale factor in a variable. We're doing it manually for easier understanding.
@@ -673,8 +588,7 @@ ggplot(mal_notif_count_cumul, aes(x = date_positive_test)) +
 ```{r}
 ggplot(mal_notif_count_cumul, aes(x = date_positive_test)) +
   geom_line(aes(y = cases)) +
-  geom_line(aes(y = cumul_cases / 49.97), color = "red") + 
-  scale_y_continuous(sec.axis = sec_axis(trans = ~ .x * 49.97, name = "Cumulative Cases"))
+  geom_line(aes(y = cumul_cases / 49.97), color = "red") +
 # Add scale_y_continuous with sec.axis = sec_axis, transofrmation is x * scale_factor
 # and name it "Cumulative Cases"
 ```
@@ -712,17 +626,12 @@ colom_hiv_deaths_per_day
 Your task is to create a plot with two y-axes: one for the daily deaths and another for the cumulative deaths in Colombia.
 :::
 
-![](images/blank.png)
-
 # Learning Objectives
 
 By the end of this lesson you will be able to:
 
 -   Reshape time series data for plotting with pivot_longer()
 
-```{=html}
-<!-- -->
-```
 -   Create line graphs in ggplot2 mapping time to x and values to y
 
 -   Enhance line graph aesthetics with techniques like custom labels, color palettes, annotations
@@ -731,7 +640,7 @@ By the end of this lesson you will be able to:
 
 -   Highlight patterns in noisy data using smoothing and aggregation
 
--   Compare time series with distinct scales using dual axes and sec_axis() ![](images/blank.png)
+-   Compare time series with distinct scales using dual axes and sec_axis() 
 
 # Wrap up
 
@@ -851,9 +760,3 @@ ggplot(colom_hiv_deaths_cumul, aes(x = date_death)) +
         axis.title.y.right = element_text(color = "red"))
 
 ```
-
-# Contributors
-
-The following team members contributed to this lesson:
-
-`r tgc_contributors_list(ids = c("imad", "joy", "kendavidn"))`
