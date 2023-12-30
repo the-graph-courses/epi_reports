@@ -1,0 +1,348 @@
+---
+title: 'Création de rapports paramétrés avec {R Markdown}'
+output:
+  html_document:
+    number_sections: true
+    toc: true
+    toc_float: true
+    css: !expr here::here("global/style/style.css")
+    highlight: kate
+    pandoc_args: --shift-heading-level-by=-1
+  word_document:
+    toc: true
+editor_options:
+  markdown:
+    wrap: 100
+  canonical: true
+  chunk_output_type: inline
+---
+
+```{r, include = FALSE, warning = FALSE, message = FALSE}
+# Load packages 
+if(!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse, knitr, here)
+
+# Source functions 
+source(here("global/functions/lesson_functions.R"))
+
+# knitr settings
+knitr::opts_chunk$set(warning = F, message = F, class.source = "tgc-code-block", error = T, fig.width = 5, fig.height = 3)
+```
+
+------------------------------------------------------------------------
+
+## Introduction
+
+‣ Importance de la paramétrisation des rapports
+
+‣ polyvalence et application inestimable
+
+‣ Consistance, précision et efficacité
+
+‣ Amélioration de la communication des données
+
+------------------------------------------------------------------------
+
+## Objectifs d'apprentissage
+
+1.  **Comprendre l'importance de la paramétrisation dans R Markdown** :
+    Concept, rôle dans le rapportage épidémiologique, transformation de
+    la présentation des données.
+
+2.  **Créer des rapports dynamiques basés sur des paramètres
+    spécifiques** : Compétence pour des rapports ajustables (régions,
+    périodes).
+
+3.  **Créer des fonctions pour la paramétrisation de rapports** :
+    Maîtrise de l'écriture de fonctions en R pour simplifier la
+    génération de rapports.
+
+4.  **Explorer la programmation fonctionnelle avec `map()` et
+    `pwalk()`** : Utilisation de `map()` et `pwalk()` de {purrr} pour
+    gérer plusieurs ensembles de données.
+
+------------------------------------------------------------------------
+
+## Packages
+
+```{r message=FALSE, warning=FALSE}
+pacman::p_load(readr, ggplot2, dplyr, knitr, purrr, gt, kableExtra)
+```
+
+‣ Chargement des packages essentiels via `p_load()` de {pacman}.
+
+------------------------------------------------------------------------
+
+## Jeu de données
+
+```{r}
+hiv_data <- read_csv(here::here("data/clean/hiv_incidence.csv"))
+```
+
+‣ `hiv_data` contient `country`, `year`, `new_cases`.
+
+------------------------------------------------------------------------
+
+## Construire un rapport pour "Angola"
+
+### Analyse et Visualisation des Tendances
+
+1.  **Rapports visuels pour l'Angola** : Utilisation de R pour créer des
+    rapports.
+
+2.  **Analyser et visualiser les tendances du VIH** : Focus sur
+    l'Angola.
+
+3.  **Analyse temporelle** : Tendance des nouveaux cas de VIH sur
+    plusieurs années.
+
+------------------------------------------------------------------------
+
+#### Sortie 1 : Graphique pour "Angola"
+
+```{r}
+angola_data <- subset(hiv_data, country == "Angola")
+ggplot(angola_data, aes(x = year, y = new_cases)) +
+  geom_line() +
+  theme_minimal() +
+  labs(title = "Incidence du VIH en Angola (1990-2000)",
+       x = "Année",
+       y = "Nouveaux Cas")
+```
+
+#### Sortie 2 : Tableau pour "Angola"
+
+```{r}
+# Filtrer pour les données de l'Angola
+angola_data <-  hiv_data  %>% filter(country == "Angola")
+
+# Résumer les données par année
+angola_summary <- angola_data %>% 
+    group_by(year) %>%
+    summarise(Total_cases = sum(new_cases))
+
+# Identifier l'année la plus récente
+most_recent_year <- max(angola_summary$year)
+
+# Afficher le tableau en utilisant kable et mettre en évidence l'année la plus récente
+angola_summary %>% 
+  gt() %>% 
+  tab_style(
+    style = cell_fill(color = "lightblue"),
+    locations = cells_body(
+      columns = vars(year),
+      rows = angola_summary$year == most_recent_year
+    )
+  ) %>% 
+  tab_header(title = "Résumé des cas de VIH en Angola par année")
+```
+
+## Pratique
+
+**Créer un rapport simple en R Markdown** : Combiner graphique et
+tableau pour l'Angola.
+
+*Étapes à suivre :*
+
+1)  Créer un nouveau fichier RMarkdown
+2)  Rédiger l'en-tête YAML
+3)  Ajouter une section de préparation des données
+4)  Ajouter un graphique en ligne et un tableau statistique
+5)  Tricoter le fichier RMarkdown
+
+## Défi
+
+**Rapport pour plusieurs pays ("Angola", "Nigeria", "Mali")** : Étendre
+l'approche pour d'autres pays sans dupliquer le code.
+
+## Principe DRY : Ne vous répétez pas !
+
+### Fonction Personnalisée : `generate_country_report()`
+
+‣ Automatise la génération de rapports par pays.
+
+‣ Applique le principe DRY.
+
+**DRY (Don't Repeat Yourself)** : Principe pour minimiser la répétition
+dans le développement logiciel.
+
+------------------------------------------------------------------------
+
+```{r}
+generate_country_report <- function(data, country_name) {
+  
+  # Tracer les données : ouput 1
+  country_data_plot <- subset(data, country == country_name)
+  p <- ggplot(country_data_plot, aes(x = year, y = new_cases)) +
+    geom_line() +
+    theme_minimal() +
+    labs(title = paste("Incidence du VIH en", country_name, "(1990-2000)"),
+         x = "Année",
+         y = "Nouveaux Cas")
+  print(p)
+
+  # préparez les données pour le tableau récapitulatif
+  country_data_table <- data %>% 
+    filter(country == country_name) %>%
+    group_by(year) %>%
+    summarise(Total_Cases = sum(new_cases))
+
+  # Identifier l'année la plus récente
+  most_recent_year <- max(country_data_table$year)
+
+  # Afficher le tableau en utilisant kable et mettre en évidence l'année la plus récente :  output 2
+  table_output <- country_data_table %>%
+    gt() %>% 
+    tab_style(
+      style = cell_fill(color = "lightblue"),
+      locations = cells_body(
+        columns = vars(year),
+        rows = angola_summary$year == most_recent_year
+      )
+    ) %>% 
+    tab_header(title = paste("Résumé des cas de VIH en",  country_name, "Angola par année"))
+
+  print(table_output)
+}
+
+```
+
+
+```{r, eval=FALSE}
+# Exemple d'utilisation de la fonction
+generate_country_report(hiv_data, "Nigeria")
+```
+
+### Explication du Code
+
+1.  **Déclaration de la fonction** : `generate_country_report()` avec
+    `data` et `country_name`.
+
+2.  **Tracé des Données** : Graphique en ligne avec ggplot.
+
+3.  **Tableau Récapitulatif** : Résumé par année, mise en évidence de
+    l'année la plus récente avec `gt()`.
+
+------------------------------------------------------------------------
+
+**Créer les ouputs pour plusieurs pays**
+
+```{r, warning=FALSE, message=FALSE, eval=FALSE}
+generate_country_report(hiv_data, "Angola")
+
+generate_country_report(hiv_data, "Nigeria")
+
+generate_country_report(hiv_data, "Mali")
+```
+
+**Programmation Fonctionnelle avec {purrr}** : Étendre à plusieurs pays via `map()`.
+
+```{r, eval=FALSE}
+countries <- c("Angola", "Nigeria", "Mali")
+
+map(countries, ~generate_country_report(hiv_data, .))
+```
+
+------------------------------------------------------------------------
+
+## Rapport Paramétrisé en R Markdown
+
+### Configuration de l'En-tête YAML
+
+‣ Définition des paramètres dans l'en-tête YAML pour un rapport
+adaptable.
+
+``` yaml
+---
+title: "Rapport VIH par Pays"
+output: html_document
+params:
+  country: "Angola"
+---
+```
+
+### Utilisation des Paramètres
+
+‣ Référencer les paramètres avec `params$country`.
+
+‣ Créer des sorties dynamiques basées sur les paramètres.
+
+```{r, eval=FALSE}
+filtered_data <- tb_data %>%
+                  filter(country ==  params$country)
+```
+
+------------------------------------------------------------------------
+
+### Tricotage avec Différents Paramètres
+
+‣ Tricotage depuis RStudio et en ligne de commande pour plus de
+flexibilité.
+
+‣ Dialogues interactifs pour personnaliser les paramètres.
+
+‣ Automatisation via des scripts.
+
+```{r, eval=FALSE}
+rmarkdown::render("hiv_incidence.Rmd", params = list(country = "Angola"))
+```
+
+------------------------------------------------------------------------
+
+## Le Processus Complet
+
+### Étapes Clés
+
+1.  **Créer un Projet R** : Utilisation de `.Rproj` pour gérer le
+    projet.
+
+2.  **En-tête YAML** : Configuration du document R Markdown.
+
+3.  **Configuration de l'Environnement** : Chargement des packages et
+    des données.
+
+4.  **Le Cœur du Rapport** : Sections dynamiques basées sur les
+    paramètres.
+
+5.  **Tricoter le Rapport** : Génération du rapport pour un état ou
+    paramètre spécifié.
+
+6.  **Script R pour Automatisation** : Utilisation de scripts pour
+    générer des rapports paramétrés.
+
+Cette leçon offre une compréhension approfondie de la création de
+rapports paramétrés en R, couvrant de la configuration initiale du
+projet à l'automatisation avancée, vous permettant de gérer efficacement
+des projets d'analyse de données variés et complexes.
+
+------------------------------------------------------------------------
+
+## Conclusion
+
+‣ Maîtriser la création de rapports paramétrés en R.
+
+‣ Gérer efficacement les projets R.
+
+‣ Produire des documents R Markdown dynamiques.
+
+‣ Réaliser des analyses de données et des visualisations.
+
+‣ Développer des scripts d'automatisation.
+
+‣ Adopter les meilleures pratiques en programmation R.
+
+‣ Améliorer les compétences de création de rapport.
+
+‣ Utiliser des techniques de programmation fonctionnelle.
+
+------------------------------------------------------------------------
+
+## Contributeurs {.unlisted .unnumbered}
+
+Les membres de l'équipe suivants ont contribué à cette leçon :
+
+`r .tgc_contributors_list(ids = c("imad", "kendavidn", "joy"))`
+
+## Références {.unlisted .unnumbered}
+
+-   Johnson, Paul. "R Markdown: Le Guide Définitif : Yihui Xie, JJ Allaire, et Garrett Grolemund. Boca Raton, FL : Chapman & Hall/CRC Press, 2018, xxxiv+ 303 pp., \$38.95 (P), ISBN : 978-1-13-835933-8
