@@ -22,9 +22,6 @@ if(!require(pacman)) install.packages("pacman")
 
 # functions
 source(here::here("global/functions/lesson_functions.R"))
-
-# default render
-registerS3method(".reactable_5_rows", "data.frame", .reactable_5_rows)
 ```
 
 # Introduction
@@ -69,7 +66,7 @@ hiv_malawi <- read_csv(here::here("data/clean/hiv_malawi.csv"))
 
 Explorons les variables :
 
-```{r render = .reactable_10_rows}
+```{r}
 # Les 6 premières lignes
 head(hiv_malawi)
 ```

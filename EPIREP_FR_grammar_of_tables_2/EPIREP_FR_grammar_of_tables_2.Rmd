@@ -1,5 +1,5 @@
 ---
-title: "Améliorer les visualisations de tableaux gt"
+title: 'Optimisation des tables gt pour une meilleure visualisation'
 output:
   html_document:
     number_sections: true
@@ -23,120 +23,126 @@ source(here::here("global/functions/lesson_functions.R"))
 registerS3method(".reactable_5_rows", "data.frame", .reactable_5_rows)
 ```
 
-# Introduction
+# Introduction {.unnumbered}
 
-La leçon précédente `gt` s'est principalement concentrée sur les composants de la table, sa structure et comment la manipuler correctement. Cette leçon, présentant la deuxième partie de la série `gt`, se concentrera sur l'utilisation du package pour perfectionner, styliser et personnaliser les effets visuels des tables d'une manière qui élève la qualité et l'efficacité de vos rapports.
+La leçon précédente sur `{gt}` se concentrait principalement sur les composants de la table, sa structure et comment la manipuler correctement. Cette leçon, qui présente la deuxième partie de la série `{gt}`, se focalisera sur l'utilisation du package pour peaufiner, styliser et personnaliser les effets visuels des tables d'une manière qui améliore la qualité et l'efficacité de vos rapports.
 
-Plongeons-y.
+Allons-y.
 
-# Objectifs d'apprentissage
+------------------------------------------------------------------------
 
--   Formatage des cellules
+# Objectifs d'apprentissage {.unnumbered}
 
--   Coloration conditionnelle
+1.  **Utilisation de Thèmes Prédéfinis avec la Fonction `opt_stylize`**: Comprendre comment appliquer des styles et des thèmes de couleurs prédéfinis aux tableaux en utilisant la fonction `opt_stylize`. Explorer diverses options de style, y compris le choix du numéro de style et de la couleur, pour renforcer l'attrait visuel des tableaux
 
--   Formater le texte (couleur de la police, gras, etc.)
+2.  **Formatage des Valeurs dans le tableau avec la Fonction `data_color`**: Apprendre à distinguer visuellement les valeurs dans des colonnes spécifiques en utilisant la fonction `data_color`. Cette technique est utile dans les grands tableaux pour mettre en évidence les données importantes.
 
--   Ajouter des bordures au texte
+3.  **Formatage Conditionnel Utilisant la Fonction `tab_style`**: Maîtriser le concept de formatage conditionnel dans les tableaux. Apprendre à appliquer des styles aux cellules en fonction de leurs valeurs lorsqu'elles atteignent un certain seuil.
 
-À la fin de cette leçon, vous aurez les compétences pour styliser artistiquement vos tables **`gt`** pour répondre à vos préférences spécifiques, atteignant un niveau de détail similaire à ceci :
+4.  **Amélioration du Texte du tableau avec des Polices et des Couleurs**: Explorer la personnalisation du texte du tableau en utilisant la fonction `gt::tab_style()`. Apprendre à appliquer différentes polices et couleurs aux titres des tableaux, sous-titres et autres éléments textuels pour une présentation plus attrayante visuellement.
 
-![](images/malawi_hiv_summary_l2_t11-02.png){width="432"}
+5.  **Ajout de Bordures avec les Fonctions `tab_style` et `cell_borders`**: Acquérir des compétences dans le tracé de bordures dans les tableaux pour souligner des zones spécifiques. Comprendre comment utiliser `tab_style` en conjonction avec `cell_borders` pour ajouter des lignes verticales et horizontales de différentes couleurs et épaisseurs.
+
+À la fin de cette leçon, vous aurez les compétences pour styliser artistiquement vos tableaux **`{gt}`** selon vos préférences spécifiques, atteignant un niveau de détail similaire à ceci :
+
+
+![](images/malawi_hiv_summary_l2_t11-02.png){width="482"}
 
 # Packages
 
 Dans cette leçon, nous utiliserons les packages suivants :
 
--   `{gt}`
+-   `{gt}` : pour créer nos tableaux.
 
--   `{dplyr}` , `{tidyr}` , et `{purrr}`.
+-   `{dplyr}`, `{tidyr}` et `{purrr}` : pour manipuler les données et automatiser les fonctions.
 
--   `{janitor}`
+-   `{janitor}` : pour un nettoyage rapide des noms de données.
 
--   `{KableExtra}`
-
--   `{Paletteer}` , `{ggsci}`
+-   `{Paletteer}`, `{ggsci}` : pour appeler des palettes prédéfinies.
 
 ```{r}
 pacman::p_load(tidyverse, janitor, gt, here)
 ```
 
-# Précédemment dans pt1
+------------------------------------------------------------------------
+
+# Précédemment dans la partie 1
 
 ::: recap
-Dans la leçon `gt` précédente, nous avons eu l'opportunité de :
+Dans la leçon précédente sur `{gt}`, nous avons eu l'opportunité de :
 
--   Découvrir les données sur la prévalence du VIH au Malawi.
+-   Découvrir les données de prévalence du VIH au Malawi.
 
--   Découvrir la grammaire des tables et le package `gt`.
+-   Découvrir la grammaire des tableaux et le package `{gt}`.
 
--   créer une table simple.
+-   Créer un tableau simple.
 
--   Ajouter des détails comme le titre et la note de bas de page à la table.
+-   Ajouter des détails comme un titre et une note de bas de page au tableau.
 
--   Regrouper les colonnes en en-têtes.
+-   Regrouper des colonnes dans des en-têtes de groupe.
 
--   Créer des lignes de résumé.
+-   Créer des lignes récapitulatives.
 
 ![](images/malawi_hiv_summary_t5.png){width="455"}
-:::
 
-# Jeu de données
+# Le jeu de données
 
-Dans cette leçon, nous utiliserons les mêmes données que la leçon précédente. Vous pouvez revenir en arrière pour une description détaillée des données et du processus de préparation que nous avons effectué.
+Dans cette leçon, nous utiliserons les mêmes données que dans la leçon précédente. Vous pouvez revenir en arrière pour une description détaillée des données et du processus de préparation que nous avons effectué.
 
 ::: recap
 Voici les détails complets des colonnes que nous utiliserons :
 
--   `region`: La région géographique ou la zone où les données ont été collectées ou sont analysées.
+-   `region` : La région géographique ou la zone où les données ont été collectées ou sont analysées.
 
--   `period`: Une période spécifique associée aux données, souvent utilisée pour l'analyse temporelle.
+-   `period` : Une période spécifique associée aux données, souvent utilisée pour l'analyse temporelle.
 
--   `previous_negative`: Le nombre d'individus avec un résultat de test négatif précédent.
+-   `previous_negative` : Le nombre d'individus avec un résultat de test négatif précédent.
 
--   `previous_positive`: Le nombre d'individus avec un résultat de test positif précédent.
+-   `previous_positive` : Le nombre d'individus avec un résultat de test positif précédent.
 
--   `new_negative`: Le nombre de nouveaux cas diagnostiqués avec un résultat négatif.
+-   `new_negative` : Le nombre de nouveaux cas diagnostiqués avec un résultat négatif.
 
--   `new_positive`: Le nombre de nouveaux cas diagnostiqués avec un résultat positif.
+-   `new_positive` : Le nombre de nouveaux cas diagnostiqués avec un résultat positif.
 :::
 
-Mais pour les besoins de cette leçon, nous utiliserons directement les tableaux. Voici le tableau que nous avons créé avec les bonnes en-têtes et étiquettes de colonnes. Nous baserons le reste de notre leçon sur ce tableau en particulier.
+Mais pour les besoins de cette leçon, nous utiliserons directement les tableaux, ceci est le tableau que nous avons créé avec les bons en-têtes de colonnes et étiquettes, nous baserons le reste de notre leçon sur celui-ci en particulier.
 
 ```{r}
-hiv_malawi_summary <- read_rds(here::here("data", "clean", "malawi_hiv_summary_t3.rds"))
+hiv_malawi_summary <- read_rds(here::here("data/clean/malawi_hiv_summary_l2_t11.rds"))
 
 hiv_malawi_summary
 ```
 
+------------------------------------------------------------------------
+
 # Thèmes
 
-Comme l'objectif de cette leçon est principalement le style, commençons par utiliser un thème prédéfini pour ajouter plus de visuels et de couleurs au tableau et à ses composants. Pour ce faire, nous utilisons la fonction `opt_stylize`. La fonction contient plusieurs styles prédéfinis et peut accepter une couleur également. Dans notre cas, nous avons choisi d'opter pour le style No.6 et la couleur 'cyan'. Vous pouvez définir ces arguments selon vos préférences.
+Puisque l'objectif de cette leçon est principalement le style, commençons par utiliser un thème prédéfini pour ajouter plus de visuels et de couleurs au tableau et à ses composants. Pour ce faire, nous utilisons la fonction `opt_stylize`. La fonction contient plusieurs styles prédéfinis et peut également accepter une couleur. Dans notre cas, nous avons choisi d'aller avec le style numéro 6 et la couleur 'gris', mais vous pouvez régler ces arguments selon vos préférences.
 
 ```{r}
 t1 <- hiv_malawi_summary %>% 
   opt_stylize(
-    style = 6, 
-    color = 'gray'
+    style = 1, 
+    color = 'cyan'
+  ) %>% 
+  tab_options(
+    stub.background.color = '#F4F4F4',
   )
 
 t1
 ```
 
 ::: challenge
-Pour des thèmes et des styles plus sophistiqués, vous pouvez consulter la fonction `tab_options` (documentation [ici](https://gt.rstudio.com/reference/tab_options.html?q=tab%20options#null)) qui est essentiellement l'équivalent de la fonction `theme` dans `ggplot2`. Cette fonction contient des arguments et des options pour chaque couche et composant du tableau. Pour les besoins de cette leçon, nous n'approfondirons pas.
+Pour des thèmes et un style plus sophistiqués, vous pouvez vous référer à la fonction `tab_options` (documentation [ici](https://gt.rstudio.com/reference/tab_options.html?q=tab%20options#null)) qui est essentiellement l'équivalent de la fonction `theme` dans `ggplot2`. Cette fonction contient des arguments et des options sur chaque couche et composant du tableau. Pour les besoins de cette leçon, nous n'irons pas plus loin dans ce domaine.
 :::
+
+------------------------------------------------------------------------
 
 # Formatage des valeurs dans le tableau
 
-Ne serait-il pas utile de visualiser en couleurs la différence entre les valeurs d'une colonne spécifique ? Dans de nombreux rapports, ces types de tableaux sont très utiles, surtout si le nombre de lignes est assez grand. Faisons cela pour notre tableau de sorte que la colonne `new_positive` soit formatée en rouge.
+Ne serait-il pas utile de visualiser en couleurs la différence entre les valeurs dans une colonne spécifique ? Dans de nombreux rapports, ce genre de tableaux est très utile, surtout si le nombre de lignes est assez grand. Faisons cela pour notre tableau de sorte que la colonne `new_positive` soit formatée en rouge.
 
-```{r}
-# révisé la documentation, paletteer n'est pas nécessaire.
-# my_colors <- paletteer::paletteer_d("ggsci::red_material")
-```
-
-Nous pouvons le faire à l'aide de la fonction `data_color` pour laquelle nous devons spécifier deux arguments : `columns` (c'est-à-dire sur quelle colonne ce style sera-t-il appliqué ?) et `palette` pour la palette de couleurs que nous souhaitons utiliser.
+Nous pouvons le faire au moyen de la fonction `data_color` pour laquelle nous devons spécifier deux arguments, `columns` (c'est-à-dire dans quelle colonne ce style sera appliqué ?) et `palette` comme la palette de couleurs que nous avons l'intention d'utiliser.
 
 ```{r}
 t2 <- t1 %>% 
@@ -149,10 +155,10 @@ t2
 ```
 
 ::: side-note
-`ggsci::red_material` n'est pas la seule palette que nous pouvons utiliser, en fait, il existe des centaines de palettes conçues pour être utilisées dans R. Vous pouvez en trouver beaucoup plus dans la documentation du package `paletteer` [ici](https://emilhvitfeldt.github.io/paletteer/#included-packages), ou dans la documentation officielle de `data_color` [ici](https://gt.rstudio.com/reference/data_color.html?q=data_color#null).
+`ggsci::red_material` n'est pas la seule palette que nous pouvons utiliser, en fait, il y a des centaines de palettes conçues pour être utilisées dans R. Vous pouvez en trouver beaucoup plus dans le package `paletteer` dans la documentation [ici](https://emilhvitfeldt.github.io/paletteer/#included-packages), ou dans la documentation officielle `data_color` [ici](https://gt.rstudio.com/reference/data_color.html?q=data_color#null).
 :::
 
-Nous pouvons faire cela pour la colonne `previous_negative` également. Nous pouvons utiliser un autre type de palette, pour ce cas, j'utilise la palette verte du même package : [`ggsci::green_material`](https://github.com/nanxstats/ggsci), la palette que vous choisissez est une question de commodité et de goût personnel, vous pouvez en savoir plus à ce sujet si vous vous référez à la note de marge ci-dessus.
+Nous pouvons également faire cela pour la colonne `previous_negative`. Nous pouvons utiliser un type différent de palette, j'utilise pour ce cas la palette verte du même package : [`ggsci::green_material`](https://github.com/nanxstats/ggsci), la palette que vous choisissez est une question de commodité et de goût personnel, vous pouvez en savoir plus à ce sujet si vous vous référez à la note latérale ci-dessus.
 
 ```{r}
 t2 %>% 
@@ -163,41 +169,47 @@ t2 %>%
   
 ```
 
-De même, nous pouvons également colorer plusieurs colonnes à la fois, par exemple nous pouvons styliser les colonnes avec des cas positifs en rouge, et celles avec des cas négatifs en vert. Pour faire cela, nous devons écrire *deux* instructions `data_color`, une pour chaque style de couleur :
+De même, nous pouvons également colorer plusieurs colonnes à la fois, par exemple nous pouvons styliser les colonnes avec des cas positifs en rouge et celles avec des cas négatifs en vert. Pour ce faire, nous devons écrire *deux* instructions `data_color`, une pour chaque style de couleur :
 
 ```{r}
 t4 <- t1 %>% 
+
   data_color(
-    columns = ends_with("positive"), # sélection des colonnes se terminant par le mot positive
+    columns = ends_with("positive"), # sélectionnant les colonnes se terminant par le mot positif
     palette = "ggsci::red_material" # palette rouge 
   ) %>% 
   data_color(
-    columns = ends_with("negative"), # sélection des colonnes se terminant par le mot negative
+    columns = ends_with("negative"), # sélectionnant les colonnes se terminant par le mot négatif
     palette = "ggsci::green_material" # palette verte
   )
+
 
 t4
 
 ```
 
 ::: reminder
-Rappelez-vous, dans la leçon précédente, nous avons utilisé les fonctions [`tidyselect`](https://tidyselect.r-lib.org/reference/starts_with.html) pour sélectionner des colonnes, dans le code ci-dessus, nous avons utilisé la fonction `ends_with` pour sélectionner les colonnes se terminant soit par le mot 'négatif' soit par 'positif', ce qui est parfait pour l'objectif de notre tableau.
+Rappelez-vous que dans la leçon précédente nous avons utilisé les fonctions [`tidyselect`](https://tidyselect.r-lib.org/reference/starts_with.html) pour sélectionner les colonnes, dans le code ci-dessus nous avons utilisé la fonction `ends_with` pour sélectionner les colonnes se terminant soit par le mot 'négatif' soit par 'positif', ce qui est parfait pour l'objectif de notre tableau.
 
-De plus, les étiquettes des colonnes dans le tableau `gt` et les noms réels des colonnes dans le `data.frame` peuvent être différents, dans notre cas, nous nous référons aux noms dans les données.
+Encore une fois, les étiquettes des colonnes dans le tableau `{gt}` et les noms réels des colonnes dans le `data.frame` peuvent être différents, dans notre cas nous nous référons aux noms dans les données.
 :::
 
-# Formatage conditionnel
+------------------------------------------------------------------------
 
-Nous pouvons également configurer le tableau pour changer conditionnellement le style d'une cellule en fonction de sa valeur. Dans notre cas, nous voulons mettre en évidence les valeurs de la colonne `previous_positive` en fonction d'un seuil (la valeur 15700). Les valeurs supérieures ou égales au seuil devraient être en vert.
+# Mise en forme conditionnelle
+
+Nous pouvons également configurer la table pour changer conditionnellement le style d'une cellule en fonction de sa valeur. Dans notre cas, nous souhaitons mettre en évidence les valeurs de la colonne `previous_positive` selon un seuil (la valeur 15700). Les valeurs supérieures ou égales au seuil doivent être en vert.
 
 Pour ce faire, nous utilisons la fonction `tab_style` où nous spécifions deux arguments :
 
--   `style` : où nous spécifions la couleur dans la fonction `cell_text` car nous avons l'intention de manipuler le texte à l'intérieur des cellules.
+- `style` : où nous spécifions la couleur dans la fonction `cell_text` puisque nous avons l'intention de manipuler le texte à l'intérieur des cellules.
 
--   `locations` : où nous spécifions les colonnes et les rangées de notre manipulation dans `cells_body` puisque ces cellules sont dans le corps principal du tableau.
+- `location` : où nous spécifions les colonnes et les lignes de notre manipulation dans `cells_body` puisque ces cellules sont dans le corps principal du tableau.
+
+Utilisons le tableau t2 comme exemple :
 
 ```{r}
-t5 <- t4 %>% 
+t5 <- t2 %>% 
   tab_style(
     style = cell_text(
       color = "red", 
@@ -211,103 +223,106 @@ t5
 ```
 
 ::: attention
-Dans le code ci-dessus, la condition sur laquelle le style s'appliquera est déclarée dans :
+Dans le code ci-dessus, la condition sur laquelle le style sera appliqué est énoncée dans :
 
-locations = cells_body(columns = previous_positive, `rows = previous_positive >= 15700 )`
+`locations = cells_body(columns = previous_positive, rows = previous_positive >= 15700 )`
 
-Notez également que nous pouvons passer plus d'arguments à la fonction `cell_text`, comme la taille et la police des cellules que nous souhaitons styler.
+Notez également que nous pouvons passer plus d'arguments à la fonction `cell_text`, tels que la taille et la police des cellules que nous avons l'intention de styler.
 :::
 
-Et si nous voulions avoir une condition à deux côtés sur le même seuil ? Pouvons-nous avoir des cellules avec des valeurs supérieures ou égales au seuil stylisées en vert, et simultanément d'autres cellules avec des valeurs inférieures au seuil stylisées en.... lightgreen ?
+Que faire si nous voulons avoir une condition à double sens sur le même seuil ? Peut-on avoir des cellules avec des valeurs supérieures ou égales au seuil stylisées en vert, et simultanément d'autres cellules avec des valeurs inférieures au seuil stylisées en... cyan ?
 
-Nous le pouvons absolument, nous avons déjà fait la première partie (dans le bloc de code précédent), nous devons simplement ajouter une seconde condition de manière similaire mais dans une déclaration `tab_style` différente :
+Nous le pouvons absolument, nous avons déjà fait la première partie (dans le morceau de code précédent), nous devons juste ajouter une seconde condition de manière similaire mais dans une déclaration `tab_style` différente :
 
 ```{r}
-t6 <- t5 %>%
+t6 <- t5 %>% 
   tab_style(
     style = cell_text(
-      color = 'lightgreen'
+      color = 'cyan' 
     ),
     location = cells_body(
       columns = 'previous_positive',
-      rows = previous_positive < 15700  
+      rows = previous_positive < 15700
     )
   )
 
 t6
+
 ```
 
-::: pratice
-**Question 1 : Mise en forme conditionnelle** Pour mettre en surbrillance (en jaune) les lignes d'un tableau **`gt`** où la colonne "hiv_positive" dépasse 1 000, quel extrait de code R devriez-vous utiliser ?
+::: pratique
+**Question 1 : Mise en forme conditionnelle** Pour mettre en évidence (en jaune) les lignes dans un tableau **`{gt}`** où la colonne "hiv_positive" dépasse 1 000, quel extrait de code R devriez-vous utiliser ?
 
-A.  
+A.
 
 ```{r eval=FALSE, echo=TRUE}
-data %>%
-  gt() %>%
+data %>% 
+  gt() %>% 
   tab_style(
-    style = cells_body(),
-    columns = "Sales",
+    style = cells_body(), 
+    columns = "Sales", 
     conditions = style_number(Sales > 1000, background = "yellow")
   )
 ```
 
-B.  
+B.
 
 ```{r eval=FALSE, echo=TRUE}
-data %>%
-  gt() %>%
+data %>% 
+  gt() %>% 
   tab_style(
-    style = cells_data(columns = "Sales"),
-    conditions = style_number(Sales > 1000, background = "yellow")
+    style = cells_data(columns = "Sales"), 
+    conditions = style_number(Sales > 1000, background = "yellow") 
   )
 ```
 
-C.  
+C.
 
 ```{r eval=FALSE, echo=TRUE}
-data %>%
-  gt() %>%
+data %>% 
+  gt() %>% 
   tab_style(
     style = cell_fill(
       color = "yellow"
-    ),
+    ), 
     locations = cells_body(
       columns = "hiv_positive",
-      rows = hiv_positive > 1000  
-    )
-  )  
-```
-
-D.  
-
-```{r eval=FALSE, echo=TRUE}
-data %>%
-  gt() %>%
-  tab_style(
-    style = cells_data(columns = "Sales"),
-    conditions = style_text(Sales > 1000, background = "yellow") 
+      rows = hiv_positive > 1000
+    ) 
   )
+    
 ```
 
-**Question 2 : Coloration de la cellule**
-
-En utilisant la dataframe **`hiv_malawi`**, créez un tableau **`gt`** qui affiche le nombre total (**somme**) de cas "*new_positive*" pour chaque "*region*". Mettez en surbrillance les cellules avec des valeurs supérieures à 50 cas en *rouge* et les cellules avec 50 ou moins en *vert*. Complétez les parties manquantes (\_\_\_\_\_\_\_\_) de ce code pour y parvenir.
+D.
 
 ```{r eval=FALSE, echo=TRUE}
-# Calculate the total_new_pos summary
+ data %>% 
+   gt() %>% 
+   tab_style(
+     style = cells_data(columns = "Sales"), 
+     conditions = style_text(Sales > 1000, background = "yellow")
+   )
+```
+
+**Question 2 : Coloration des cellules**
+
+En utilisant le jeu de données **`hiv_malawi`**, créez un tableau **`{gt}`** qui affiche le total (**somme**) des cas "*`new_positive`*" pour chaque "*`region`*". Mettez en évidence les cellules avec des valeurs de plus de 50 cas en *rouge* et les cellules avec des valeurs inférieures ou égales à 50 en *vert*. Complétez les parties manquantes (\_\_\_\_\_\_\_\_) de ce code pour y parvenir.
+
+```{r eval=FALSE, echo=TRUE}
+# Calculez le résumé de total_new_pos```{r eval=FALSE, echo=TRUE}
+# Calculez le résumé de total_new_pos
 total_summary <- hiv_malawi %>%
   group_by(_________) %>%
   summarize(total_new_positive = __________)
 
-# Create a gt table and apply cell coloration  
+# Créez un tableau gt et appliquez la coloration des cellules
 summary_table <- total_summary %>%
   gt() %>%
   tab_style(
-    style = cell_fill(color = "red"), 
+    style = cell_fill(color = "red"),
     locations = _________(
       columns = "new_positive",
-      rows = _________________  
+      rows = _________________
     )
   ) %>%
   tab_style(
@@ -320,88 +335,84 @@ summary_table <- total_summary %>%
 ```
 :::
 
+------------------------------------------------------------------------
+
 # Polices et texte
 
-C'est maintenant le bon moment pour ajouter une personnalisation au texte dans le tableau. en utilisant la même fonction `gt::tab_style`.
+Maintenant, nous allons améliorer l'attrait visuel du texte de notre tableau. Pour ce faire, nous utiliserons à nouveau la fonction `gt::tab_style()`.
 
-Changeons la police et la couleur du titre et du sous-titre par exemple, je choisis d'utiliser la police `Yanone Kaffeesatz` de google. Google fonts vous fournit des centaines de milliers de polices et de styles parmi lesquels choisir, qui peuvent être plus intéressants que les polices Excel rigides et ennuyeuses.
+Modifions la police et la couleur du titre et du sous-titre. Nous sélectionnerons la police `Yanone Kaffeesatz` de Google Fonts, une ressource offrant un vaste choix de polices qui peuvent ajouter une touche unique à votre tableau, au-delà des options standard d'Excel.
 
-Pour cela, nous devons spécifier quelques détails dans la fonction `gt::tab_style` :
+Pour appliquer ces changements, nous configurerons la fonction `gt::tab_style()` comme suit :
 
--   Argument `style` : attribue la fonction `cell_text` :
+-   L'argument `style` est assigné à la fonction `cell_text()`, qui contient deux autres arguments :
 
-    -   Nous utilisons la fonction `google_font` pour utiliser la police choisie depuis google et l'attribuer à l'argument `font`
+    -   `font` est assigné à la fonction `google_font()` avec le nom de notre police choisie.
 
-    -   Nous spécifions la couleur du texte.
+    -   `color` est défini sur un code couleur hexadécimal qui correspond à la couleur de texte désirée.
 
--   Argument `locations` : attribue la fonction `cells_title` :
+-   L'argument `locations` est assigné à la fonction `cells_title()` :
 
-    -   Nous spécifions l'emplacement `title` et `subtitle` via l'argument `groups` dans une notation vectorielle `c(...)`
+    -   Nous spécifions `title` et `subtitle` dans l'argument `groups` en utilisant la notation vectorielle `c(…)`.
 
-::: note
-Notez que pour apporter des modifications à l'apparence du titre ou du sous-titre, vous pouvez simplement utiliser : `locations = cells_title(groups = "title")` pour appliquer des modifications au titre, ou `locations = cells_title(groups = "subtitle")` pour appliquer des modifications au sous-titre sans avoir besoin d'utiliser `c(...)`.
+::: side-note
+Pour modifier spécifiquement le titre ou le sous-titre, vous pouvez utiliser `locations = cells_title(groups = "title")` ou `locations = cells_title(groups = "subtitle")`, respectivement, sans avoir besoin de `c(…)`.
+
+**Utiliser des listes pour passer des arguments dans gt :** Les listes en R sont une partie intégrante du langage et sont extrêmement polyvalentes. Une liste peut contenir des éléments de différents types (nombres, chaînes, vecteurs, et même d'autres listes) et chaque élément peut être accédé par son indice. Dans le contexte de notre tableau {gt}, nous utilisons des listes pour regrouper ensemble des propriétés de style (avec l'argument style) et pour spécifier plusieurs emplacements dans le tableau où ces styles doivent être appliqués (avec l'argument locations).
+
+**Utiliser des Codes Couleurs Hexadécimaux :** Les couleurs dans de nombreux langages de programmation, y compris R, peuvent être spécifiées à l'aide de codes couleurs hexadécimaux. Ces codes commencent par un symbole dièse (#) et sont suivis de six chiffres hexadécimaux. Les deux premiers chiffres représentent la composante rouge, les deux suivants la composante verte, et les deux derniers la composante bleue. Ainsi, lorsque nous définissons color = "#00353f", nous spécifions une couleur qui n'a pas de rouge, un peu de vert, et une bonne quantité de bleu, ce qui résulte en une couleur bleu profond. Cela nous permet de contrôler précisément les couleurs que nous utilisons dans nos tableaux.
 :::
 
 ```{r}
-t7 <- t6 %>%
+t7 <- t4 %>% 
   tab_style(
-    style = cell_text(
-      font = google_font(name = 'Yanone Kaffeesatz'),
-      color = "pink"
-    ), 
-    locations = cells_title(groups = c("title", "subtitle"))
+      style = cell_text(
+          font = google_font(name = 'Yanone Kaffeesatz'), 
+          color = "#00353f"
+        ),
+      locations = cells_title(groups = c("title", "subtitle"))
   )
-
 t7
 ```
 
-De plus, nous pouvons effectuer les mêmes changements sur les libellés de colonnes et de lignes, tout ce que nous devons faire est de spécifier correctement l'emplacement des modifications que nous souhaitons apporter, sauf que cette fois nous modifions la couleur d'arrière-plan (ou couleur de remplissage) des cellules que nous allons modifier. Nous pouvons le faire en ajoutant une autre fonction de style `cell_fill` où nous fournissons la couleur que nous voulons pour l'arrière-plan de nos cellules. Enfin, dans l'argument `locations`, et de manière similaire à l'argument `style`, nous attribuons une liste dans laquelle nous fournissons les informations de localisation des modifications que nous souhaitons apporter à l'aide de la fonction `cells_column_labels`, où nous spécifions les libellés de colonne que nous souhaitons modifier.
+Nous pouvons étendre notre personnalisation pour inclure les étiquettes des colonnes, des en-têtes de groupe et des lignes d'attente, ainsi que la note source. Dans l'argument `locations`, nous fournirons une liste indiquant les emplacements spécifiques pour ces changements. Pour une compréhension complète des emplacements, veuillez vous référer à l'Annexe (Liste 1).
 
 ```{r}
-t8 <- t7 %>%
+t8 <- t7 %>% 
   tab_style(
     style = list(
       cell_text(
-        font = google_font(name = "Righteous"),
-        color = "pink" 
+        font = google_font(name = "Montserrat"),
+        color = "#00353f"
       )
     ),
     locations = list(
-      cells_column_labels(columns = everything()), # select every column
-      cells_column_spanners(spanners = everything()) # select all spanners
+      cells_column_labels(columns = everything()), # sélectionner chaque colonne
+      cells_column_spanners(spanners = everything()), # sélectionner tous les en-têtes de groupe
+      cells_source_notes(),
+      cells_stub()
     )
   )
-
 t8
 ```
 
-De manière similaire, nous pouvons faire la même chose pour les lignes de groupe et les périodes, tout ce que nous devons faire est de les ajouter à l'argument locations en utilisant `cells_rows_groups` pour les lignes de groupe, et `cells_body` pour le reste de la colonne période comme suit :
+::: side-note
+Si vous souhaitez changer la couleur de fond du titre, vous pouvez le faire en ajustant l'argument `locations` pour pointer sur `cells_title(groups = "title")`. Voici comment vous pourriez le faire :
 
-```{r}
-t9 <- t8 %>%
+```{r eval = FALSE}
+t9 <- t7 %>% 
   tab_style(
-    style = list( # we wrap the arguments in a list when we have multiple stuling
-      cell_text( # text styling  
-        font = google_font(name = "Righteous"),
-        color = "pink"
-      ),
-      cell_fill(color = "gray") # cell background color fill styling
-    ),
-    locations = list( # similar with locations
-      cells_row_groups(groups = everything()),
-      cells_body(columns = period) 
-    )
-  )
-
+    style = cell_fill(color = "#ffffff"),
+    locations = cells_title(groups = "title")
+   )
 t9
 ```
 
-::: key-point
-L'idée derrière ce que nous avons fait ici est de vous donner le contrôle sur ce que VOUS voulez réaliser et non un exemple de ce que vous devez faire exactement. Il y a d'innombrables façons de personnaliser une table `gt`. C'est à vous de choisir ce dont vous avez besoin et ce qui fonctionne pour votre flux de travail.
+Dans ce code, `cell_fill(color = "#ffffff")` change la couleur de fond en blanc, et `locations = cells_title(groups = "title")` applique ce changement spécifiquement au titre du tableau.
 :::
 
-::: practice
-**Question 2: Polices et Texte** Quel extrait de code R permet de changer la taille de la police du texte de bas de page dans une table **`gt`** ?
+::: pratique
+**Question 3 : Polices et Texte** Quel extrait de code R permet de changer la taille de la police du texte de bas de page dans un tableau **`{gt}`** ?
 
 A.  
 
@@ -447,57 +458,55 @@ D.
 ```
 :::
 
+------------------------------------------------------------------------
+
 # Bordures
 
-Avec `gt`, il est également possible de dessiner des bordures dans les tables pour aider l'utilisateur final à se concentrer sur une zone spécifique de la table. Pour ajouter des bordures à une table `gt`, nous utiliserons, encore une fois, la fonction `tab_style` et, de nouveau, spécifierons l'argument style et locations. La seule différence maintenant est que nous utiliserons la fonction d'aide `cell_borders` et l'attribuerons à l'argument style. Voici comment :
+Dans `{gt}`, il est également possible de dessiner des bordures dans les tableaux pour aider l'utilisateur final à se concentrer sur une zone spécifique du tableau. Pour ajouter des bordures à un tableau `{gt}`, nous utiliserons, encore une fois, la fonction `tab_style` et, encore une fois, spécifierons l'argument style et locations. La seule différence maintenant est que nous utiliserons la fonction d'assistance `cell_borders` et l'assignerons à l'argument de style. Voici comment :
 
-Commençons par ajouter une ligne verticale :
+Ajoutons d'abord une ligne verticale :
 
 ```{r}
-t10 <- t9 %>% 
+t10 <- t8 %>% 
   tab_style(
     style = cell_borders( # nous ajoutons une bordure
       sides = "left",     # à gauche de l'emplacement sélectionné
-      color = "pink",     # avec une couleur rose
+      color = "#45785e",     # avec une couleur vert foncé
       weight = px(5)      # et cinq pixels d'épaisseur
     ),
-    locations = cells_body(columns = 2) # ajoutez cette ligne de bordure à gauche de la colonne 2
+    locations = cells_body(columns = 2) # ajouter cette ligne de bordure à gauche de la colonne 2
   )
 t10
 ```
 
-Ajoutons maintenant une autre ligne de bordure horizontale rose :
+Maintenant, ajoutons une autre ligne de bordure horizontale rose :
 
 ```{r}
 t11 <- t10 %>% 
     tab_style(
-    style = cell_borders( # nous ajoutons une ligne de bordure
-      sides = "bottom",   # en bas de l'emplacement sélectionné
-      color = "pink",     # avec une couleur rose
+    style = cell_borders( # nous ajoutons une bordure
+      sides = "left",     # à gauche de l'emplacement sélectionné
+      color = "#45785e",     # avec une couleur vert foncé
       weight = px(5)      # et cinq pixels d'épaisseur
     ),
-    locations = cells_column_labels(columns = everything()) # ajoutez cette ligne de bordure en bas des étiquettes de colonne
+    locations = list(
+      cells_column_labels(columns = everything()), # ajouter cette ligne de bordure en bas des étiquettes des colonnes
+      cells_stubhead()                             # et au stubhead
+    )
   )
   
 t11
 ```
 
-```{r message=FALSE, warning=FALSE, include=FALSE}
-
-# saving table for next lesson as rds object
-t11 %>% write_rds(here("data/clean/malawi_hiv_summary_l2_t11.rds"))
-t11 %>% gt::gtsave(here("data/clean/malawi_hiv_summary_l2_t11.png"))
-```
-
 ::: challenge
-**Question 4 : Bordures** Pour ajouter une bordure solide autour de l'ensemble du tableau **`gt`**, quel extrait de code R devriez-vous utiliser ?
+**Question 4 : Bordures** Pour ajouter une bordure pleine autour de la totalité du tableau **`{gt}`**, quel extrait de code R devriez-vous utiliser ?
 
-Astuce : nous pouvons utiliser une fonction qui définit des options pour l'ensemble du tableau, tout comme la fonction `theme` pour le package `ggplot`.
+Indice : nous pouvons utiliser une fonction qui définit des options pour l'ensemble du tableau, tout comme la fonction `theme` pour le package `ggplot`.
 
 A.  
 
 ```{r eval=FALSE, echo=TRUE}
-data %>% 
+donnees %>% 
   gt() %>% 
   tab_options(table.border.top.style = "solid")
 ```
@@ -505,7 +514,7 @@ data %>%
 B.  
 
 ```{r eval=FALSE, echo=TRUE}
-data %>% 
+donnees %>% 
   gt() %>% 
   tab_options(table.border.style = "solid")
 ```
@@ -513,7 +522,7 @@ data %>%
 C.  
 
 ```{r eval=FALSE, echo=TRUE}
-data %>% 
+donnees %>% 
   gt() %>% 
   tab_style(
     style = cells_table(), 
@@ -524,7 +533,7 @@ data %>%
 D.  
 
 ```{r eval=FALSE, echo=TRUE}
-data %>% 
+donnees %>% 
   gt() %>% 
   tab_style(
     style = cells_body(), 
@@ -533,21 +542,27 @@ data %>%
 ```
 :::
 
-# Solutions {.unnumbered}
+------------------------------------------------------------------------
 
-1. C
+# Conclusion
 
-2.
+Pour conclure notre série, nous avons commencé par un récapitulatif complet de la première partie, posant les bases pour des techniques avancées de stylisation de tableaux. Nous avons exploré l'utilisation de la fonction `opt_stylize()` pour appliquer de manière élégante des styles et des couleurs prédéfinis, améliorant l'attrait visuel de nos tableaux. Une partie clé de notre discussion a introduit la fonction `data_color`, un outil puissant pour appliquer des distinctions codées par couleur aux valeurs du tableau, ce qui aide à une évaluation rapide des données et au suivi visuel. Nous avons ensuite abordé le formatage conditionnel, en utilisant la fonction `tab_style` pour modifier dynamiquement les styles des cellules en fonction des données qu'elles contiennent, une étape qui attire l'attention sur les métriques et les tendances critiques. Au-delà de la fonctionnalité, nous nous sommes concentrés sur l'esthétique avec `gt::tab_style()`, montrant comment des polices uniques de Google Fonts peuvent améliorer considérablement la lisibilité et l'apparence du texte dans les tableaux. Enfin, nous avons couvert l'ajout stratégique de bordures en utilisant la fonction `tab_style` en conjonction avec la fonction d'assistance `cell_borders`, guidant l'attention des utilisateurs sur des zones spécifiques du tableau et améliorant l'interprétation globale des données. Chacune de ces techniques contribue à une présentation de tableau plus engageante et informative, garantissant que les données ne sont pas seulement accessibles mais également captivantes.
+
+# Corrigé {.unnumbered}
+
+1.  **Question 1 : Formatage Conditionnel**
+    -   *C*
+2.  **Question 2 : Coloration de Remplissage des Cellules**
 
 ```{r eval=FALSE, echo=TRUE}
 # Les solutions sont là où les lignes sont numérotées
 
-# Calculez le résumé total_new_pos
+# Calculer le résumé total_new_pos
 total_summary <- hiv_malawi %>%
   group_by(region) %>% ##1
   summarize(total_new_positive = new_positive) ##2 
 
-# Créez un tableau gt et appliquez une coloration de cellule
+# Créer un tableau gt et appliquer la coloration des cellules
 summary_table <- total_summary %>%
   gt() %>% ##3
   tab_style(
@@ -566,22 +581,62 @@ summary_table <- total_summary %>%
   )
 ```
 
-3. B
+3.  **Question 3 : Polices et Texte**
+    -   *B*
+4.  **Question 4 : Bordures**
+    -   *B*
 
-4. B
+------------------------------------------------------------------------
 
 # Contributeurs {.unlisted .unnumbered}
 
-Les membres suivants de l'équipe ont contribué à cette leçon :
+Les membres de l'équipe suivants ont contribué à cette leçon :
 
 `r .tgc_contributors_list(ids = c("benn", "joy", "guy"))`
 
-# Ressources et packages externes
+------------------------------------------------------------------------
 
--   The definite cookbook of `gt` by Tom Mock : <https://themockup.blog/static/resources/gt-cookbook.html#introduction>
+# Ressources externes et paquets
 
--   the Grammar of Table article : <https://themockup.blog/posts/2020-05-16-gt-a-grammar-of-tables/#add-titles>
+-   Le guide définitif de `{gt}` par Tom Mock : <https://themockup.blog/static/resources/gt-cookbook.html#introduction>
 
--   official `gt` documentation page : <https://gt.rstudio.com/articles/intro-creating-gt-tables.html>
+-   L'article sur la Grammaire des Tableaux : <https://themockup.blog/posts/2020-05-16-gt-a-grammar-of-tables/#add-titles>
 
--   Create Awesome HTML Table with knitr::kable and kableExtra book by Hao Zhu : <https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html#Overview>
+-   Page de documentation officielle de `{gt}` : <https://gt.rstudio.com/articles/intro-creating-gt-tables.html>
+
+-   Créer une table HTML impressionnante avec le livre knitr::kable et kableExtra par Hao Zhu : <https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html#Overview>
+
+# Annexe {.unlisted .unnumbered}
+
+Le package `{gt}` en R fournit une variété de fonctions pour spécifier les emplacements dans un tableau où certains styles ou mises en forme doivent être appliqués. Voici certaines d'entre elles :
+
+-   `cells_body()` : Cette fonction cible les cellules à l'intérieur du corps du tableau. Vous pouvez spécifier davantage les lignes et les colonnes pour cibler un sous-ensemble du corps.
+
+-   `cells_column_labels()` : Cette fonction cible les cellules qui contiennent les étiquettes des colonnes.
+
+-   `cells_column_spanners()` : Cette fonction cible les cellules qui s'étendent sur plusieurs colonnes.
+
+-   `cells_footnotes()` : Cette fonction cible les cellules qui contiennent des notes de bas de page.
+
+-   `cells_grand_summary()` : Cette fonction cible les cellules qui contiennent les lignes de grand résumé.
+
+-   `cells_group()` : Cette fonction cible les cellules qui contiennent les lignes d'étiquettes de groupe.
+
+-   `cells_row_groups()` : Cette fonction cible les cellules qui contiennent les lignes d'étiquettes de groupes de lignes.
+
+-   `cells_source_notes()` : Cette fonction cible les cellules qui contiennent les notes sources.
+
+-   `cells_stub()` : Cette fonction cible les cellules dans le talon du tableau (les étiquettes dans la première colonne du tableau).
+
+-   `cells_stubhead()` : Cette fonction cible la cellule qui contient l'en-tête du talon.
+
+-   `cells_stub_summary()` : Cette fonction cible les cellules qui contiennent les lignes de résumé du talon.
+
+-   `cells_title()` : Cette fonction cible les cellules qui contiennent le titre et le sous-titre du tableau.
+
+-   `cells_summary()` : Cette fonction cible les cellules qui contiennent les lignes de résumé.
+
+Ces fonctions peuvent être utilisées dans l'argument `locations` de la fonction `tab_style()` pour appliquer des styles spécifiques à différentes parties du tableau.
+
+------------------------------------------------------------------------
+```
