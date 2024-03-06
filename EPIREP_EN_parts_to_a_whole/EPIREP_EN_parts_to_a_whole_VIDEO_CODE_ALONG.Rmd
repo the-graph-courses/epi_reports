@@ -225,7 +225,8 @@ Write the adequate code that generates a basic bar chart of the number of `cases
 ```{r}
 # PQ1 answer:
 tb_outcomes %>% 
-  ggplot(aes(------, ------)) + 
+  ggplot(
+    aes(_______, _______)) + 
   geom_col()
 ```
 
@@ -234,10 +235,9 @@ tb_outcomes %>%
 Create a stacked bar chart to display treatment outcomes over different time periods
 
 ```{r}
-# PQ2 answer:
 tb_outcomes %>% 
   ggplot(
-    aes(-----, ------, ------)) + 
+    aes(_______, _______, _______)) + 
   geom_col()
 ```
 :::
@@ -331,19 +331,20 @@ ggplot(
 -   In the forthcoming section, we will delve into methods that effectively display these composition relationships, providing clarity on how individual parts contribute to the whole.
 
 ::: practice
-**Question 3: Trend of total cases**
+**Question 3: Area Chart**
 
-How can we visualize the trend of total TB cases over time, broken down by diagnosis type? Fill in the blanks:
+Create an area chart that illustrates the temporal variation of the total number of cases while simultaneously comparing different types of diagnoses. Using the `tb_outcomes` data frame grouped by `period_date` and `diagnosis_type`, represent the time period `period_date` on the x-axis and the total number of cases `total_cases` on the y-axis.
 
 ```{r}
-# PQ 3 answer
-tb_outcomes %>% 
-  group_by(--------, -------) %>% 
-  summarise(
-    total_cases = sum(--------)) %>% 
+tb_outcomes  %>% 
+  group_by(________________) %>% 
+  summarise(________________) %>% 
 ggplot(
-  aes(-----, -----, ----)) +
-  geom_area()
+  aes(
+    x = __________,
+    y = __________,
+    fill = __________)) +
+  ________________
 ```
 :::
 
@@ -554,7 +555,7 @@ ggplot(aes(x=----, y=------, fill=-------)) +
 ```
 :::
 
-## Wrap Up! {.unnumbered}
+## Wrap Up!
 
 -   We've worked through this `{ggplot2}` lesson to improve visual comparisons and compositions using bar, pie, area, and donut charts.
 -   Bar charts were our starting point, highlighting their strength in comparing categories and customization strategies in ggplot2.
@@ -566,14 +567,48 @@ ggplot(aes(x=----, y=------, fill=-------)) +
 
 ## Solutions {.unlisted .unnumbered}
 
-## Contributors {.unlisted .unnumbered}
+```{r}
+# PQ1 answer:
+tb_outcomes %>% 
+  ggplot(aes(x = period_date,
+             y = cases)) + 
+  geom_col()
+```
 
-## References {.unlisted .unnumbered}
+```{r}
+# PQ2 answer:
+tb_outcomes %>% 
+  ggplot(
+    aes(x = period_date, 
+        y = cases,
+        fill = outcome)) + 
+  geom_col()
+```
 
-Some material in this lesson was adapted from the following sources:
+```{r}
+# PQ 3 answer
+tb_outcomes %>% 
+  group_by(period_date, diagnosis_type) %>% 
+  summarise(
+    total_cases = sum(cases, na.rm = T)) %>% 
+ggplot(
+  aes(
+    x = period_date,
+    y = total_cases,
+    fill = diagnosis_type)) +
+  geom_area()
+```
 
--   Horst, Allison. "Allisonhorst/Dplyr-Learnr: A Colorful Introduction to Some Common Functions in Dplyr, Part of the Tidyverse." GitHub. Accessed April 6, 2022. <https://github.com/allisonhorst/dplyr-learnr.>
-
-<!-- (Chicago format. You can use https://www.citationmachine.net) -->
-
-`r .tgc_license()`
+```{r}
+# PQ4 answer
+tb_outcomes %>% 
+  group_by(outcome, diagnosis_type) %>% 
+  summarise(
+    total_cases = sum(cases, na.rm = T)) %>% 
+ggplot(aes(x=hsize, y=total_cases, fill=outcome)) +
+  geom_col(color = "white", position = "fill") +
+  coord_polar(theta = "y") + 
+  xlim(c(0.2, hsize + 0.5)) +
+  theme_void() +
+  facet_wrap(~diagnosis_type)
+```
